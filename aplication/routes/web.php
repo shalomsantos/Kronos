@@ -1,8 +1,8 @@
 <?php
 
 use App\Http\Controllers\ProfileController;
-use App\Models\User;
-use App\Models\Phone;
+use App\Http\Controllers\ProjetoController;
+use App\Http\Controllers\TipoProjetoController;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
@@ -13,6 +13,7 @@ use Inertia\Inertia;
 // })->middleware(['auth', 'verified'])->name('dashboard');
 
 Route::middleware('auth')->group(function () {
+
     Route::get('/', function () {
         return Inertia::render('Dashboard', [
             'canLogin' => Route::has('login'),
@@ -21,6 +22,10 @@ Route::middleware('auth')->group(function () {
             'phpVersion' => PHP_VERSION,
         ]);
     })->name('home');
+
+    Route::resource('/projeto', ProjetoController::class);
+    Route::resource('/tipoprojeto', TipoProjetoController::class);
+
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');

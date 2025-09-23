@@ -116,7 +116,7 @@
             <v-sheet
                 class="d-flex ga-2 pe-2"
                 color="transparent"
-                v-if="location[0]?.title == 'Base Zero'"
+                v-if="location[1]?.title == 'lista'"
             >
                 <v-btn
                     class="text-none"
@@ -134,8 +134,8 @@
                 >
             </v-sheet>
         </v-app-bar>
-        <v-main>
-            <v-sheet color="transparent" style="min-height: 88vh">
+        <v-main class="bg-green-lighten-5">
+            <v-sheet class="pa-3" color="transparent">
                 <slot />
             </v-sheet>
         </v-main>

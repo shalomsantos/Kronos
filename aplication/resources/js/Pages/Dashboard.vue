@@ -1,7 +1,6 @@
 <template>
     <DefaultLayout
         :location="location"
-        class="bg-green-lighten-5 pa-3"
         @filter="dialogFilter = !dialogFilter"
         @newBasezero="dialogNewBasezero = !dialogNewBasezero"
     >
@@ -14,13 +13,12 @@
                 text="lorem ipsumlorem ipsum"
             ></v-card>
         </v-dialog>
-        <v-dialog v-model="dialogNewBasezero" max-width="550">
-            <v-toolbar title="Nova Base zero" density="compact"></v-toolbar>
+        <v-dialog v-model="dialogNewBasezero" max-width="650">
+            <v-toolbar title="Nova Base zero" density="compact"><v-btn icon="mdi-close" @click.prevent="dialogNewBasezero=false"></v-btn></v-toolbar>
             <v-card rounded="0">
                 <v-card-item class="ma-0 pa-2">
                     <v-row dense class="pa-2">
-                        <v-col cols="12" class="d-flex align-center ga-3">
-                            <!-- <v-text-field clearable label="Projetos" variant="outlined" density="compact" hide-details="auto"></v-text-field> -->
+                        <v-col cols="9" class="d-flex ga-2 align-center">
                             <v-select
                                 clearable
                                 label="Projetos"
@@ -38,59 +36,34 @@
                             ></v-select>
                             <v-btn
                                 class="text-none"
+                                :href="route('projeto.index')"
                                 prepend-icon="mdi-plus"
-                                color="grey"
-                                density="compact"
-                                >Projeto</v-btn
-                            >
+                                color="green-darken-1"
+                            >Projeto</v-btn>
                         </v-col>
-                        <v-col cols="6">
+                        <v-col cols="3">
                             <v-text-field
-                                clearable
-                                label="campo 1"
+                                label="Ano"
                                 variant="outlined"
                                 density="compact"
                                 hide-details="auto"
-                            ></v-text-field>
-                        </v-col>
-                        <v-col cols="6">
-                            <v-text-field
                                 clearable
-                                label="campo 1"
-                                variant="outlined"
-                                density="compact"
-                                hide-details="auto"
                             ></v-text-field>
                         </v-col>
                         <v-col cols="12">
-                            <v-text-field
+                            <v-textarea
                                 clearable
-                                label="campo 1"
+                                label="Descrição"
                                 variant="outlined"
                                 density="compact"
-                                hide-details="auto"
-                            ></v-text-field>
+                                hide-details
+                                rows="2"
+                                auto-grow
+                                counter
+                            ></v-textarea>
                         </v-col>
-                        <v-col cols="6">
-                            <v-text-field
-                                clearable
-                                label="campo 1"
-                                variant="outlined"
-                                density="compact"
-                                hide-details="auto"
-                            ></v-text-field>
-                        </v-col>
-                        <v-col cols="6">
-                            <v-text-field
-                                clearable
-                                label="campo 1"
-                                variant="outlined"
-                                density="compact"
-                                hide-details="auto"
-                            ></v-text-field>
-                        </v-col>
+                        <v-btn class="text-none" color="green-darken-1">Salvar</v-btn>
                     </v-row>
-                    <v-btn class="text-none" color="grey">Salvar</v-btn>
                 </v-card-item>
             </v-card>
         </v-dialog>
@@ -98,15 +71,18 @@
 </template>
 
 <script setup>
-import DefaultLayout from "../Layouts/DefaultLayout.vue";
-import { Link } from "@inertiajs/vue3";
+import DefaultLayout from "@/Layouts/DefaultLayout.vue";
 import { ref } from "vue";
+import { usePage } from '@inertiajs/vue3'
+import { Link } from "@inertiajs/vue3";
 
+const page = usePage()
+const pageInfo = page.props;
 const dialogFilter = ref(false);
 const dialogNewBasezero = ref(false);
 
 const location = [
-    { title: "Base Zero", disabled: false, href: "/bzeros" },
+    { title: "Base Zero", disabled: false, href: "/" },
     { title: "lista", disabled: true },
 ];
 </script>
