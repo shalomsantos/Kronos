@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('projetos', function (Blueprint $table) {
             $table->id();
             $table->string('nome');
-            $table->string('descricao');
+            $table->string('descricao')->nullable();
             $table->unsignedBigInteger('tipo_projeto_id');
             $table->foreign('tipo_projeto_id')->references('id')->on('tipo_projetos');
             // stamps

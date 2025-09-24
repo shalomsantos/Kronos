@@ -8,7 +8,6 @@ use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasOne;
-use App\Models\Phone;
 
 class User extends Authenticatable
 {
@@ -24,10 +23,11 @@ class User extends Authenticatable
         'email',
         'password',
     ];
+    protected $with = ['preferencia'];
 
-    public function phone(): HasOne
+    public function preferencia(): HasOne
     {
-        return $this->hasOne(Phone::class);
+        return $this->hasOne(Preferencia::class);
     }
 
     /**

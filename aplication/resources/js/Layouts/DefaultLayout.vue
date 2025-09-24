@@ -11,7 +11,7 @@
                 <v-list-item
                     title="Base zero"
                     link
-                    href="/bzeros"
+                    href="/"
                     prepend-icon="mdi mdi-alpha-b-circle"
                 ></v-list-item>
                 <v-divider></v-divider>
@@ -77,6 +77,7 @@
                                 class="link text-decoration-none"
                             >
                                 <v-chip
+                                    color="green-darken-3"
                                     prepend-icon="mdi-account-arrow-right"
                                     class="px-6"
                                 >
@@ -85,6 +86,7 @@
                             </Link>
                             <Link :href="route('profile.edit')" class="link">
                                 <v-chip
+                                    color="green-darken-3"
                                     prepend-icon="mdi-account-cog-outline"
                                     class="px-6"
                                 >
@@ -100,63 +102,93 @@
             <template v-slot:prepend>
                 <v-app-bar-nav-icon @click="rail = !rail"></v-app-bar-nav-icon>
             </template>
-            <v-app-bar-title>
-                <v-breadcrumbs :items="location">
-                    <template v-slot:divider>
-                        <v-icon
-                            icon="mdi mdi-slash-forward"
-                            size="x-small"
-                        ></v-icon>
-                    </template>
-                    <template v-slot:title="{ item }">
-                        <p class="text-subtitle-1">{{ item.title }}</p>
-                    </template>
-                </v-breadcrumbs>
-            </v-app-bar-title>
-            <v-sheet
-                class="d-flex ga-2 pe-2"
-                color="transparent"
-                v-if="location[1]?.title == 'lista'"
-            >
-                <v-btn
-                    class="text-none"
-                    prepend-icon="mdi-filter"
-                    variant="tonal"
-                    @click="$emit('filter')"
-                    >Filtrar</v-btn
-                >
-                <v-btn
-                    class="text-none"
-                    prepend-icon="mdi-plus"
-                    variant="tonal"
-                    @click="$emit('newBasezero')"
-                    >Nova Bz</v-btn
-                >
-            </v-sheet>
+            <template v-slot:title>
+                <v-sheet class="d-flex align-center justify-space-between" color="transparent">
+                    <v-breadcrumbs :items="location">
+                        <template v-slot:divider>
+                            <v-icon
+                                icon="mdi mdi-slash-forward"
+                                size="x-small"
+                            ></v-icon>
+                        </template>
+                        <template v-slot:title="{ item }">
+                            <p class="text-subtitle-1">{{ item.title }}</p>
+                        </template>
+                    </v-breadcrumbs>
+                    <v-sheet class="d-flex align-center ga-3" color="transparent">
+                        <!-- <v-switch prepend-icon="mdi-account" hide-details color="green-lighten-4"></v-switch> -->
+                        <v-radio-group
+                            v-if="props.modelValue != null"
+                            :disabled="onLoad"
+                            :model-value="props.modelValue"
+                            @update:model-value="onViewChange"
+                            class="me-3"
+                            inline
+                            hide-details
+                        >
+                            <v-radio
+                                prepend-icon="mdi-account"
+                                label="Table"
+                                :value="0"
+                            ></v-radio>
+                            <v-radio
+                                label="Card"
+                                :value="1"
+                            ></v-radio>
+                        </v-radio-group>
+                        <v-sheet
+                            class="d-flex ga-2 pe-3"
+                            color="transparent"
+                            v-if="location?.[1].title == 'Lista'"
+                        >
+                            <v-btn
+                                class="text-none"
+                                prepend-icon="mdi-filter"
+                                variant="tonal"
+                                @click="$emit('filter')"
+                                >Filtrar</v-btn
+                            >
+                            <v-btn
+                                class="text-none"
+                                prepend-icon="mdi-plus"
+                                variant="tonal"
+                                @click="$emit('newBasezero')"
+                                >Nova Bz</v-btn
+                            >
+                        </v-sheet>
+                    </v-sheet>
+                </v-sheet>
+            </template>
         </v-app-bar>
-        <v-main class="bg-green-lighten-5">
+        <v-main class="bg-green-lighten-5" min-height="100vh">
             <v-sheet class="pa-3" color="transparent">
                 <slot />
             </v-sheet>
         </v-main>
+        <NormalFeedback v-model="feedback" />
     </v-layout>
 </template>
 
 <script setup>
+import NormalFeedback from "@/Components/Feedback/NormalFeedback.vue";
 import { Link, usePage } from "@inertiajs/vue3";
+import axios from "axios";
 import { ref } from "vue";
 
 const props = defineProps({
+    modelValue: Number,
     location: {},
 });
+const onLoad = ref(false);
+const user = usePage().props.auth.user;
+const emit = defineEmits(["update:modelValue"]);
 
 const drawer = ref(true);
 const rail = ref(true);
 const menu = ref(false);
-const user = usePage().props.auth.user;
 
 let cadMenuOptions = [
-    ["Projeto", "mdi-apps", "/projetos"],
+    ["Projeto", "mdi-apps", route('projeto.index')],
     ["Plataforma", "mdi-apps", "/plataformas"],
     ["Item", "mdi-apps", "/itens"],
     ["Subitem", "mdi-apps", "/subitens"],
@@ -167,4 +199,43 @@ let cadMenuOptions = [
     ["Equipe", "mdi-apps", "/equipes"],
     ["Precificação", "mdi-apps", "/precificacoes"],
 ];
+// Feedback var
+const feedback = ref({
+    show: false,
+    timeout: 2000,
+    color: "success",
+    text: "",
+});
+
+async function onViewChange(value){
+    onLoad.value=true
+
+    let data = {
+        user_id: user.id,
+        listagem_menu: value
+    }
+
+    await axios.post(route("preferencia.modify"), data)
+    .then((res) => {
+        if(res.data.success){
+            emit("update:modelValue", value);
+        }else{
+            feedback.value = {
+                show: true,
+                timeout: 4000,
+                color: "error",
+                text: res.data.message ?? res.data,
+            };
+        }
+        onLoad.value=false
+    }).catch((err) => {
+        feedback.value = {
+            show: true,
+            timeout: 4000,
+            color: "error",
+            text: err,
+        };
+        onLoad.value=false
+    })
+}
 </script>
