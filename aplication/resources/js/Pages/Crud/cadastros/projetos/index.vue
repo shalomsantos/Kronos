@@ -1,5 +1,5 @@
 <template>
-    <DefaultLayout v-model="viewOption" :location="location">
+    <DefaultLayout v-model="viewOption" :title="'Projetos lista'" :location="location">
         <v-card class="mb-3">
             <v-card-item>
                 <v-btn

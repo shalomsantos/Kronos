@@ -1,5 +1,7 @@
 <template>
     <v-layout class="rounded rounded-md border">
+        <Head :title="title" />
+
         <v-navigation-drawer
             v-model="drawer"
             permanent
@@ -171,12 +173,16 @@
 
 <script setup>
 import NormalFeedback from "@/Components/Feedback/NormalFeedback.vue";
-import { Link, usePage } from "@inertiajs/vue3";
+import { Link, usePage, Head } from "@inertiajs/vue3";
 import axios from "axios";
 import { ref } from "vue";
 
 const props = defineProps({
     modelValue: Number,
+    title: {
+        type: String,
+        default: 'None'
+    },
     location: {},
 });
 const onLoad = ref(false);

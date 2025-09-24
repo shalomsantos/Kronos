@@ -24,13 +24,10 @@ Route::middleware('auth')->group(function () {
         ]);
     })->name('home');
 
-    Route::get('/teste', function () {
-        return Inertia::render('teste');
-    })->name('teste');
-
     Route::resource('/projeto', ProjetoController::class);
     Route::resource('/bzero', BzeroController::class);
     Route::resource('/tipoprojeto', TipoProjetoController::class);
+    
     Route::post('/preferencia', [BzeroController::class, 'modify'])->name('preferencia.modify');
 
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');

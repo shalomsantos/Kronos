@@ -1,6 +1,7 @@
 <template>
     <DefaultLayout
         v-model="viewOption"
+        :title="'Bases Lista'"
         :location="location"
         @filter="dialogFilter = !dialogFilter"
         @newBasezero="dialogNewBasezero = !dialogNewBasezero"
