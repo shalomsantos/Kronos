@@ -2,14 +2,15 @@
     <div>
         <v-dialog v-model="model" max-width="500">
             <v-toolbar title="Novo projeto" density="compact"
-                ><v-btn icon="mdi-close" @click.prevent="model = false"></v-btn
+                ><v-btn icon="mdi-close" @click.prevent="(model = false, inputProjeto=null, valueTipoProjetos=null,inputDescricao=null)"></v-btn
             ></v-toolbar>
             <v-card rounded="0">
                 <v-card-item class="ma-0 pa-2">
                     <v-row class="pa-4">
                         <v-col cols="12">
                             <v-text-field
-                                label="Nome"
+                                v-model="inputProjeto"
+                                label="Nome*"
                                 variant="outlined"
                                 density="compact"
                                 hide-details="auto"
@@ -19,11 +20,11 @@
                         <v-col cols="12" class="d-flex ga-2 align-center">
                             <v-select
                                 v-model="valueTipoProjetos"
-                                clearable
-                                label="Tipo do projeto"
+                                label="Tipo do projeto*"
                                 :items="itensTipoProjetos"
                                 item-title="label"
                                 item-value="id"
+                                clearable
                                 variant="outlined"
                                 density="compact"
                                 hide-details="auto"
@@ -38,6 +39,7 @@
                         </v-col>
                         <v-col cols="12">
                             <v-textarea
+                                v-model="inputDescricao"
                                 clearable
                                 label="Descrição"
                                 variant="outlined"
@@ -48,7 +50,10 @@
                                 counter
                             ></v-textarea>
                         </v-col>
-                        <v-btn class="text-none" color="green-darken-1"
+                        <v-btn
+                            class="text-none"
+                            color="green-darken-1"
+                            @click.prevent="insertProjeto"
                             >Salvar</v-btn
                         >
                     </v-row>
@@ -57,10 +62,10 @@
         </v-dialog>
 
         <v-dialog v-model="dialogNewTipoProjeto" max-width="500">
-            <v-toolbar title="Nova tipo de projeto" density="compact"
+            <v-toolbar title="Novo tipo de projeto" density="compact"
                 ><v-btn
                     icon="mdi-close"
-                    @click.prevent="dialogNewTipoProjeto = false"
+                    @click.prevent="(dialogNewTipoProjeto = false, tipoProjetoNome = null)"
                 ></v-btn
             ></v-toolbar>
             <v-card rounded="0">
@@ -97,14 +102,17 @@ import NormalFeedback from "@/Components/Feedback/NormalFeedback.vue";
 import { ref, onMounted } from "vue";
 
 const model = defineModel();
+const emit = defineEmits(['endProcess'])
 
 onMounted(() => {
-    loadAllTypes();
+    carregandoTodosTiposProjetos();
 });
 
 // Components var
-const tipoProjetoNome = ref("");
-const valueTipoProjetos = ref();
+const inputProjeto = ref(null);
+const inputDescricao = ref(null);
+const tipoProjetoNome = ref(null);
+const valueTipoProjetos = ref(null);
 const itensTipoProjetos = ref([]);
 
 // Dialog var
@@ -119,7 +127,7 @@ const feedback = ref({
 });
 
 // Functions
-async function loadAllTypes() {
+async function carregandoTodosTiposProjetos() {
     await axios
         .get(route("tipoprojeto.index"))
         .then((res) => {
@@ -130,7 +138,7 @@ async function loadAllTypes() {
                     show: true,
                     timeout: 2000,
                     color: "error",
-                    text: "Falha no load dos tipos de projeto."
+                    text: "Falha no load dos tipos de projeto.",
                 };
             }
         })
@@ -139,35 +147,90 @@ async function loadAllTypes() {
                 show: true,
                 timeout: 4000,
                 color: "error",
-                text: err
+                text: err,
+            };
+        });
+}
+async function insertProjeto() {
+    if (inputProjeto.value == null || valueTipoProjetos.value == null) {
+        feedback.value = {
+            show: true,
+            timeout: 4000,
+            color: "warning",
+            text: "O nome e tipo do projeto devem ser preenchidos.",
+        };
+        return;
+    }
+    let data = {
+        nome: inputProjeto.value,
+        tipo_projeto_id: valueTipoProjetos.value,
+        descricao: inputDescricao.value,
+    };
+    await axios
+        .post(route("projeto.store"), data)
+        .then((res) => {
+            if (res.data.success) {
+                emit('endProcess');
+                feedback.value = {
+                    show: true,
+                    timeout: 4000,
+                    color: "success",
+                    text: res.data.message,
+                };
+                model.value=false;
+            } else {
+                model.value=false;
+                feedback.value = {
+                    show: true,
+                    timeout: 4000,
+                    color: "error",
+                    text: res.data.message,
+                };
+            }
+        })
+        .catch((err) => {
+            model.value=false;
+            feedback.value = {
+                show: true,
+                timeout: 4000,
+                color: "error",
+                text: "Axios: " + err + ". Data: " + res.data.message + ".",
             };
         });
 }
 async function insertTipoProjeto() {
-    if (tipoProjetoNome.value.replace(/\s+/g, "") == "") alert("É necessario inserir um nome.");
+    if (tipoProjetoNome.value.replace(/\s+/g, "") == "")
+        alert("É necessario inserir um nome.");
 
     await axios
         .post(route("tipoprojeto.store"), { nome: tipoProjetoNome.value })
         .then((res) => {
             if (res.data.success) {
+                itensTipoProjetos.value = [];
+                carregandoTodosTiposProjetos();
+                dialogNewTipoProjeto.value = false;
+
                 feedback.value = {
                     show: true,
-                    timeout: 2000,
-                    text: res.data.message
+                    timeout: 4000,
+                    color: "success",
+                    text: res.data.message,
                 };
             } else {
                 feedback.value = {
                     show: true,
-                    timeout: 2000,
-                    text: res.data.message
+                    timeout: 4000,
+                    color: "warning",
+                    text: res.data.message,
                 };
             }
         })
         .catch((err) => {
             feedback.value = {
                 show: true,
-                timeout: 2000,
-                text: 'Axios: '+err+'. Data: '+res.data.message+'.'
+                timeout: 4000,
+                color: "error",
+                text: "Axios: " + err + ". Data: " + res.data.message + ".",
             };
         });
 }

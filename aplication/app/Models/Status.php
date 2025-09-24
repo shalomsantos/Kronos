@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\Model;
 
 class Status extends Model
@@ -16,4 +17,9 @@ class Status extends Model
         'pai_id',
         'prox_id'
     ];
+
+    public function bzero(): HasOne
+    {
+        return $this->hasOne(Bzero::class);
+    }
 }

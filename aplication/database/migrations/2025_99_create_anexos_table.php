@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('anexos', function (Blueprint $table) {
             $table->id();
             $table->string('nome_arquivo');
-            $table->string('descricao');
+            $table->string('descricao')->nullable();
             $table->string('extensao');
             $table->string('path');
             $table->unsignedBigInteger('bz_plat_item_subitem_form_id');

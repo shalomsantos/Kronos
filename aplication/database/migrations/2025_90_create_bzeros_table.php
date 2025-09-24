@@ -17,8 +17,8 @@ return new class extends Migration
             $table->unsignedBigInteger('status_id')->default(1);
             $table->foreign('status_id')->references('id')->on('status');
             $table->string('ano');
-            $table->date('dt_aprovacao');
-            $table->string('descricao');
+            $table->date('dt_aprovacao')->nullable();
+            $table->string('descricao')->nullable();
             // stamps
             $table->foreignId('created_by')->nullable()->constrained('users')->nullOnDelete();
             $table->foreignId('updated_by')->nullable()->constrained('users')->nullOnDelete();
