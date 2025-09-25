@@ -3,15 +3,32 @@
         v-model="viewOption"
         :title="'Bases Lista'"
         :location="location"
-        @filter="dialogFilter = !dialogFilter"
-        @newBasezero="dialogNewBasezero = !dialogNewBasezero"
+        class="position-relative"
     >
+        <v-sheet
+            class="d-flex flex-column position-absolute ga-2 ma-3"
+            color="transparent"
+            v-if="location?.[1].title == 'Lista'"
+        >
+            <v-btn
+                class="text-none"
+                size="x-large"
+                icon="mdi-filter"
+                color="green-darken-1"
+                @click="dialogFilter = !dialogFilter"
+            />
+            <v-btn
+                class="text-none rotate"
+                size="x-large"
+                icon="mdi-plus"
+                color="green-darken-1"
+                prepend-icon="mdi-plus"
+                @click="dialogNewBasezero = !dialogNewBasezero"
+            />
+        </v-sheet>
         <v-sheet class="bg-transparent">
-            <v-row
-                class="bg-transparent"
-                v-if="dados.length > 0 && viewOption"
-            >
-                <v-col cols="3" v-for="(item, id) in dados" :key="id">
+            <v-row class="bg-transparent" v-if="dados.length > 0 && viewOption">
+                <v-col cols="4" v-for="(item, id) in dados" :key="id">
                     <v-hover>
                         <template v-slot:default="{ isHovering, props }">
                             <v-card
@@ -37,20 +54,44 @@
                                 </template>
                                 <template v-slot:item>
                                     <v-row no-gutters class="pt-2">
-                                        <v-col>
+                                        <v-col cols="4">
                                             <p class="text-body-2">Status</p>
                                             <div>
-                                                <p class="text-body-2 text-disabled">{{ item.status.nome }}</p>
+                                                <p
+                                                    class="text-body-2 text-disabled"
+                                                >
+                                                    {{ item.status.nome }}
+                                                </p>
                                             </div>
                                         </v-col>
-                                        <v-col>
+                                        <v-col cols="4">
                                             <p class="text-body-2">Ano</p>
                                             <div>
-                                                <p class="text-body-2 text-disabled">{{ item.ano }}</p>
+                                                <p
+                                                    class="text-body-2 text-disabled"
+                                                >
+                                                    {{ item.ano }}
+                                                </p>
+                                            </div>
+                                        </v-col>
+                                        <v-col cols="4">
+                                            <p class="text-body-2">Criado em</p>
+                                            <div>
+                                                <p
+                                                    class="text-body-2 text-disabled"
+                                                >
+                                                    {{
+                                                        isDate(item.created_at)
+                                                    }}
+                                                </p>
                                             </div>
                                         </v-col>
                                         <v-col cols="12">
-                                            <v-chip size="x-small" color="green" variant="flat">
+                                            <v-chip
+                                                size="x-small"
+                                                color="green"
+                                                variant="flat"
+                                            >
                                                 {{ item.created_by.name }}
                                             </v-chip>
                                         </v-col>
@@ -63,6 +104,7 @@
             </v-row>
             <v-table
                 density="compact"
+                class="bg-green-lighten-5"
                 v-else-if="dados.length > 0 && !viewOption"
                 striped="even"
             >
@@ -72,6 +114,7 @@
                         <th class="text-left">Projeto</th>
                         <th class="text-left">Status</th>
                         <th class="text-left">Ano</th>
+                        <th class="text-left">Criado em</th>
                         <th class="text-left">***</th>
                     </tr>
                 </thead>
@@ -81,6 +124,7 @@
                         <td>{{ item.projeto.nome }}</td>
                         <td>{{ item.status.nome }}</td>
                         <td>{{ item.ano }}</td>
+                        <td>{{ isDate(item.created_at) }}</td>
                         <td>
                             <v-btn
                                 class="text-none me-1"
@@ -182,7 +226,7 @@ import axios from "axios";
 
 // <===> Context Var <===>
 const location = [
-    { title: "Base Zero", disabled: false, href: "/" },
+    { title: "Kratos", disabled: false, href: "/" },
     { title: "Lista", disabled: true },
 ];
 const user = usePage().props.auth.user;
@@ -238,7 +282,7 @@ async function carregandoTodosProjetos() {
         .catch((err) => console.log(err));
 }
 async function insertBzero() {
-    if (projetosValue.value == null || ano.value == null){
+    if (projetosValue.value == null || ano.value == null) {
         alert(
             "Certifique-se de que os campos projeto e ano estão preenchidos."
         );
@@ -289,7 +333,7 @@ function reducingContent(data) {
     }));
 }
 function endingProcess() {
-    carregandoTodosBases()
+    carregandoTodosBases();
     projetosValue.value = null;
     ano.value = null;
     inputDescricao.value = null;
@@ -298,4 +342,8 @@ function endingProcess() {
 }
 </script>
 
-<style scoped></style>
+<style scoped>
+.position-absolute{
+    bottom: 0;
+    right: 0;
+}</style>

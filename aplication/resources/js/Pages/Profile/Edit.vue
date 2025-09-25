@@ -34,7 +34,7 @@ defineProps({
 
 // Context Var
 const location = [
-    { title: "Base Zero", disabled: false, href: "/" },
+    { title: "kratos", disabled: false, href: "/" },
     { title: "Perfil", disabled: true }
 ];
 </script>

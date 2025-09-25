@@ -1,8 +1,12 @@
 <template>
-    <v-row align="center" no gutters class="bg-grey-lighten-4 h-screen">
-        <v-col cols="3" class="mx-auto">
-            <form @submit.prevent="submit" class="d-flex flex-column">
-                <h1 class="mb-3">Login</h1>
+    <v-row align="center" no-gutters class="bg-grey-lighten-4 pt-16">
+        <Head title="Login"></Head>
+
+
+        <v-col cols="3" class="mx-auto mt-16">
+            <form @submit.prevent="submit" class="d-flex flex-column position-relative">
+                <h1 class="work-sans text-center mb-3">Kratos</h1>
+                <v-icon icon="mdi-omega" class="position-absolute"></v-icon>
                 <v-text-field
                     type="email"
                     label="E-mail"
@@ -23,13 +27,20 @@
                     autocomplete="current-password"
                 ></v-text-field>
 
-                <v-btn variant="tonal" type="submit" :class="{ 'opacity-25': form.processing }" :disabled="form.processing" size="x-large" class="bg-blue-grey-darken-3 mb-3">
-                    Log in
+                <v-btn
+                    type="submit"
+                    :class="{ 'opacity-25': form.processing }"
+                    :disabled="form.processing"
+                    size="x-large"
+                    class="text-none mb-3"
+                    color="green-darken-3"
+                >
+                    Entrar
                 </v-btn>
                 <Link
                     v-if="canResetPassword"
                     :href="route('password.request')"
-                    class="underline text-sm text-gray-600 hover:text-gray-900 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                    class="text-black text-decoration-none"
                 >
                     Esqueceu a sua senha?
                 </Link>
@@ -39,7 +50,7 @@
 </template>
 
 <script setup>
-import { Link, useForm } from '@inertiajs/vue3';
+import { Link, useForm, Head } from "@inertiajs/vue3";
 
 defineProps({
     canResetPassword: {
@@ -51,15 +62,32 @@ defineProps({
 });
 
 const form = useForm({
-    email: '',
-    password: '',
+    email: "",
+    password: "",
 });
 
 const submit = () => {
-    form.post(route('login'), {
-        onFinish: () => form.reset('password'),
+    form.post(route("login"), {
+        onFinish: () => form.reset("password"),
     });
 };
 </script>
 
-
+<style scoped>
+.position-relative{
+    /* background: red; */
+}
+.position-absolute{
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 40rem;
+    color: rgba(128, 128, 128, 0.322);
+}
+.text-black{
+    color: #609dff !important;
+}
+.text-black:hover{
+    color: #396ec3 !important;
+}
+</style>

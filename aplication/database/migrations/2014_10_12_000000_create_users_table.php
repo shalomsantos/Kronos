@@ -15,6 +15,7 @@ return new class extends Migration
             $table->id();
             $table->string('name');
             $table->string('email')->unique();
+            // $table->foreignId('preferencia_id')->after('email')->nullable()->constrained();
 
             $table->unsignedBigInteger('cargo_id')->nullable();
             $table->foreign('cargo_id')->references('id')->on('cargos');

@@ -8,6 +8,7 @@ use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasOne;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class User extends Authenticatable
 {
@@ -23,8 +24,12 @@ class User extends Authenticatable
         'email',
         'password',
     ];
-    protected $with = ['preferencia'];
+    protected $with = ['cargo', 'preferencia'];
 
+    public function cargo(): BelongsTo
+    {
+        return $this->belongsTo(Cargo::class);
+    }
     public function preferencia(): HasOne
     {
         return $this->hasOne(Preferencia::class);

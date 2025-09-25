@@ -11,11 +11,14 @@
         >
             <v-list nav density="compact">
                 <v-list-item
-                    title="Base zero"
                     link
                     href="/"
-                    prepend-icon="mdi mdi-alpha-b-circle"
-                ></v-list-item>
+                    class="text-center"
+                >
+                <template v-slot:title>
+                    <v-icon icon="mdi-omega" class="omega-icon" :style="rail?'':'transition: 250ms;font-size: 5vw;'"></v-icon>
+                </template>
+                </v-list-item>
                 <v-divider></v-divider>
                 <v-list-item
                     id="menu-activator"
@@ -130,34 +133,14 @@
                         >
                             <v-radio
                                 prepend-icon="mdi-account"
-                                label="Table"
+                                label="Tabela"
                                 :value="0"
                             ></v-radio>
                             <v-radio
-                                label="Card"
+                                label="Cards"
                                 :value="1"
                             ></v-radio>
                         </v-radio-group>
-                        <v-sheet
-                            class="d-flex ga-2 pe-3"
-                            color="transparent"
-                            v-if="location?.[1].title == 'Lista'"
-                        >
-                            <v-btn
-                                class="text-none"
-                                prepend-icon="mdi-filter"
-                                variant="tonal"
-                                @click="$emit('filter')"
-                                >Filtrar</v-btn
-                            >
-                            <v-btn
-                                class="text-none"
-                                prepend-icon="mdi-plus"
-                                variant="tonal"
-                                @click="$emit('newBasezero')"
-                                >Nova Bz</v-btn
-                            >
-                        </v-sheet>
                     </v-sheet>
                 </v-sheet>
             </template>

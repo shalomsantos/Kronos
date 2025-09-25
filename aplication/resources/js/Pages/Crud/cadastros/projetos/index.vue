@@ -1,15 +1,17 @@
 <template>
-    <DefaultLayout v-model="viewOption" :title="'Projetos lista'" :location="location">
-        <v-card class="mb-3">
-            <v-card-item>
-                <v-btn
-                    @click.prevent="dialogNewProjeto = true"
-                    class="text-none"
-                    color="green-darken-1"
-                    >Novo</v-btn
-                >
-            </v-card-item>
-        </v-card>
+    <DefaultLayout
+        v-model="viewOption"
+        :title="'Projetos lista'"
+        :location="location"
+        class="position-relative"
+    >
+        <v-btn
+            @click.prevent="dialogNewProjeto = true"
+            class="text-none position-absolute rotate ma-3"
+            color="green-darken-1"
+            size="x-large"
+            icon="mdi-plus"
+        />
         <v-sheet class="bg-transparent">
             <v-row class="bg-transparent" v-if="dados.length > 0 && viewOption">
                 <v-col cols="3" v-for="(item, id) in dados" :key="id">
@@ -20,28 +22,44 @@
                                 :subtitle="item.tipo_projeto.nome"
                                 @click.prevent="EditProjeto(item)"
                                 v-bind="props"
-                                :color="isHovering ? 'green-lighten-5' : undefined"
+                                :color="
+                                    isHovering ? 'green-lighten-5' : undefined
+                                "
                             >
-                            <template v-slot:prepend>
-                                <v-icon icon="mdi-clipboard-file" color="green-darken-1"></v-icon>
-                            </template>
-                        </v-card>
+                                <template v-slot:prepend>
+                                    <v-icon
+                                        icon="mdi-clipboard-file"
+                                        color="green-darken-1"
+                                    ></v-icon>
+                                </template>
+                            </v-card>
                         </template>
                     </v-hover>
                 </v-col>
             </v-row>
-            <v-table density="compact" v-else-if="dados.length > 0 && !viewOption" striped="even">
+            <v-table
+                class="bg-green-lighten-5"
+                density="compact"
+                v-else-if="dados.length > 0 && !viewOption"
+                striped="even"
+            >
                 <thead>
                     <tr>
                         <th class="text-left">Nome</th>
                         <th class="text-left">Tipo</th>
+                        <th class="text-left">Criado em</th>
                         <th class="text-left">***</th>
                     </tr>
                 </thead>
                 <tbody>
-                    <tr v-for="(item, id) in dados" :key="id" @click.prevent="EditProjeto(item)">
+                    <tr
+                        v-for="(item, id) in dados"
+                        :key="id"
+                        @click.prevent="EditProjeto(item)"
+                    >
                         <td>{{ item.nome }}</td>
                         <td>{{ item.tipo_projeto.nome }}</td>
+                        <td>{{ isDate(item.created_at) }}</td>
                         <td>
                             <v-btn
                                 class="text-none me-1"
@@ -111,7 +129,10 @@
             </v-card>
         </v-dialog>
 
-        <NovoProjeto v-model="dialogNewProjeto" @endProcess="carregandoTodosProjetos()"></NovoProjeto>
+        <NovoProjeto
+            v-model="dialogNewProjeto"
+            @endProcess="carregandoTodosProjetos()"
+        ></NovoProjeto>
     </DefaultLayout>
 </template>
 
@@ -129,7 +150,7 @@ onMounted(() => {
 
 // Context Var
 const location = [
-    { title: "Base Zero", disabled: false, href: "/" },
+    { title: "Kratos", disabled: false, href: "/" },
     { title: "Projetos", disabled: true },
     { title: "Lista", disabled: true },
 ];
@@ -192,6 +213,10 @@ function reducingContent(data) {
 </script>
 
 <style scoped>
+.position-absolute {
+    bottom: 0;
+    right: 0;
+}
 tbody tr:hover {
     background-color: #eeeeee;
 }

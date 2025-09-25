@@ -13,9 +13,4 @@ class Preferencia extends Model
         'user_id',
         'listagem_menu'
     ];
-
-    public function user(): HasOne
-    {
-        return $this->hasOne(User::class);
-    }
 }
