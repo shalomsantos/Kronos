@@ -1,6 +1,15 @@
 <template>
     <DefaultLayout :title="'Perfil'" :location="location">
         <v-row dense>
+            <v-col cols="12">
+                <p>{{ user.name }}</p>
+                <p>{{ user.email }}</p>
+            </v-col>
+            <v-col cols="12">
+                
+            </v-col>
+        </v-row>
+        <v-row dense>
             <v-col cols="4">
                 <UpdateProfileInformationForm
                     :must-verify-email="mustVerifyEmail"
@@ -22,6 +31,7 @@ import DeleteUserForm from './Partials/DeleteUserForm.vue';
 import UpdatePasswordForm from './Partials/UpdatePasswordForm.vue';
 import UpdateProfileInformationForm from './Partials/UpdateProfileInformationForm.vue';
 import DefaultLayout from '@/Layouts/DefaultLayout.vue';
+import { usePage } from "@inertiajs/vue3";
 
 defineProps({
     mustVerifyEmail: {
@@ -31,7 +41,7 @@ defineProps({
         type: String,
     },
 });
-
+const user = usePage().props.auth.user;
 // Context Var
 const location = [
     { title: "kratos", disabled: false, href: "/" },
