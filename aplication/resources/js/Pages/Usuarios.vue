@@ -118,7 +118,11 @@ const location = [
     { title: "Lista", disabled: true },
 ];
 async function carregandoTodosUsuarios() {
-    await axios.get("/todos-usuarios")
+    await axios.get("/usuarios", {
+        headers: {
+            Accept: "application/json",
+        }
+    })
     .then((res) => {
         dados.value = res.data
     }).catch((err) => {

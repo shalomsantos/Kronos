@@ -6,7 +6,7 @@
             ></v-toolbar>
             <v-card rounded="0">
                 <v-card-item class="ma-0 pa-2">
-                    <v-row class="pa-4">
+                    <v-row dense class="pa-4">
                         <v-col cols="12">
                             <v-text-field
                                 v-model="inputProjeto"
@@ -50,12 +50,16 @@
                                 counter
                             ></v-textarea>
                         </v-col>
-                        <v-btn
-                            class="text-none"
-                            color="green-darken-1"
-                            @click.prevent="insertProjeto"
-                            >Salvar</v-btn
-                        >
+                        <v-col cols="12" class="pt-3">
+                            <v-btn
+                                class="text-none"
+                                color="green-darken-1"
+                                size="large"
+                                prepend-icon="mdi-content-save"
+                                @click.prevent="insertProjeto"
+                                >Salvar</v-btn
+                            >
+                        </v-col>
                     </v-row>
                 </v-card-item>
             </v-card>

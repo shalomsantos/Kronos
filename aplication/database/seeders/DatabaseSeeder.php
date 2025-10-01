@@ -15,12 +15,15 @@ class DatabaseSeeder extends Seeder
     {
         // \App\Models\User::factory(10)->create();
         $this->call([
-            CargoSeeder::class,
-            UserSeeder::class,
-            TipoProjetoSeeder::class,
-            ProjetoSeeder::class,
-            StatusSeeder::class,
-            BzeroSeeder::class,
+            CargoSeeder::class, // 4
+            UserSeeder::class, // 4
+            TipoProjetoSeeder::class, // 5
+            ProjetoSeeder::class, // 5
+            StatusSeeder::class, // 6
+            BzeroSeeder::class, // 5
+
+            ItemSeeder::class,
+            PlataformaSeeder::class
         ]);
     }
 }

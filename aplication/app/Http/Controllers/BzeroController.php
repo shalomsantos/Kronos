@@ -3,17 +3,87 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use Illuminate\Foundation\Application;
+use Illuminate\Support\Facades\Route;
+use Carbon\Carbon;
+use Inertia\Inertia;
 use App\Models\Preferencia;
 use App\Models\Bzero;
 
 class BzeroController extends Controller
 {
     /**
+     * Filtra registros de Bzero conforme parâmetros recebidos.
+     */
+    public function filtro(Request $request)
+    {
+        $validated = $request->validate([
+            'id' => 'nullable|integer',
+            'projeto_id' => 'nullable|integer',
+            'ano' => 'nullable|integer',
+            'status_id' => 'nullable|integer',
+            'created_at_start' => 'nullable|date',
+            'created_at_end' => 'nullable|date',
+        ]);
+
+        $query = Bzero::query();
+
+        if (isset($validated['id'])) {
+            $query->where('id', $validated['id']);
+        }
+        if (isset($validated['projeto_id'])) {
+            $query->where('projeto_id', $validated['projeto_id']);
+        }
+        if (isset($validated['ano'])) {
+            $query->where('ano', $validated['ano']);
+        }
+        if (isset($validated['status_id'])) {
+            $query->where('status_id', $validated['status_id']);
+        }
+        if (isset($validated['created_at_start']) && isset($validated['created_at_end'])) {
+            $start = Carbon::parse($validated['created_at_start'])->startOfDay();
+
+            $end = $validated['created_at_end']
+                ? Carbon::parse($validated['created_at_end'])->endOfDay()
+                : $start->copy()->endOfDay();
+            dd($start, $end);
+            $query->whereBetween('created_at', [$start, $end]);
+        }else if(isset($validated['created_at_start']) && !isset($validated['created_at_end'])){
+            $start = Carbon::parse($validated['created_at_start'])->startOfDay();
+            $end = $start->copy()->endOfDay();
+            $query->whereBetween('created_at', [$start, $end]);
+        }
+
+        $result = $query->get();
+
+        if ($result->isEmpty()) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Nenhum registro encontrado.',
+                'data' => []
+            ]);
+        }
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Registros filtrados com sucesso.',
+            'data' => $result
+        ]);
+    }
+
+    /**
      * Display a listing of the resource.
      */
     public function index(Request $request)
     {
         if ($request->expectsJson()) return Bzero::all();
+
+        return Inertia::render('Dashboard', [
+            'canLogin' => Route::has('login'),
+            'canRegister' => Route::has('register'),
+            'laravelVersion' => Application::VERSION,
+            'phpVersion' => PHP_VERSION,
+        ]);
     }
 
     /**

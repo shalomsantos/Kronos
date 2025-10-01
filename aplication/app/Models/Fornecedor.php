@@ -12,6 +12,13 @@ class Fornecedor extends Model
     use HasFactory;
 
     protected $fillable = [
-        'nome'
+        'nome_fantasia',
+        'razao_social',
+        'cpf',
+        'cnpj',
+        'endereco',
+        'contato',
+        'email',
+        'descricao',
     ];
 }

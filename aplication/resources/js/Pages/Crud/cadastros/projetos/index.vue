@@ -12,6 +12,7 @@
             size="x-large"
             icon="mdi-plus"
         />
+
         <v-sheet class="bg-transparent">
             <v-row class="bg-transparent" v-if="dados.length > 0 && viewOption">
                 <v-col cols="3" v-for="(item, id) in dados" :key="id">
@@ -48,6 +49,7 @@
                         <th class="text-left">Nome</th>
                         <th class="text-left">Tipo</th>
                         <th class="text-left">Criado em</th>
+                        <th class="text-left">Criado por</th>
                         <th class="text-left">***</th>
                     </tr>
                 </thead>
@@ -60,6 +62,11 @@
                         <td>{{ item.nome }}</td>
                         <td>{{ item.tipo_projeto.nome }}</td>
                         <td>{{ isDate(item.created_at) }}</td>
+                        <td>
+                            <v-chip size="x-small" color="green" variant="flat">
+                            {{ item.created_by.name }}
+                        </v-chip>
+                        </td>
                         <td>
                             <v-btn
                                 class="text-none me-1"
@@ -76,7 +83,7 @@
 
         <!-- Dialogs -->
         <v-dialog v-model="dialogEditProjeto" max-width="500">
-            <v-toolbar title="Novo projeto" density="compact"
+            <v-toolbar title="Atualizar projeto" density="compact"
                 ><v-btn
                     icon="mdi-close"
                     @click.prevent="dialogEditProjeto = false"
@@ -121,9 +128,12 @@
                                 counter
                             ></v-textarea>
                         </v-col>
-                        <v-btn class="text-none" color="green-darken-1"
-                            >Atualizar</v-btn
-                        >
+                        <v-btn
+                            class="text-none"
+                            color="green-darken-1"
+                            size="large"
+                            prepend-icon="mdi-update"
+                            >Atualizar</v-btn>
                     </v-row>
                 </v-card-item>
             </v-card>

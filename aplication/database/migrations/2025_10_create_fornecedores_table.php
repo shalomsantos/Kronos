@@ -13,7 +13,14 @@ return new class extends Migration
     {
         Schema::create('fornecedores', function (Blueprint $table) {
             $table->id();
-            $table->string('nome');
+            $table->string('nome_fantasia');
+            $table->string('razao_social');
+            $table->string('cpf', 14)->nullable();
+            $table->string('cnpj', 18)->nullable();
+            $table->string('endereco')->nullable();
+            $table->string('contato')->nullable();
+            $table->string('email')->nullable();
+            $table->text('descricao')->nullable();
             // stamps
             $table->foreignId('created_by')->nullable()->constrained('users')->nullOnDelete();
             $table->foreignId('updated_by')->nullable()->constrained('users')->nullOnDelete();

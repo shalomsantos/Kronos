@@ -18,7 +18,7 @@ return new class extends Migration
             $table->foreign('status_id')->references('id')->on('status');
             $table->string('ano');
             $table->date('dt_aprovacao')->nullable();
-            $table->string('descricao')->nullable();
+            $table->text('descricao')->nullable();
             // stamps
             $table->foreignId('created_by')->nullable()->constrained('users')->nullOnDelete();
             $table->foreignId('updated_by')->nullable()->constrained('users')->nullOnDelete();

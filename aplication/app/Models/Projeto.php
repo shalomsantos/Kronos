@@ -16,6 +16,7 @@ class Projeto extends Model
         'descricao',
         'tipo_projeto_id'
     ];
+    protected $with = ['createdBy'];
 
     public function TipoProjeto(): BelongsTo
     {
@@ -24,5 +25,9 @@ class Projeto extends Model
     public function bzero(): HasOne
     {
         return $this->hasOne(Bzero::class);
+    }
+    public function createdBy(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'created_by', 'id');
     }
 }
