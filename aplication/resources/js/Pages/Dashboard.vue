@@ -36,6 +36,7 @@
             <v-toolbar title="Nova Base zero" density="compact"
                 ><v-btn
                     icon="mdi-close"
+                    size="small"
                     @click.prevent="
                         (dialogNewBasezero = false), endingProcess()
                     "
@@ -43,7 +44,7 @@
             ></v-toolbar>
             <v-card rounded="0">
                 <v-card-item class="ma-0 pa-2">
-                    <v-row dense class="pa-2">
+                    <v-row class="pa-2">
                         <v-col cols="9" class="d-flex ga-2 align-center">
                             <v-select
                                 v-model="projetosValue"
@@ -109,7 +110,7 @@
 <script setup>
 import DefaultLayout from "@/Layouts/DefaultLayout.vue";
 import NormalFeedback from "@/Components/Feedback/NormalFeedback.vue";
-import FiltroBase from "@/Components/Dialogs/FiltroBase.vue";
+import FiltroBase from "@/Components/Dialogs/Bzero/FiltroBase.vue";
 import { usePage } from "@inertiajs/vue3";
 import { ref, onMounted } from "vue";
 import axios from "axios";
@@ -117,7 +118,7 @@ import ViewOptionMode from "@/Components/Bases/ViewOptionMode.vue";
 
 // <===> Context Var <===>
 const location = [
-    { title: "Kratos", disabled: false, href: "/" },
+    { title: "Kronos", disabled: false, href: "/" },
     { title: "Lista", disabled: true },
 ];
 const user = usePage().props.auth.user;
@@ -246,4 +247,5 @@ async function filtrarBases(filtros) {
 .position-absolute{
     bottom: 0;
     right: 0;
-}</style>
+}
+</style>

@@ -2,11 +2,20 @@
     <div>
         <v-dialog v-model="model" max-width="500">
             <v-toolbar title="Novo projeto" density="compact"
-                ><v-btn icon="mdi-close" @click.prevent="(model = false, inputProjeto=null, valueTipoProjetos=null,inputDescricao=null)"></v-btn
+                ><v-btn
+                    icon="mdi-close"
+                    size="small"
+                    @click.prevent="
+                        (model = false),
+                            (inputProjeto = null),
+                            (valueTipoProjetos = null),
+                            (inputDescricao = null)
+                    "
+                ></v-btn
             ></v-toolbar>
             <v-card rounded="0">
                 <v-card-item class="ma-0 pa-2">
-                    <v-row dense class="pa-4">
+                    <v-row class="pa-2">
                         <v-col cols="12">
                             <v-text-field
                                 v-model="inputProjeto"
@@ -33,7 +42,7 @@
                                 class="text-none"
                                 prepend-icon="mdi-plus"
                                 color="green-darken-1"
-                                @click.prevent="dialogNewTipoProjeto = true"
+                                @click.prevent="dialogNovoTipoProjeto = true"
                                 >Tipo</v-btn
                             >
                         </v-col>
@@ -56,7 +65,7 @@
                                 color="green-darken-1"
                                 size="large"
                                 prepend-icon="mdi-content-save"
-                                @click.prevent="insertProjeto"
+                                @click.prevent="insertEvent"
                                 >Salvar</v-btn
                             >
                         </v-col>
@@ -64,49 +73,32 @@
                 </v-card-item>
             </v-card>
         </v-dialog>
-
-        <v-dialog v-model="dialogNewTipoProjeto" max-width="500">
-            <v-toolbar title="Novo tipo de projeto" density="compact"
-                ><v-btn
-                    icon="mdi-close"
-                    @click.prevent="(dialogNewTipoProjeto = false, tipoProjetoNome = null)"
-                ></v-btn
-            ></v-toolbar>
-            <v-card rounded="0">
-                <v-card-item class="ma-0 pa-2">
-                    <v-row class="pa-2">
-                        <v-col>
-                            <v-text-field
-                                v-model="tipoProjetoNome"
-                                label="Digite aqui o tipo de projeto"
-                                variant="outlined"
-                                density="compact"
-                                hide-details="auto"
-                                clearable
-                            ></v-text-field>
-                        </v-col>
-                        <v-col cols="12">
-                            <v-btn
-                                class="text-none"
-                                color="green-darken-1"
-                                @click.prevent="insertTipoProjeto"
-                                >Salvar</v-btn
-                            >
-                        </v-col>
-                    </v-row>
-                </v-card-item>
-            </v-card>
-        </v-dialog>
+        <!-- Dialog -->
+        <NovoTipoProjeto
+            v-model="dialogNovoTipoProjeto"
+            max-width="500"
+            @insertProcess="insertTipoProjeto"
+        />
+        <!-- Feedback -->
         <NormalFeedback v-model="feedback" />
     </div>
 </template>
 
 <script setup>
 import NormalFeedback from "@/Components/Feedback/NormalFeedback.vue";
+import NovoTipoProjeto from "./NovoTipoProjeto.vue";
 import { ref, onMounted } from "vue";
 
 const model = defineModel();
-const emit = defineEmits(['endProcess'])
+
+const props = defineProps({
+    tipos: {
+        type: Object,
+        required: true,
+    },
+});
+
+const emit = defineEmits(["insertProcess"]);
 
 onMounted(() => {
     carregandoTodosTiposProjetos();
@@ -115,12 +107,12 @@ onMounted(() => {
 // Components var
 const inputProjeto = ref(null);
 const inputDescricao = ref(null);
-const tipoProjetoNome = ref(null);
+
 const valueTipoProjetos = ref(null);
-const itensTipoProjetos = ref([]);
+const itensTipoProjetos = ref(props.tipos ? reducingContent(props.tipos) : []);
 
 // Dialog var
-const dialogNewTipoProjeto = ref(false);
+const dialogNovoTipoProjeto = ref(false);
 
 // Feedback var
 const feedback = ref({
@@ -133,18 +125,13 @@ const feedback = ref({
 // Functions
 async function carregandoTodosTiposProjetos() {
     await axios
-        .get(route("tipoprojeto.index"))
+        .get(route("tipoprojeto.index"), {
+            headers: {
+                Accept: "application/json",
+            },
+        })
         .then((res) => {
-            if (res.data.success) {
-                itensTipoProjetos.value = reducingContent(res.data.data);
-            } else {
-                feedback.value = {
-                    show: true,
-                    timeout: 2000,
-                    color: "error",
-                    text: "Falha no load dos tipos de projeto.",
-                };
-            }
+            itensTipoProjetos.value = reducingContent(res.data);
         })
         .catch((err) => {
             feedback.value = {
@@ -155,7 +142,7 @@ async function carregandoTodosTiposProjetos() {
             };
         });
 }
-async function insertProjeto() {
+function insertEvent() {
     if (inputProjeto.value == null || valueTipoProjetos.value == null) {
         feedback.value = {
             show: true,
@@ -165,66 +152,39 @@ async function insertProjeto() {
         };
         return;
     }
-    let data = {
+    let projeto = {
         nome: inputProjeto.value,
         tipo_projeto_id: valueTipoProjetos.value,
         descricao: inputDescricao.value,
     };
+    // limpando inputs
+    inputProjeto.value = null;
+    valueTipoProjetos.value = null;
+    inputDescricao.value = null;
+    // fechando dialog
+    model.value = false;
+    // emitindo evento para o pai
+    emit("insertProcess", projeto);
+}
+async function insertTipoProjeto(tipoProjeto) {
     await axios
-        .post(route("projeto.store"), data)
+        .post(route("tipoprojeto.store"), { nome: tipoProjeto.nome })
         .then((res) => {
             if (res.data.success) {
-                emit('endProcess');
+                // reload tipos de projetos
+                itensTipoProjetos.value = [];
+                carregandoTodosTiposProjetos();
                 feedback.value = {
                     show: true,
                     timeout: 4000,
                     color: "success",
                     text: res.data.message,
                 };
-                model.value=false;
             } else {
-                model.value=false;
                 feedback.value = {
                     show: true,
                     timeout: 4000,
                     color: "error",
-                    text: res.data.message,
-                };
-            }
-        })
-        .catch((err) => {
-            model.value=false;
-            feedback.value = {
-                show: true,
-                timeout: 4000,
-                color: "error",
-                text: "Axios: " + err + ". Data: " + res.data.message + ".",
-            };
-        });
-}
-async function insertTipoProjeto() {
-    if (tipoProjetoNome.value.replace(/\s+/g, "") == "")
-        alert("É necessario inserir um nome.");
-
-    await axios
-        .post(route("tipoprojeto.store"), { nome: tipoProjetoNome.value })
-        .then((res) => {
-            if (res.data.success) {
-                itensTipoProjetos.value = [];
-                carregandoTodosTiposProjetos();
-                dialogNewTipoProjeto.value = false;
-
-                feedback.value = {
-                    show: true,
-                    timeout: 4000,
-                    color: "success",
-                    text: res.data.message,
-                };
-            } else {
-                feedback.value = {
-                    show: true,
-                    timeout: 4000,
-                    color: "warning",
                     text: res.data.message,
                 };
             }

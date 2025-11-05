@@ -14,6 +14,7 @@ return new class extends Migration
         Schema::create('plataformas', function (Blueprint $table) {
             $table->id();
             $table->string('nome')->unique();
+            $table->text('descricao')->nullable();
             // stamps
             $table->foreignId('created_by')->nullable()->constrained('users')->nullOnDelete();
             $table->foreignId('updated_by')->nullable()->constrained('users')->nullOnDelete();

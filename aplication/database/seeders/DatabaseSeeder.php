@@ -2,7 +2,7 @@
 
 namespace Database\Seeders;
 
-// use Illuminate\Database\Console\Seeds\WithoutModelEvents;
+use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Hash;
 
@@ -22,8 +22,12 @@ class DatabaseSeeder extends Seeder
             StatusSeeder::class, // 6
             BzeroSeeder::class, // 5
 
-            ItemSeeder::class,
-            PlataformaSeeder::class
+            FornecedorSeeder::class, // 3
+            SubitemSeeder::class, // 10
+            ItemSeeder::class, // 3
+            PlataformaSeeder::class, // 8
+
+            TabelasAuxiliaresSeeder::class
         ]);
     }
 }

@@ -4,21 +4,25 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Inertia\Inertia;
-use App\Models\User;
+use App\Models\Item;
+use App\Models\Subitem;
 
-class UserController extends Controller
+class ItemController extends Controller
 {
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
-        if(request()->expectsJson()) {
-            return User::all();
-        }
+        if($request->expectsJson()) return Item::all();
 
-        return Inertia::render('Usuarios', [
-            'usuarios' => User::all()
+        $usuario_logado = auth()->user();
+        $preferencias = $usuario_logado->preferencia;
+
+        return Inertia::render('Crud/cadastros/itens/index', [
+            'itens' => Item::all(), // vem com os subitens associados por padrão
+            'user' => $usuario_logado,
+            'preferencias' => $preferencias,
         ]);
     }
 

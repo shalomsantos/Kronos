@@ -1,31 +1,25 @@
 <template>
     <DefaultLayout
         v-model="viewOption"
-        :title="'Projetos lista'"
         :location="location"
+        title="Plataformas"
         class="position-relative"
     >
         <v-btn
-            @click.prevent="dialogNewProjeto = true"
+            @click.prevent="dialogNovaPlataforma = true"
             class="text-none position-absolute rotate ma-3"
             color="green-darken-1"
             size="x-large"
             icon="mdi-plus"
         />
-
         <v-sheet class="bg-transparent">
-            <!-- CARD -->
-            <v-row class="bg-transparent pa-2" v-if="dados.length > 0 && viewOption">
+            <v-row class="bg-transparent" v-if="dados.length > 0 && viewOption">
                 <v-col cols="3" v-for="(item, id) in dados" :key="id">
                     <v-hover>
                         <template v-slot:default="{ isHovering, props }">
                             <v-card
                                 :title="item.nome"
-                                :subtitle="item.tipo_projeto.nome"
-                                @click.prevent="
-                                    (projetoSelecionado = item),
-                                        (dialogEditProjeto = true)
-                                "
+                                @click.prevent="editePlataforma(item)"
                                 v-bind="props"
                                 :color="
                                     isHovering ? 'green-lighten-5' : undefined
@@ -42,9 +36,8 @@
                     </v-hover>
                 </v-col>
             </v-row>
-            <!-- TABLE -->
             <v-table
-                class="bg-green-lighten-5 pa-2"
+                class="bg-green-lighten-5"
                 density="compact"
                 v-else-if="dados.length > 0 && !viewOption"
                 striped="even"
@@ -52,7 +45,6 @@
                 <thead>
                     <tr>
                         <th class="text-left">Nome</th>
-                        <th class="text-left">Tipo</th>
                         <th class="text-left">Criado em</th>
                         <th class="text-left">Criado por</th>
                         <th class="text-left">***</th>
@@ -62,22 +54,17 @@
                     <tr
                         v-for="(item, id) in dados"
                         :key="id"
-                        @click.prevent="
-                            (projetoSelecionado = item),
-                                (dialogEditProjeto = true)
-                        "
+                        @click.prevent="editePlataforma(item)"
                     >
                         <td>{{ item.nome }}</td>
-                        <td>{{ item.tipo_projeto.nome }}</td>
                         <td>{{ isDate(item.created_at) }}</td>
                         <td>
                             <v-chip size="x-small" color="green" variant="flat">
-                                {{ item.created_by.name }}
+                                {{ item.created_by?.name }}
                             </v-chip>
                         </td>
                         <td>
                             <v-btn
-                                disabled
                                 class="text-none me-1"
                                 icon="mdi-delete"
                                 density="comfortable"
@@ -91,74 +78,64 @@
         </v-sheet>
 
         <!-- Dialogs -->
-        <EditeProjeto
-            v-model="dialogEditProjeto"
-            :projeto="projetoSelecionado"
-            :tipos="tiposProjetos"
-            @closeEditProjeto="(projetoSelecionado = null), (dialogEditProjeto = false)"
-            @editeProcess="editProjeto"
+        <EditePlataforma
+            v-model="dialogEditePlataforma"
+            :plataformaSelecionada="plataformaSelecionada"
+            @editProcess="EditePlataforma"
         />
-        <NovoProjeto
-            v-model="dialogNewProjeto"
-            @insertProcess="insertProjeto"
-        ></NovoProjeto>
+        <NovaPlataforma
+            v-model="dialogNovaPlataforma"
+            @insertProcess="insertPlataforma"
+        />
         <!-- Feedback -->
         <NormalFeedback v-model="feedback" />
     </DefaultLayout>
 </template>
 
 <script setup>
+import EditePlataforma from "@/Components/Dialogs/Plataforma/EditePlataforma.vue";
+import NovaPlataforma from "@/Components/Dialogs/Plataforma/NovaPlataforma.vue";
 import DefaultLayout from "@/Layouts/DefaultLayout.vue";
-import EditeProjeto from "@/Components/Dialogs/Projeto/EditeProjeto.vue";
-import NovoProjeto from "@/Components/Dialogs/Projeto/NovoProjeto.vue";
 import EmptyData from "@/Components/EmptyData.vue";
-import NormalFeedback from "@/Components/Feedback/NormalFeedback.vue"
 import { ref } from "vue";
 import axios from "axios";
-// dados trazidos com a rota.
+import NormalFeedback from "@/Components/Feedback/NormalFeedback.vue";
+
 const props = defineProps({
-    projetos: {
-        type: Object,
-        required: true,
-    },
-    tiposProjetos: {
-        type: Object,
-        required: true,
+    plataformas: {
+        type: Array
     },
     user: {
-        type: Object,
-        required: true,
+        type: Object
     },
     preferencias: {
-        type: Object,
-        required: true,
+        type: Object
     },
 });
-// Content var
+// content var
 const location = [
     { title: "Kronos", disabled: false, href: "/" },
-    { title: "Projetos", disabled: true },
+    { title: "Plataformas", disabled: true },
     { title: "Lista", disabled: true },
 ];
-// const user = props.user;
 const viewOption = ref(props.preferencias?.listagem_menu ?? 0);
-const dados = ref(props.projetos ?? []);
-// Seleção
-const projetoSelecionado = ref(null);
-// Dialogs var
-const dialogNewProjeto = ref(false);
-const dialogEditProjeto = ref(false);
-// Feedback var
+// data objects
+const dados = ref(props.plataformas);
+const plataformaSelecionada = ref(null);
+// dialogs
+const dialogEditePlataforma = ref(false);
+const dialogNovaPlataforma = ref(false);
+// Feedback
 const feedback = ref({
     show: false,
     timeout: 2000,
     color: "success",
     text: "",
 });
-// Functions
-async function carregandoTodosProjetos() {
+// functions
+async function carregandoTodasPlataformas() {
     await axios
-        .get(route("projeto.index"), {
+        .get(route("plataforma.index"), {
             headers: {
                 Accept: "application/json",
             },
@@ -168,19 +145,19 @@ async function carregandoTodosProjetos() {
         })
         .catch((err) => console.log(err));
 }
-async function insertProjeto(projeto) {
+async function insertPlataforma(plataforma) {
     await axios
-        .post(route("projeto.store"), projeto)
+        .post(route("plataforma.store"), plataforma)
         .then((res) => {
             if (res.data.success) {
-                carregandoTodosProjetos();
-
+                carregandoTodasPlataformas();
                 feedback.value = {
                     show: true,
                     timeout: 4000,
                     color: "success",
                     text: res.data.message,
                 };
+                return;
             }
             feedback.value = {
                 show: true,
@@ -188,8 +165,7 @@ async function insertProjeto(projeto) {
                 color: "error",
                 text: res.data.message,
             };
-        })
-        .catch((err) => {
+        }).catch((err) => {
             feedback.value = {
                 show: true,
                 timeout: 4000,
@@ -198,38 +174,9 @@ async function insertProjeto(projeto) {
             };
         });
 }
-async function editProjeto(projeto) {
-    const projectId = projeto.id;
-
-    await axios
-        .patch(route("projeto.update", projectId), projeto)
-        .then((res) => {
-            if (!res.data.success) {
-                feedback.value = {
-                    show: true,
-                    timeout: 4000,
-                    color: "error",
-                    text: res.data.message,
-                };
-                return;
-            }
-
-            carregandoTodosProjetos();
-            feedback.value = {
-                show: true,
-                timeout: 4000,
-                color: "success",
-                text: res.data.message,
-            };
-        })
-        .catch((err) => {
-            feedback.value = {
-                show: true,
-                timeout: 4000,
-                color: "error",
-                text: err,
-            };
-        });
+function editePlataforma(plataforma) {
+    plataformaSelecionada.value = plataforma;
+    dialogEditePlataforma.value = true;
 }
 </script>
 

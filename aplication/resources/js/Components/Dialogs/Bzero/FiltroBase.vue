@@ -3,6 +3,7 @@
         <v-toolbar title="Filtro" density="compact"
             ><v-btn
                 icon="mdi-close"
+                size="small"
                 @click.prevent="
                     (model = false),
                     (id = null),
@@ -15,8 +16,8 @@
             ></v-btn
         ></v-toolbar>
         <v-card rounded="0">
-            <template v-slot:text>
-                <v-row dense>
+            <v-card-item class="ma-0 pa-2">
+                <v-row class="pa-2">
                     <v-col cols="3">
                         <v-text-field
                             v-model="id"
@@ -113,7 +114,7 @@
                         >Limpar</v-btn>
                     </v-col>
                 </v-row>
-            </template>
+            </v-card-item>
         </v-card>
     </v-dialog>
 </template>

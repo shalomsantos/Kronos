@@ -3,8 +3,9 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use App\Models\Projeto;
 use Inertia\Inertia;
+use App\Models\Projeto;
+use App\Models\TipoProjeto;
 
 class ProjetoController extends Controller
 {
@@ -15,7 +16,15 @@ class ProjetoController extends Controller
     {
         if ($request->expectsJson()) return Projeto::with('tipoProjeto')->get();
 
-        return Inertia::render('Crud/cadastros/projetos/index');
+        $usuario_logado = auth()->user();
+        $preferencias = $usuario_logado->preferencia;
+
+        return Inertia::render('Crud/cadastros/projetos/index', [
+            'projetos' => Projeto::with('tipoProjeto')->get(),
+            'tiposProjetos' => TipoProjeto::all(),
+            'user' => $usuario_logado,
+            'preferencias' => $preferencias,
+        ]);
     }
 
     /**
@@ -47,14 +56,11 @@ class ProjetoController extends Controller
                     'message' => "Projeto: ".$request['nome'].", criado com sucesso."
                 ]);
             }
-
             return response()->json([
                 'success' => false,
                 'message' => "Houve um erro no procedimento de inserção de registro."
             ]);
-
         } catch (\Exception $e) {
-
             return response()->json([
                 'success' => false,
                 'message' => "Erro ao tentar inserir o projeto: ".$request['nome'].".",
@@ -84,7 +90,45 @@ class ProjetoController extends Controller
      */
     public function update(Request $request, string $id)
     {
-        //
+        try {
+            $request->validate([
+                'nome' => 'required|string|max:255',
+                'tipo_projeto_id' => 'required|integer|exists:tipo_projetos,id',
+            ]);
+
+            $projeto = Projeto::find($id);
+
+            if (!$projeto) {
+                return response()->json([
+                    'success' => false,
+                    'message' => "Projeto com ID: {$id} não encontrado."
+                ], 404);
+            }
+
+            $projetoAtualizado = $projeto->update([
+                'nome' => $request['nome'],
+                'tipo_projeto_id' => $request['tipo_projeto_id'],
+                'descricao' => $request['descricao'] ?? '',
+                'updated_by' => auth()->id(),
+            ]);
+            if($projetoAtualizado){
+                return response()->json([
+                    'success' => true,
+                    'message' => "Projeto: ".$request['nome'].", atualizado com sucesso."
+                ]);
+            }
+            return response()->json([
+                'success' => false,
+                'message' => "Nenhuma alteração detectada no projeto."
+            ]);
+
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => "Erro ao tentar atualizar o projeto: ".$request['nome'].".",
+                'details' => $e->getMessage()
+            ], 500);
+        }
     }
 
     /**

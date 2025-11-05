@@ -113,7 +113,7 @@ watch(viewOption, () => {
 })
 
 const location = [
-    { title: "Kratos", disabled: false, href: "/" },
+    { title: "Kronos", disabled: false, href: "/" },
     { title: "Usuários", disabled: true },
     { title: "Lista", disabled: true },
 ];

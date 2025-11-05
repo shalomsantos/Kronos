@@ -11,32 +11,26 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('bz_plat_item_subitem_forms', function (Blueprint $table) {
+        Schema::create('plataforma_item_subitem_fornecedor', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('bzero_id')->constrained();
-            $table->foreignId('plataforma_id')->constrained();
+            $table->unsignedBigInteger('plataforma_id');
+            $table->foreign('plataforma_id')->references('id')->on('plataformas');
 
             $table->unsignedBigInteger('item_id');
             $table->foreign('item_id')->references('id')->on('itens');
+
             $table->unsignedBigInteger('subitem_id');
             $table->foreign('subitem_id')->references('id')->on('subitens');
+
             $table->unsignedBigInteger('fornecedor_id')->nullable();
             $table->foreign('fornecedor_id')->references('id')->on('fornecedores');
-
+            
             $table->unsignedDecimal('vl_unit_cot')->default(0);
-            $table->unsignedInteger('qt_unid_cot')->nullable(false)->default(1);
-            $table->unsignedInteger('multip_cot')->nullable(false)->default(1);
-
-            $table->unsignedDecimal('vl_unit_apr')->default(0);
-            $table->unsignedInteger('qt_unid_apr')->nullable(false)->default(1);
-            $table->unsignedInteger('multip_apr')->nullable(false)->default(1);
-
-            $table->unsignedDecimal('vl_executado')->default(0);
-
+            $table->unsignedTinyInteger('qt_unidade_cot')->default(1);
+            $table->unsignedTinyInteger('qt_multip_uni_cot')->default(1);
             // stamps
             $table->foreignId('created_by')->nullable()->constrained('users')->nullOnDelete();
             $table->foreignId('updated_by')->nullable()->constrained('users')->nullOnDelete();
-
             $table->timestamps();
         });
     }
@@ -46,6 +40,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('bz_plat_item_subitem_forms');
+        Schema::dropIfExists('plataforma_item_subitem_fornecedor');
     }
 };

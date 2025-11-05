@@ -5,7 +5,7 @@
 
         <v-col cols="3" class="mx-auto" style="margin-top: 7.2rem;">
             <form @submit.prevent="submit" class="d-flex flex-column position-relative px-3 py-6">
-                <h1 class="work-sans text-center mb-3">Kratos</h1>
+                <h1 class="work-sans text-center mb-3">Kronos</h1>
                 <v-icon icon="mdi-omega" class="position-absolute"></v-icon>
                 <v-text-field
                     type="email"

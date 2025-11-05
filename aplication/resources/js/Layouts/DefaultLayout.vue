@@ -15,9 +15,9 @@
                     href="/"
                     class="text-center"
                 >
-                <template v-slot:title>
-                    <v-icon icon="mdi-omega" class="omega-icon" :style="rail?'':'transition: 250ms;font-size: 5vw;'"></v-icon>
-                </template>
+                    <template v-slot:title>
+                        <v-icon icon="mdi-alpha-k" :style="rail?'font-size: 2vw;':'transition: 250ms;font-size: 5vw;'"></v-icon>
+                    </template>
                 </v-list-item>
                 <v-divider></v-divider>
                 <v-list-item
@@ -145,8 +145,8 @@
                 </v-sheet>
             </template>
         </v-app-bar>
-        <v-main class="bg-green-lighten-5" min-height="100vh">
-            <v-sheet class="pa-3" color="transparent">
+        <v-main class="bg-green-lighten-5" min-height="99.6vh">
+            <v-sheet color="transparent">
                 <slot />
             </v-sheet>
         </v-main>
@@ -173,20 +173,20 @@ const user = usePage().props.auth.user;
 const emit = defineEmits(["update:modelValue"]);
 
 const drawer = ref(true);
-const rail = ref(true);
+const rail = ref(false);
 const menu = ref(false);
 
 let cadMenuOptions = [
     ["Projeto", "mdi-apps", route('projeto.index')],
-    ["Plataforma", "mdi-apps", "/plataformas"],
-    ["Item", "mdi-apps", "/itens"],
-    ["Subitem", "mdi-apps", "/subitens"],
-    ["Fornecedor", "mdi-apps", "/fornecedores"],
-    ["Colaborador", "mdi-apps", "/colaboradores"],
-    ["Intermediário", "mdi-apps", "/intermediarios"],
-    ["Setor", "mdi-apps", "/setores"],
-    ["Equipe", "mdi-apps", "/equipes"],
-    ["Precificação", "mdi-apps", "/precificacoes"],
+    ["Plataforma", "mdi-apps", route('plataforma.index')],
+    ["Item", "mdi-apps", route("item.index")],
+    ["Subitem", "mdi-apps", "/"],
+    ["Fornecedor", "mdi-apps", "/"],
+    ["Colaborador", "mdi-apps", "/"],
+    ["Intermediário", "mdi-apps", "/"],
+    ["Setor", "mdi-apps", "/"],
+    ["Equipe", "mdi-apps", "/"],
+    ["Precificação", "mdi-apps", "/"],
 ];
 // Feedback var
 const feedback = ref({

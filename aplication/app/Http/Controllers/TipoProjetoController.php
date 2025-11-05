@@ -10,30 +10,9 @@ class TipoProjetoController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
-        try {
-            $allTipoProjeto = TipoProjeto::all();
-
-            if($allTipoProjeto){
-                return response()->json([
-                    'success' => true,
-                    'message' => "Registros encontrados.",
-                    'data' => $allTipoProjeto
-                ]);
-            }
-
-            return response()->json([
-                'success' => false,
-                'message' => "Nenhum registro foi encontrado.",
-            ]);
-        } catch (\Throwable $e) {
-            return response()->json([
-                'success' => false,
-                'message' => "Houve um erro inesperado ao consultar os registros.",
-                'details' => $e->getMessage()
-            ]);
-        }
+        if($request->expectsJson()) return TipoProjeto::all();
     }
 
     /**
@@ -50,14 +29,14 @@ class TipoProjetoController extends Controller
     public function store(Request $request)
     {
         try {
-            $newTipo_Projeto = TipoProjeto::insert([
+            $novoTipoProjeto = TipoProjeto::insert([
                 'nome' => $request['nome'],
                 'created_by' => auth()->id(),
                 // 'updated_by' => ,
                 'created_at' => now(),
                 // 'updated_at' =>
             ]);
-            if($newTipo_Projeto){
+            if($novoTipoProjeto){
                 return response()->json([
                     'success' => true,
                     'message' => "Tipo de projeto: ".$request['nome'].", criado com sucesso."

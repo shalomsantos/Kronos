@@ -1,18 +1,35 @@
 <?php
 
 namespace App\Http\Controllers;
-namespace App\Models\Tipo_projeto;
 
 use Illuminate\Http\Request;
+use App\Models\Subitem;
+use App\Models\ItemSubitem;
 
-class TipoProjeto extends Controller
+class SubitemController extends Controller
 {
+    public function subitensAssociaveis(Request $request)
+    {
+        $id = $request['itemId'];
+
+        $subitensAssociaveis = ItemSubitem::whereNot('id', $id)->get();
+
+        return response()->json([
+            'data' => $subitensAssociaveis
+        ]);
+    }
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
-        dd("entrou");
+        if ($request->expectsJson()) return Subitem::all();
+
+        if($request['search']){
+            return response()->json([
+                'search' => $request['search']
+            ]);
+        }
     }
 
     /**
@@ -28,22 +45,7 @@ class TipoProjeto extends Controller
      */
     public function store(Request $request)
     {
-        try {
-            // $newTipo_Projeto = Tipo_projeto::create([
-            //     'nome' => $request['nome']
-            // ]);
-
-            return response()->json([
-                'success' => true,
-                'message' => "Tipo de projeto: [".$request['nome']."], criado com sucesso."
-            ]);
-        } catch (\Throwable $e) {
-            return response()->json([
-                'success' => false,
-                'message' => "Erro ao tentar inserir tipo: [".$request['nome']."].",
-                'details' => $e
-            ]);
-        }
+        //
     }
 
     /**

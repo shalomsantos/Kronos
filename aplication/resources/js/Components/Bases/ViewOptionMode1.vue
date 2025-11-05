@@ -73,7 +73,6 @@
             </v-col>
         </v-row>
         <!-- Modo tabela -->
-
         <v-table
             density="compact"
             class="bg-green-lighten-5"
@@ -92,21 +91,14 @@
                 </tr>
             </thead>
             <tbody>
-                <tr
-                    v-for="(item, id) in dados"
-                    :key="id"
-                >
+                <tr v-for="(item, id) in dados" :key="id">
                     <td>{{ item.id }}</td>
                     <td>{{ item.projeto.nome }}</td>
                     <td>{{ item.status.nome }}</td>
                     <td>{{ item.ano }}</td>
                     <td>{{ isDate(item.created_at) }}</td>
                     <td>
-                        <v-chip
-                            size="x-small"
-                            color="green"
-                            variant="flat"
-                        >
+                        <v-chip size="x-small" color="green" variant="flat">
                             {{ item.created_by.name }}
                         </v-chip>
                     </td>
@@ -121,7 +113,6 @@
                 </tr>
             </tbody>
         </v-table>
-
         <EmptyData v-else />
     </v-sheet>
 </template>
@@ -140,5 +131,4 @@ const props = defineProps({
 });
 </script>
 
-<style scoped>
-</style>
+<style scoped></style>

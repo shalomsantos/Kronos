@@ -4,19 +4,24 @@
 @import url('https://fonts.googleapis.com/css2?family=Nunito:ital,wght@0,200..1000;1,200..1000&family=Work+Sans:ital,wght@0,100..900;1,100..900&display=swap');
 .nunito {
   font-family: "Nunito", sans-serif;
-  font-optical-sizing: auto;
-  font-style: normal;
 }
 .work-sans {
   font-family: "Work Sans", sans-serif;
-  font-optical-sizing: auto;
-  font-style: normal;
 }
 @keyframes rotation {
     to { transform: rotate(360deg); }
 }
 .rotate{
     animation: rotation 8s linear infinite;
+}
+thead{
+    background-color: #4CAF50;
+    font-weight: 800;
+    font-family: "Nunito", sans-serif;
+    color: white;
+}
+tbody tr:hover {
+    background-color: #d1d1d1;
 }
 .hyper-t, .hyper-b, .hyper-l, .hyper-r{
     position: relative;

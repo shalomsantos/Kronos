@@ -1,15 +1,15 @@
 <template>
     <DefaultLayout :title="'Perfil'" :location="location">
-        <v-row dense>
+        <v-row>
             <v-col cols="12">
                 <p>{{ user.name }}</p>
                 <p>{{ user.email }}</p>
             </v-col>
             <v-col cols="12">
-                
+
             </v-col>
         </v-row>
-        <v-row dense>
+        <v-row>
             <v-col cols="4">
                 <UpdateProfileInformationForm
                     :must-verify-email="mustVerifyEmail"
@@ -44,7 +44,7 @@ defineProps({
 const user = usePage().props.auth.user;
 // Context Var
 const location = [
-    { title: "kratos", disabled: false, href: "/" },
+    { title: "Kronos", disabled: false, href: "/" },
     { title: "Perfil", disabled: true }
 ];
 </script>
