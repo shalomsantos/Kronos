@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\Model;
 
 class SubitemFornecedor extends Model
@@ -15,4 +16,9 @@ class SubitemFornecedor extends Model
         'subitem_id',
         'fornecedor_id'
     ];
+
+    public function fornecedor(): HasOne
+    {
+        return $this->hasOne(Fornecedor::class, 'id', 'fornecedor_id');
+    }
 }

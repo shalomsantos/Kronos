@@ -9,10 +9,7 @@ use App\Http\Controllers\TipoProjetoController;
 use App\Http\Controllers\PlataformaController;
 use App\Http\Controllers\ItemController;
 use App\Http\Controllers\SubitemController;
-use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
-use Inertia\Inertia;
-use App\Models\User;
 
 Route::middleware('auth')->group(function () {
     // Home
@@ -27,11 +24,13 @@ Route::middleware('auth')->group(function () {
     Route::resource('tipoprojeto', TipoProjetoController::class);
     // Plataforma
     Route::resource('plataforma', PlataformaController::class);
+    Route::get('/plataforma/associaveis/{id}', [PlataformaController::class, 'plataformasAssociaveis'])->name('plataforma.plataformasAssociaveis');
     // Item
     Route::resource('item', ItemController::class);
+    Route::get('/item/associaveis/{id}', [ItemController::class, 'itemAssociaveis'])->name('item.itemAssociaveis');
     // Subitens
     Route::resource('subitem', SubitemController::class);
-    Route::post('/subitens/associaveis', [SubitemController::class, 'subitensAssociaveis'])->name('subitem.subitensAssociaveis');
+    Route::get('/subitens/associaveis/{id}', [SubitemController::class, 'subitensAssociaveis'])->name('subitem.subitensAssociaveis');
     // Status
     Route::resource('status', StatusController::class);
     // User

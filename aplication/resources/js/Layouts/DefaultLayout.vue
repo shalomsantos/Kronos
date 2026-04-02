@@ -103,6 +103,7 @@
                 </v-menu>
             </v-list>
         </v-navigation-drawer>
+
         <v-app-bar density="compact" color="green-darken-3">
             <template v-slot:prepend>
                 <v-app-bar-nav-icon @click="rail = !rail"></v-app-bar-nav-icon>
@@ -145,11 +146,13 @@
                 </v-sheet>
             </template>
         </v-app-bar>
-        <v-main class="bg-green-lighten-5" min-height="99.6vh">
-            <v-sheet color="transparent">
+
+        <v-main class="bg-green-lighten-5" min-height="97vh">
+            <v-sheet color="transparent" class="pa-2">
                 <slot />
             </v-sheet>
         </v-main>
+        
         <NormalFeedback v-model="feedback" />
     </v-layout>
 </template>

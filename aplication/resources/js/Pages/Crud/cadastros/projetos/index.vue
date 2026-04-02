@@ -15,7 +15,7 @@
 
         <v-sheet class="bg-transparent">
             <!-- CARD -->
-            <v-row class="bg-transparent pa-2" v-if="dados.length > 0 && viewOption">
+            <v-row class="bg-transparent" v-if="dados.length > 0 && viewOption">
                 <v-col cols="3" v-for="(item, id) in dados" :key="id">
                     <v-hover>
                         <template v-slot:default="{ isHovering, props }">

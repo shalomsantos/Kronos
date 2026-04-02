@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 use App\Models\Plataforma;
+use App\Models\PlataformaItemSubitemFornecedor;
 use App\Models\User;
 
 class PlataformaController extends Controller
@@ -97,5 +98,21 @@ class PlataformaController extends Controller
     public function destroy(string $id)
     {
         //
+    }
+
+    public function plataformasAssociaveis(string $id)
+    {
+        try {
+            $relationchips = PlataformaItemSubitemFornecedor::where('plataforma_id', $id)->get();
+            return response()->json([
+                'success' => true,
+                'data' => $relationchips
+            ]);
+        } catch (\Throwable $e) {
+            return response()->json([
+                'success' => false,
+                'message' => $e->getMessage()
+            ]);
+        }
     }
 }

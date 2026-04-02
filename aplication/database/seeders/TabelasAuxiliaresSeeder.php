@@ -5,6 +5,7 @@ namespace Database\Seeders;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 use App\Models\SubitemFornecedor;
+use App\Models\ItemSubitem;
 
 class TabelasAuxiliaresSeeder extends Seeder
 {

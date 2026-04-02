@@ -81,7 +81,6 @@
         <EditePlataforma
             v-model="dialogEditePlataforma"
             :plataformaSelecionada="plataformaSelecionada"
-            @editProcess="EditePlataforma"
         />
         <NovaPlataforma
             v-model="dialogNovaPlataforma"

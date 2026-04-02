@@ -26,7 +26,6 @@ services:
     # image: sistema_comissao
     extra_hosts:
       - "host.docker.internal:host-gateway"
-    restart: always
     working_dir: /var/www/html
     volumes:
        - ./aplication:/var/www/html
@@ -39,7 +38,6 @@ services:
   my_aplication_node:
     container_name: aplication_node
     image: node:20-alpine
-    restart: always
     ports:
       - "5173:5173"
     tty: true

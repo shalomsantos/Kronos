@@ -5,19 +5,10 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\Subitem;
 use App\Models\ItemSubitem;
+use App\Models\SubitemFornecedor;
 
 class SubitemController extends Controller
 {
-    public function subitensAssociaveis(Request $request)
-    {
-        $id = $request['itemId'];
-
-        $subitensAssociaveis = ItemSubitem::whereNot('id', $id)->get();
-
-        return response()->json([
-            'data' => $subitensAssociaveis
-        ]);
-    }
     /**
      * Display a listing of the resource.
      */
@@ -78,5 +69,21 @@ class SubitemController extends Controller
     public function destroy(string $id)
     {
         //
+    }
+
+    public function subitensAssociaveis(string $id)
+    {
+        try {
+            $subitensAssociaveis = SubitemFornecedor::where('subitem_id', $id)->with('fornecedor')->get();
+            return response()->json([
+                'success' => true,
+                'data' => $subitensAssociaveis
+            ], 200);
+        } catch (\Throwable $e) {
+            return response()->json([
+                'success' => false,
+                'message' => $e->getMessage()
+            ], 500);
+        }
     }
 }

@@ -5,7 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 use App\Models\Item;
-use App\Models\Subitem;
+use App\Models\ItemSubitem;
 
 class ItemController extends Controller
 {
@@ -14,13 +14,25 @@ class ItemController extends Controller
      */
     public function index(Request $request)
     {
-        if($request->expectsJson()) return Item::all();
+        if($request->expectsJson()) {
+            try {
+                return response()->json([
+                    'success' => true,
+                    'data' => Item::all()
+                ], 200);
+            } catch (\Throwable $e) {
+                return response()->json([
+                    'success' => false,
+                    'message' => $e->getMessage()
+                ], 500);
+            }
+        }
 
         $usuario_logado = auth()->user();
         $preferencias = $usuario_logado->preferencia;
 
         return Inertia::render('Crud/cadastros/itens/index', [
-            'itens' => Item::all(), // vem com os subitens associados por padrão
+            'itens' => Item::all(), 
             'user' => $usuario_logado,
             'preferencias' => $preferencias,
         ]);
@@ -72,5 +84,21 @@ class ItemController extends Controller
     public function destroy(string $id)
     {
         //
+    }
+
+    public function itemAssociaveis(string $id)
+    {
+        try {
+            $associaveis = ItemSubitem::where('item_id', $id)->with('subitem')->get();
+            return response()->json([
+                'success' => true,
+                'data' => $associaveis
+            ], 200);
+        } catch (\Throwable $e) {
+            return response()->json([
+                'success' => false,
+                'message' => $e->getMessage()
+            ], 500);
+        }
     }
 }

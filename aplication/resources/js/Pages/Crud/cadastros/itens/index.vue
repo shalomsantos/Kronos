@@ -3,7 +3,7 @@
         v-model="viewOption"
         :title="'Projetos lista'"
         :location="location"
-        class="position-relative pa-2"
+        class="position-relative"
     >
         <v-btn
             @click.prevent="dialogNovoItem = true"
