@@ -13,11 +13,7 @@
             icon="mdi-plus"
         />
         <v-sheet class="bg-transparent">
-            <v-row
-                dense
-                class="bg-transparent"
-                v-if="dados.length > 0 && !viewOption"
-            >
+            <v-row class="bg-transparent" v-if="dados.length > 0 && viewOption">
                 <v-col cols="12" v-for="(item, id) in dados" :key="id">
                     <v-hover>
                         <template v-slot:default="{ isHovering, props }">
@@ -70,10 +66,11 @@
                     </v-hover>
                 </v-col>
             </v-row>
+
             <v-table
                 class="bg-green-lighten-5"
                 density="compact"
-                v-else-if="dados.length > 0 && viewOption"
+                v-else-if="dados.length > 0 && !viewOption"
                 striped="even"
             >
                 <thead>
@@ -123,6 +120,7 @@
                     </tr>
                 </tbody>
             </v-table>
+
             <EmptyData v-else />
         </v-sheet>
 
@@ -146,9 +144,9 @@
 <script setup>
 import NormalFeedback from "@/Components/Feedback/NormalFeedback.vue";
 import NovoItem from "@/Components/Dialogs/Item/NovoItem.vue";
+import EmptyData from "@/Components/EmptyData.vue";
 import EditeItem from "@/Components/Dialogs/Item/EditeItem.vue";
 import DefaultLayout from "@/Layouts/DefaultLayout.vue";
-import EmptyData from "@/Components/EmptyData.vue";
 import { ref } from "vue";
 
 const props = defineProps({

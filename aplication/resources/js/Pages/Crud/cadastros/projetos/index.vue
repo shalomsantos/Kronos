@@ -44,7 +44,7 @@
             </v-row>
             <!-- TABLE -->
             <v-table
-                class="bg-green-lighten-5 pa-2"
+                class="bg-green-lighten-5"
                 density="compact"
                 v-else-if="dados.length > 0 && !viewOption"
                 striped="even"
