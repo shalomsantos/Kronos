@@ -25,7 +25,7 @@
         <v-sheet class="bg-transparent">
             <v-row>
                 <v-col
-                    cols="12"
+                    cols="6"
                     v-if="dados.length > 0 && viewOption"
                     v-for="(item, id) in dados"
                     :key="id"
@@ -34,24 +34,16 @@
                         <template v-slot:default="{ isHovering, props }">
                             <v-card
                                 :title="item.nome"
+                                prepend-icon="mdi-layers"
                                 @click.prevent="editePlataforma(item)"
                                 v-bind="props"
                                 :color="
                                     isHovering ? 'green-lighten-5' : undefined
                                 "
                             >
-                                <template v-slot:prepend>
-                                    <v-icon
-                                        icon="mdi-clipboard-file"
-                                        color="green-darken-1"
-                                    ></v-icon>
-                                </template>
-                                <template #title>
+                                <template #subtitle>
                                     <v-row no-gutters>
-                                        <v-col cols="10">
-                                            {{ item.nome }}
-                                        </v-col>
-                                        <v-col cols="2" class="text-right">
+                                        <v-col cols="2">
                                             <p
                                                 class="text-body-2 text-disabled"
                                             >

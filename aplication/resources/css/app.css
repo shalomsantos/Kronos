@@ -8,6 +8,9 @@
 .work-sans {
   font-family: "Work Sans", sans-serif;
 }
+html{
+    overflow: hidden !important;
+}
 thead{
     background-color: #4CAF50;
     font-weight: 800;

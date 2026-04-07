@@ -106,20 +106,27 @@
                 </v-menu>
             </v-list>
         </v-navigation-drawer>
-
-        <v-app-bar density="compact" color="green-darken-3">
+        
+        <v-app-bar color="green-lighten-5" style="height: 10vh;">
             <template v-slot:prepend>
-                <v-app-bar-nav-icon @click="rail = !rail"></v-app-bar-nav-icon>
+                <v-app-bar-nav-icon color="green-darken-1"
+                    @click="rail = !rail"
+                ></v-app-bar-nav-icon>
             </template>
             <template v-slot:title>
                 <v-sheet
                     class="d-flex align-center justify-space-between"
                     color="transparent"
                 >
-                    <v-breadcrumbs :items="location">
+                    <v-breadcrumbs 
+                        :items="location" 
+                        color="green-darken-1"
+                        active-color="green-darken-4"
+                    >
                         <template v-slot:divider>
                             <v-icon
                                 icon="mdi mdi-slash-forward"
+                                color="green-darken-1"
                                 size="x-small"
                             ></v-icon>
                         </template>
@@ -131,7 +138,6 @@
                         class="d-flex align-center ga-3"
                         color="transparent"
                     >
-                        <!-- <v-switch prepend-icon="mdi-account" hide-details color="green-lighten-4"></v-switch> -->
                         <v-btn-toggle
                             v-if="props.modelValue != null"
                             :disabled="onLoad"
@@ -139,14 +145,25 @@
                             @update:model-value="onViewChange"
                             class="me-3"
                             variant="outlined"
+                            active-color="green-darken-4"
+                            base-color="green-lighten-1"
                             divided
+                            density="compact"
                             mandatory
                         >
-                            <v-btn :value="0" class="text-white" density="compact" title="Exibição por tabelas">
+                            <v-btn
+                                :value="0"
+                                variant="text"
+                                title="Exibição por tabelas"
+                            >
                                 <v-icon icon="mdi-table"></v-icon>
                             </v-btn>
 
-                            <v-btn :value="1" class="text-white" density="compact" title="Exibição por cartões">
+                            <v-btn
+                                :value="1"
+                                variant="text"
+                                title="Exibição por cartões"
+                            >
                                 <v-icon icon="mdi-card-multiple"></v-icon>
                             </v-btn>
                         </v-btn-toggle>
@@ -155,9 +172,68 @@
             </template>
         </v-app-bar>
 
-        <v-main class="bg-green-lighten-5" min-height="97vh">
-            <v-sheet color="transparent" class="pa-2">
-                <slot />
+        <v-main class="bg-green-lighten-5 overflow-x-auto pt-0" style="margin-top: 10vh; height: 90vh;">
+            <v-sheet color="transparent">
+                <v-row class="ma-0 pa-0">
+                    <!-- <v-col class="d-flex align-center" cols="6">
+                        <v-btn
+                            icon="mdi-menu"
+                            color="green-darken-1"
+                            @click="rail = !rail"
+                            variant="text"
+                        ></v-btn>
+                        <v-breadcrumbs 
+                            :items="location" 
+                            color="green-darken-1"
+                            active-color="green-darken-4"
+                        >
+                            <template v-slot:divider>
+                                <v-icon
+                                    icon="mdi mdi-slash-forward"
+                                    color="green-darken-1"
+                                    size="x-small"
+                                ></v-icon>
+                            </template>
+                            <template v-slot:title="{ item }">
+                                <p class="text-subtitle-1">{{ item.title }}</p>
+                            </template>
+                        </v-breadcrumbs>
+                    </v-col>
+                    <v-col cols="6" class="d-flex justify-end align-center">
+                        <v-btn-toggle
+                            v-if="props.modelValue != null"
+                            :disabled="onLoad"
+                            :model-value="props.modelValue"
+                            @update:model-value="onViewChange"
+                            class="me-3"
+                            variant="outlined"
+                            active-color="green-darken-4"
+                            base-color="green-lighten-1"
+                            divided
+                            density="compact"
+                            mandatory
+                        >
+                            <v-btn
+                                :value="0"
+                                variant="text"
+                                title="Exibição por tabelas"
+                            >
+                                <v-icon icon="mdi-table"></v-icon>
+                            </v-btn>
+    
+                            <v-btn
+                                :value="1"
+                                variant="text"
+                                title="Exibição por cartões"
+                            >
+                                <v-icon icon="mdi-card-multiple"></v-icon>
+                            </v-btn>
+                        </v-btn-toggle>
+                    </v-col> -->
+                    <v-col cols="12">
+                        <slot />
+                    </v-col>
+                </v-row>
             </v-sheet>
         </v-main>
 

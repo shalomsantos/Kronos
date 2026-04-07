@@ -43,7 +43,7 @@
                                     <v-col cols="10">
                                         {{ item.nome }}
                                     </v-col>
-                                    <v-col cols="2" class="text-right">
+                                    <v-col cols="2">
                                         <p class="text-body-2 text-disabled">
                                             Criado em:
                                             {{ isDate(item.created_at) }}

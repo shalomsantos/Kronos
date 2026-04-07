@@ -25,26 +25,37 @@
         <v-sheet class="bg-transparent">
             <!-- CARD -->
             <v-row class="bg-transparent" v-if="dados.length > 0 && viewOption">
-                <v-col cols="3" v-for="(item, id) in dados" :key="id">
+                <v-col cols="6" v-for="(item, id) in dados" :key="id">
                     <v-hover>
                         <template v-slot:default="{ isHovering, props }">
                             <v-card
-                                :title="item.nome"
-                                :subtitle="item.tipo_projeto.nome"
-                                @click.prevent="
-                                    (projetoSelecionado = item),
-                                        (dialogEditProjeto = true)
-                                "
                                 v-bind="props"
+                                :title="item.nome"
+                                prepend-icon="mdi-clipboard-file"
+                                @click.prevent="
+                                    ((projetoSelecionado = item),
+                                    (dialogEditProjeto = true))
+                                "
                                 :color="
                                     isHovering ? 'green-lighten-5' : undefined
                                 "
                             >
-                                <template v-slot:prepend>
-                                    <v-icon
-                                        icon="mdi-clipboard-file"
-                                        color="green-darken-1"
-                                    ></v-icon>
+                                <template #subtitle>
+                                    <v-chip
+                                        size="small"
+                                        color="green"
+                                    >
+                                        {{ item.tipo_projeto.nome }}
+                                    </v-chip>
+                                </template>
+                                <template #item>
+                                    <p class="text-body-2 text-disabled">
+                                        Criado em:
+                                        {{ isDate(item.created_at) }}
+                                    </p>
+                                    <p class="text-body-2 text-disabled">
+                                        Por: {{ item.created_by.name }}
+                                    </p>
                                 </template>
                             </v-card>
                         </template>
@@ -72,8 +83,8 @@
                         v-for="(item, id) in dados"
                         :key="id"
                         @click.prevent="
-                            (projetoSelecionado = item),
-                                (dialogEditProjeto = true)
+                            ((projetoSelecionado = item),
+                            (dialogEditProjeto = true))
                         "
                     >
                         <td>{{ item.nome }}</td>
@@ -104,7 +115,9 @@
             v-model="dialogEditProjeto"
             :projeto="projetoSelecionado"
             :tipos="tiposProjetos"
-            @closeEditProjeto="(projetoSelecionado = null), (dialogEditProjeto = false)"
+            @closeEditProjeto="
+                ((projetoSelecionado = null), (dialogEditProjeto = false))
+            "
             @editeProcess="editProjeto"
         />
         <NovoProjeto
@@ -121,7 +134,7 @@ import DefaultLayout from "@/Layouts/DefaultLayout.vue";
 import EditeProjeto from "@/Components/Dialogs/Projeto/EditeProjeto.vue";
 import NovoProjeto from "@/Components/Dialogs/Projeto/NovoProjeto.vue";
 import EmptyData from "@/Components/EmptyData.vue";
-import NormalFeedback from "@/Components/Feedback/NormalFeedback.vue"
+import NormalFeedback from "@/Components/Feedback/NormalFeedback.vue";
 import { ref } from "vue";
 import axios from "axios";
 // dados trazidos com a rota.

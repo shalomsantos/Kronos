@@ -14,7 +14,7 @@ class FornecedorController extends Controller
     public function index(Request $request)
     {
         try {
-            $fornecedores = Fornecedor::all();
+            $fornecedores = Fornecedor::paginate(5);
 
             if ($request->expectsJson()) return response()->json(['success' => true, 'data' => $fornecedores], 200);
 

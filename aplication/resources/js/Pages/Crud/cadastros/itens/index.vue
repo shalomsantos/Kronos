@@ -24,11 +24,13 @@
         
         <v-sheet class="bg-transparent">
             <v-row v-if="dados.length > 0 && viewOption">
-                <v-col cols="12" v-for="(item, id) in dados" :key="id">
+                <v-col cols="6" v-for="(item, id) in dados" :key="id">
                     <v-hover>
                         <template v-slot:default="{ isHovering, props }">
                             <v-card
                                 v-bind="props"
+                                :title="item.nome"
+                                prepend-icon="mdi-apple-keyboard-option"
                                 :color="
                                     isHovering ? 'green-lighten-5' : undefined
                                 "
@@ -37,12 +39,9 @@
                                     (dialogEditeItem = true))
                                 "
                             >
-                                <template #title>
+                                <template #subtitle>
                                     <v-row no-gutters>
-                                        <v-col cols="10">
-                                            {{ item.nome }}
-                                        </v-col>
-                                        <v-col cols="2" class="text-right">
+                                        <v-col cols="2">
                                             <p
                                                 class="text-body-2 text-disabled"
                                             >

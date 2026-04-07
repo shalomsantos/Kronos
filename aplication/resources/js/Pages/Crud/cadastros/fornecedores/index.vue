@@ -4,34 +4,35 @@
         :title="'fornecedores lista'"
         :location="location"
     >
-        <v-sheet class="d-flex ga-3 mb-3" color="transparent">
-            <v-btn
-                @click.prevent="dialogNovoItem = true"
-                class="text-none"
-                color="green-darken-1"
-                prepend-icon="mdi-plus"
-                text="Adicionar"
-            />
-            <v-text-field
-                v-model="search"
-                placeholder="Pesquisar aqui..."
-                variant="outlined"
-                density="compact"
-                hide-details="auto"
-                clearable
-            />
-        </v-sheet>
         <v-row>
+            <v-col class="d-flex ga-3" cols="12">
+                <v-btn
+                    @click.prevent="dialogNovoItem = true"
+                    class="text-none"
+                    color="green-darken-1"
+                    prepend-icon="mdi-plus"
+                    text="Adicionar"
+                />
+                <v-text-field
+                    v-model="search"
+                    placeholder="Pesquisar aqui..."
+                    variant="outlined"
+                    density="compact"
+                    hide-details="auto"
+                    clearable
+                />
+            </v-col>
             <v-col
-                cols="12"
-                v-for="(item, id) in fornecedores"
+                cols="6"
+                v-for="(item, id) in fornecedoresFiltrados"
                 :key="id"
-                v-if="fornecedores.length > 0 && viewOption"
+                v-if="fornecedoresFiltrados.length > 0 && viewOption"
             >
                 <v-hover>
                     <template v-slot:default="{ isHovering, props }">
                         <v-card
                             v-bind="props"
+                            :title="item.razao_social"
                             :color="isHovering ? 'green-lighten-5' : undefined"
                             @click.prevent="
                                 ((itemSelecionado = item),
@@ -40,48 +41,27 @@
                         >
                             <template v-slot:prepend>
                                 <v-icon
-                                    icon="mdi-clipboard-file"
+                                    icon="mdi-store"
                                     color="green-darken-1"
                                 ></v-icon>
                             </template>
-                            <template #title>
-                                <v-row no-gutters>
-                                    <v-col cols="10">
-                                        {{ item.razao_social }}
-                                    </v-col>
-                                    <v-col cols="2" class="text-right">
-                                        <p class="text-body-2 text-disabled">
-                                            Criado em:
-                                            {{ isDate(item.created_at) }}
-                                        </p>
-                                        <p class="text-body-2 text-disabled">
-                                            Por: {{ item.created_by.name }}
-                                        </p>
-                                    </v-col>
-                                </v-row>
-                            </template>
-                            <template #item>
-                                <v-sheet
-                                    class="d-flex flex-wrap ga-2 bg-transparent pt-3"
-                                >
-                                    <v-chip
-                                        size="x-small"
-                                        color="green"
-                                        variant="flat"
-                                        v-for="(
-                                            fornecedor, id
-                                        ) in item.fornecedores"
-                                        :key="id"
-                                    >
-                                        {{ fornecedor.nome_fantasia }}
-                                    </v-chip>
-                                </v-sheet>
+                            <template #subtitle>
+                                <p class="text-body-2 text-disabled">
+                                    Criado em:
+                                    {{ isDate(item.created_at) }}
+                                </p>
+                                <p class="text-body-2 text-disabled">
+                                    Por: {{ item.created_by.name }}
+                                </p>
                             </template>
                         </v-card>
                     </template>
                 </v-hover>
             </v-col>
-            <v-col cols="12" v-else-if="fornecedores.length > 0 && !viewOption">
+            <v-col
+                cols="12"
+                v-else-if="fornecedoresFiltrados.length > 0 && !viewOption"
+            >
                 <v-table
                     class="bg-green-lighten-5"
                     density="compact"
@@ -97,14 +77,14 @@
                     </thead>
                     <tbody>
                         <tr
-                            v-for="(item, id) in fornecedores"
+                            v-for="(item, id) in fornecedoresFiltrados"
                             :key="id"
                             @click.prevent="
                                 ((projetoSelecionado = item),
                                 (dialogEditProjeto = true))
                             "
                         >
-                            <td>{{ item.nome }}</td>
+                            <td>{{ item.razao_social }}</td>
                             <td>{{ isDate(item.created_at) }}</td>
                             <td>
                                 <v-chip
@@ -130,6 +110,20 @@
             <v-col cols="12" v-else>
                 <EmptyData />
             </v-col>
+            <v-col cols="12">
+                <v-pagination
+                    v-model="fornecedores.current_page"
+                    :length="fornecedores.last_page"
+                    :total-visible="4"
+                    @update:model-value="updatePage"
+                    class="position-absolute bottom-0 mb-3"
+                    style="left: 50%; transform: translateX(-50px); z-index: 15"
+                    active-color="green-darken-4"
+                    color="green-lighten-1"
+                    density="comfortable"
+                    variant="flat"
+                ></v-pagination>
+            </v-col>
         </v-row>
         <NormalFeedback v-model="feedback"></NormalFeedback>
     </DefaultLayout>
@@ -139,21 +133,50 @@
 import DefaultLayout from "@/Layouts/DefaultLayout.vue";
 import EmptyData from "@/Components/EmptyData.vue";
 import NormalFeedback from "@/Components/Feedback/NormalFeedback.vue";
-import { ref } from "vue";
+import { router } from "@inertiajs/vue3";
+import { ref, computed } from "vue";
 
 const props = defineProps({
-    fornecedores: {},
-    user: {},
-    preferencias: {},
+    fornecedores: Object,
+    user: Object,
+    preferencias: Object,
 });
 
 const viewOption = ref(props.preferencias?.listagem_menu ?? 0);
+const search = ref("");
 
 const location = [
     { title: "Kronos", disabled: false, href: "/" },
     { title: "Fornecedores", disabled: true },
     { title: "Lista", disabled: true },
 ];
+
+const fornecedoresFiltrados = computed(() => {
+    if (!search.value) {
+        return props.fornecedores.data;
+    }
+
+    const termo = search.value.toLowerCase();
+
+    return props.fornecedores.data.filter((item) => {
+        // Busca na Razão Social (Cards) ou Nome (Tabela)
+        const razao = item.razao_social?.toLowerCase() || "";
+        const nome = item.nome?.toLowerCase() || "";
+
+        return razao.includes(termo) || nome.includes(termo);
+    });
+});
+
+const updatePage = (page) => {
+    router.get(
+        route("fornecedor.index"),
+        { page: page },
+        {
+            preserveState: true,
+            preserveScroll: true,
+        },
+    );
+};
 
 // Feedback var
 const feedback = ref({

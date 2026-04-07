@@ -23,7 +23,7 @@
         </v-sheet>
         <v-row>
             <v-col
-                cols="12"
+                cols="6"
                 v-for="(item, id) in subitens"
                 :key="id"
                 v-if="subitens.length > 0 && viewOption"
@@ -32,27 +32,22 @@
                     <template v-slot:default="{ isHovering, props }">
                         <v-card
                             v-bind="props"
+                            :title="item.nome"
+                            prepend-icon="mdi-apple-keyboard-option"
                             :color="isHovering ? 'green-lighten-5' : undefined"
                             @click.prevent="
                                 ((itemSelecionado = item),
                                 (dialogEditeItem = true))
                             "
                         >
-                            <template #title>
-                                <v-row no-gutters>
-                                    <v-col cols="10">
-                                        {{ item.nome }}
-                                    </v-col>
-                                    <v-col cols="2" class="text-right">
-                                        <p class="text-body-2 text-disabled">
-                                            Criado em:
-                                            {{ isDate(item.created_at) }}
-                                        </p>
-                                        <p class="text-body-2 text-disabled">
-                                            Por: {{ item.created_by.name }}
-                                        </p>
-                                    </v-col>
-                                </v-row>
+                            <template #subtitle>
+                                <p class="text-body-2 text-disabled">
+                                    Criado em:
+                                    {{ isDate(item.created_at) }}
+                                </p>
+                                <p class="text-body-2 text-disabled">
+                                    Por: {{ item.created_by.name }}
+                                </p>
                             </template>
                             <template #item>
                                 <v-sheet
