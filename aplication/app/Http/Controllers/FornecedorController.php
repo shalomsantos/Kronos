@@ -2,12 +2,11 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Fornecedor;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
-use App\Models\Item;
-use App\Models\ItemSubitem;
 
-class ItemController extends Controller
+class FornecedorController extends Controller
 {
     /**
      * Display a listing of the resource.
@@ -15,17 +14,17 @@ class ItemController extends Controller
     public function index(Request $request)
     {
         try {
-            $itens = Item::all();
-    
-            if($request->expectsJson()) return response()->json(['success' => true, 'data' => $itens], 200);
-    
+            $fornecedores = Fornecedor::all();
+
+            if ($request->expectsJson()) return response()->json(['success' => true, 'data' => $fornecedores], 200);
+
             $usuario_logado = auth()->user();
             $preferencias = $usuario_logado->preferencia;
-    
-            return Inertia::render('Crud/cadastros/itens/index', [
-                'itens' => $itens, 
+
+            return Inertia::render('Crud/cadastros/fornecedores/index', [
+                'fornecedores' => $fornecedores,
                 'user' => $usuario_logado,
-                'preferencias' => $preferencias,
+                'preferencias'=> $preferencias
             ]);
         } catch (\Throwable $e) {
             return response()->json(['success' => false, 'message' => $e->getMessage()], 500);
@@ -78,21 +77,5 @@ class ItemController extends Controller
     public function destroy(string $id)
     {
         //
-    }
-
-    public function itemAssociaveis(string $id)
-    {
-        try {
-            $associaveis = ItemSubitem::where('item_id', $id)->with('subitem')->get();
-            return response()->json([
-                'success' => true,
-                'data' => $associaveis
-            ], 200);
-        } catch (\Throwable $e) {
-            return response()->json([
-                'success' => false,
-                'message' => $e->getMessage()
-            ], 500);
-        }
     }
 }

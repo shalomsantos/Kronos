@@ -3,15 +3,24 @@
         v-model="viewOption"
         :title="'Projetos lista'"
         :location="location"
-        class="position-relative"
     >
-        <v-btn
-            @click.prevent="dialogNewProjeto = true"
-            class="text-none position-absolute rotate ma-3"
-            color="green-darken-1"
-            size="x-large"
-            icon="mdi-plus"
-        />
+        <v-sheet class="d-flex ga-3 mb-3" color="transparent">
+            <v-btn
+                @click.prevent="dialogNewProjeto = true"
+                class="text-none"
+                color="green-darken-1"
+                prepend-icon="mdi-plus"
+                text="Adicionar"
+            />
+            <v-text-field
+                v-model="search"
+                placeholder="Pesquisar aqui..."
+                variant="outlined"
+                density="compact"
+                hide-details="auto"
+                clearable
+            />
+        </v-sheet>
 
         <v-sheet class="bg-transparent">
             <!-- CARD -->

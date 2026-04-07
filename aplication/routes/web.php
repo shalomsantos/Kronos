@@ -3,11 +3,13 @@
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\BzeroController;
+use App\Http\Controllers\FornecedorController;
 use App\Http\Controllers\ProjetoController;
 use App\Http\Controllers\StatusController;
 use App\Http\Controllers\TipoProjetoController;
 use App\Http\Controllers\PlataformaController;
 use App\Http\Controllers\ItemController;
+use App\Http\Controllers\PlataformaItemSubitemFornecedorController;
 use App\Http\Controllers\SubitemController;
 use Illuminate\Support\Facades\Route;
 
@@ -24,13 +26,17 @@ Route::middleware('auth')->group(function () {
     Route::resource('tipoprojeto', TipoProjetoController::class);
     // Plataforma
     Route::resource('plataforma', PlataformaController::class);
-    Route::get('/plataforma/associaveis/{id}', [PlataformaController::class, 'plataformasAssociaveis'])->name('plataforma.plataformasAssociaveis');
+    Route::get('/plataforma/associaveis/{id}', [PlataformaItemSubitemFornecedorController::class, 'show'])->name('plataforma.plataformasAssociaveis');
+    // plataforma item subitem fornecedor
+    Route::resource('plataformaitemsubitemfornecedor', PlataformaItemSubitemFornecedorController::class);
     // Item
     Route::resource('item', ItemController::class);
     Route::get('/item/associaveis/{id}', [ItemController::class, 'itemAssociaveis'])->name('item.itemAssociaveis');
     // Subitens
     Route::resource('subitem', SubitemController::class);
     Route::get('/subitens/associaveis/{id}', [SubitemController::class, 'subitensAssociaveis'])->name('subitem.subitensAssociaveis');
+    // Fornecedor
+    Route::resource('fornecedor', FornecedorController::class);
     // Status
     Route::resource('status', StatusController::class);
     // User

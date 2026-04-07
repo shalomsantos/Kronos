@@ -3,17 +3,27 @@
         v-model="viewOption"
         :title="'Projetos lista'"
         :location="location"
-        class="position-relative"
     >
-        <v-btn
-            @click.prevent="dialogNovoItem = true"
-            class="text-none position-absolute rotate ma-3"
-            color="green-darken-1"
-            size="x-large"
-            icon="mdi-plus"
-        />
+        <v-sheet class="d-flex ga-3 mb-3" color="transparent">
+            <v-btn
+                @click.prevent="dialogNovoItem = true"
+                class="text-none"
+                color="green-darken-1"
+                prepend-icon="mdi-plus"
+                text="Adicionar"
+            />
+            <v-text-field
+                v-model="search"
+                placeholder="Pesquisar aqui..."
+                variant="outlined"
+                density="compact"
+                hide-details="auto"
+                clearable
+            />
+        </v-sheet>
+        
         <v-sheet class="bg-transparent">
-            <v-row class="bg-transparent" v-if="dados.length > 0 && viewOption">
+            <v-row v-if="dados.length > 0 && viewOption">
                 <v-col cols="12" v-for="(item, id) in dados" :key="id">
                     <v-hover>
                         <template v-slot:default="{ isHovering, props }">
@@ -22,7 +32,10 @@
                                 :color="
                                     isHovering ? 'green-lighten-5' : undefined
                                 "
-                                @click.prevent="(itemSelecionado=item, dialogEditeItem=true)"
+                                @click.prevent="
+                                    ((itemSelecionado = item),
+                                    (dialogEditeItem = true))
+                                "
                             >
                                 <template #title>
                                     <v-row no-gutters>
@@ -87,8 +100,8 @@
                         v-for="(item, id) in dados"
                         :key="id"
                         @click.prevent="
-                            (projetoSelecionado = item),
-                                (dialogEditProjeto = true)
+                            ((projetoSelecionado = item),
+                            (dialogEditProjeto = true))
                         "
                     >
                         <td>{{ item.nome }}</td>
@@ -129,7 +142,7 @@
             v-model="dialogEditeItem"
             :itemSelecionado="itemSelecionado"
             @editProcess="editItem"
-            @closeEvent="(itemSelecionado=null, dialogEditeItem=false)"
+            @closeEvent="((itemSelecionado = null), (dialogEditeItem = false))"
         ></EditeItem>
         <NovoItem
             v-model="dialogNovoItem"

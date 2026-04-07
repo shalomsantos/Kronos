@@ -3,31 +3,25 @@
         v-model="viewOption"
         :title="'Bases Lista'"
         :location="location"
-        class="position-relative"
     >
-        <v-sheet
-            class="d-flex flex-column position-absolute ga-2 ma-3"
-            color="transparent"
-            v-if="location?.[1].title == 'Lista'"
-        >
+        <v-sheet class="d-flex ga-3 mb-3" color="transparent">
             <v-btn
                 class="text-none"
-                size="x-large"
-                icon="mdi-filter"
+                prepend-icon="mdi-filter"
                 color="green-darken-1"
+                text="Filtro"
                 @click="dialogFilter = !dialogFilter"
             />
             <v-btn
-                class="text-none rotate"
-                size="x-large"
-                icon="mdi-plus"
-                color="green-darken-1"
+                class="text-none"
                 prepend-icon="mdi-plus"
+                color="green-darken-1"
+                text="Adicionar"
                 @click="dialogNewBasezero = !dialogNewBasezero"
             />
         </v-sheet>
 
-        <ViewOptionMode v-model="viewOption" :dados="dados"/>
+        <ViewOptionMode v-model="viewOption" :dados="dados" />
 
         <!-- Dialogs -->
         <FiltroBase v-model="dialogFilter" @onFilter="filtrarBases" />
@@ -38,7 +32,7 @@
                     icon="mdi-close"
                     size="small"
                     @click.prevent="
-                        (dialogNewBasezero = false), endingProcess()
+                        ((dialogNewBasezero = false), endingProcess())
                     "
                 ></v-btn
             ></v-toolbar>
@@ -176,7 +170,7 @@ async function carregandoTodosProjetos() {
 async function insertBzero() {
     if (projetosValue.value == null || ano.value == null) {
         alert(
-            "Certifique-se de que os campos projeto e ano estão preenchidos."
+            "Certifique-se de que os campos projeto e ano estão preenchidos.",
         );
         return;
     }
@@ -244,7 +238,7 @@ async function filtrarBases(filtros) {
 </script>
 
 <style scoped>
-.position-absolute{
+.position-absolute {
     bottom: 0;
     right: 0;
 }

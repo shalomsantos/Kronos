@@ -147,12 +147,17 @@ import EmptyData from "@/Components/EmptyData.vue";
 import NormalFeedback from "@/Components/Feedback/NormalFeedback.vue";
 import { ref } from "vue";
 
+const props = defineProps({
+    subitens: { type: Object },
+    user: { type: Object },
+    preferencias: { type: Object },
+});
+
 const location = [
     { title: "Kronos", disabled: false, href: "/" },
-    { title: "Fornecedores", disabled: true },
+    { title: "Subitem", disabled: true },
     { title: "Lista", disabled: true },
 ];
-
 // Feedback var
 const feedback = ref({
     show: false,
@@ -160,6 +165,8 @@ const feedback = ref({
     color: "success",
     text: "",
 });
+const dialogNovoItem = ref(false);
+const viewOption = ref(props.preferencias?.listagem_menu ?? 0);
 </script>
 
 <style scoped></style>

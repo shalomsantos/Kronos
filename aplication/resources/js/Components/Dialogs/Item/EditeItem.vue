@@ -108,7 +108,7 @@
 
 <script setup>
 import NormalFeedback from "@/Components/Feedback/NormalFeedback.vue";
-import { onMounted, ref, computed } from "vue";
+import { ref, computed, watch } from "vue";
 import axios from "axios";
 
 const model = defineModel();
@@ -118,12 +118,17 @@ const props = defineProps({
     itemSelecionado: {},
 });
 
-onMounted(() => {
-});
-
 const itemId = computed(() => props.itemSelecionado?.id ?? null);
-const inputItemNome = computed(() => props.itemSelecionado?.nome ?? null);
+const inputItemNome = ref("");
 const dialogNovoSubitem = ref(false);
+
+watch(() => props.itemSelecionado,
+    (novo) => {
+        if (novo) {
+            itemId.value = props.itemSelecionado.id;
+            inputItemNome.value = props.itemSelecionado.nome;
+        }
+});
 
 const feedback = ref({
     show: false,

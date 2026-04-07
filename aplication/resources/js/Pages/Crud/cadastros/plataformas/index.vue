@@ -3,18 +3,33 @@
         v-model="viewOption"
         :location="location"
         title="Plataformas"
-        class="position-relative"
     >
-        <v-btn
-            @click.prevent="dialogNovaPlataforma = true"
-            class="text-none position-absolute rotate ma-3"
-            color="green-darken-1"
-            size="x-large"
-            icon="mdi-plus"
-        />
+        <v-sheet class="d-flex ga-3 mb-3" color="transparent">
+            <v-btn
+                @click.prevent="dialogNovaPlataforma = true"
+                class="text-none"
+                color="green-darken-1"
+                prepend-icon="mdi-plus"
+                text="Adicionar"
+            />
+            <v-text-field
+                v-model="search"
+                placeholder="Pesquisar aqui..."
+                variant="outlined"
+                density="compact"
+                hide-details="auto"
+                clearable
+            />
+        </v-sheet>
+
         <v-sheet class="bg-transparent">
-            <v-row class="bg-transparent" v-if="dados.length > 0 && viewOption">
-                <v-col cols="3" v-for="(item, id) in dados" :key="id">
+            <v-row>
+                <v-col
+                    cols="12"
+                    v-if="dados.length > 0 && viewOption"
+                    v-for="(item, id) in dados"
+                    :key="id"
+                >
                     <v-hover>
                         <template v-slot:default="{ isHovering, props }">
                             <v-card
@@ -31,50 +46,92 @@
                                         color="green-darken-1"
                                     ></v-icon>
                                 </template>
+                                <template #title>
+                                    <v-row no-gutters>
+                                        <v-col cols="10">
+                                            {{ item.nome }}
+                                        </v-col>
+                                        <v-col cols="2" class="text-right">
+                                            <p
+                                                class="text-body-2 text-disabled"
+                                            >
+                                                Criado em:
+                                                {{ isDate(item.created_at) }}
+                                            </p>
+                                            <p
+                                                class="text-body-2 text-disabled"
+                                            >
+                                                Por: {{ item.created_by.name }}
+                                            </p>
+                                        </v-col>
+                                    </v-row>
+                                </template>
+                                <template #item>
+                                    <v-sheet
+                                        class="d-flex flex-wrap ga-2 bg-transparent pt-3"
+                                    >
+                                        <v-chip
+                                            size="x-small"
+                                            color="green"
+                                            variant="flat"
+                                            v-for="(item1, id) in item.itens"
+                                            :key="id"
+                                        >
+                                            {{ item1.nome }}
+                                        </v-chip>
+                                    </v-sheet>
+                                </template>
                             </v-card>
                         </template>
                     </v-hover>
                 </v-col>
-            </v-row>
-            <v-table
-                class="bg-green-lighten-5"
-                density="compact"
-                v-else-if="dados.length > 0 && !viewOption"
-                striped="even"
-            >
-                <thead>
-                    <tr>
-                        <th class="text-left">Nome</th>
-                        <th class="text-left">Criado em</th>
-                        <th class="text-left">Criado por</th>
-                        <th class="text-left">***</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr
-                        v-for="(item, id) in dados"
-                        :key="id"
-                        @click.prevent="editePlataforma(item)"
+                <v-col cols="12" v-else-if="dados.length > 0 && !viewOption">
+                    <v-table
+                        class="bg-green-lighten-5"
+                        density="compact"
+                        striped="even"
                     >
-                        <td>{{ item.nome }}</td>
-                        <td>{{ isDate(item.created_at) }}</td>
-                        <td>
-                            <v-chip size="x-small" color="green" variant="flat">
-                                {{ item.created_by?.name }}
-                            </v-chip>
-                        </td>
-                        <td>
-                            <v-btn
-                                class="text-none me-1"
-                                icon="mdi-delete"
-                                density="comfortable"
-                                color="red-lighten-2"
-                            ></v-btn>
-                        </td>
-                    </tr>
-                </tbody>
-            </v-table>
-            <EmptyData v-else />
+                        <thead>
+                            <tr>
+                                <th class="text-left">Nome</th>
+                                <th class="text-left">Criado em</th>
+                                <th class="text-left">Criado por</th>
+                                <th class="text-left">***</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr
+                                v-for="(item, id) in dados"
+                                :key="id"
+                                @click.prevent="editePlataforma(item)"
+                            >
+                                <td>{{ item.nome }}</td>
+                                <td>{{ isDate(item.created_at) }}</td>
+                                <td>
+                                    <v-chip
+                                        size="x-small"
+                                        color="green"
+                                        variant="flat"
+                                    >
+                                        {{ item.created_by?.name }}
+                                    </v-chip>
+                                </td>
+                                <td>
+                                    <v-btn
+                                        class="text-none me-1"
+                                        icon="mdi-delete"
+                                        density="comfortable"
+                                        color="red-lighten-2"
+                                    ></v-btn>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </v-table>
+                </v-col>
+                <v-col cols="12" v-else>
+                    <EmptyData />
+                </v-col>
+            </v-row>
         </v-sheet>
 
         <!-- Dialogs -->
@@ -101,14 +158,12 @@ import axios from "axios";
 import NormalFeedback from "@/Components/Feedback/NormalFeedback.vue";
 
 const props = defineProps({
-    plataformas: {
-        type: Array
-    },
+    plataformas: { type: Object },
     user: {
-        type: Object
+        type: Object,
     },
     preferencias: {
-        type: Object
+        type: Object,
     },
 });
 // content var
@@ -164,7 +219,8 @@ async function insertPlataforma(plataforma) {
                 color: "error",
                 text: res.data.message,
             };
-        }).catch((err) => {
+        })
+        .catch((err) => {
             feedback.value = {
                 show: true,
                 timeout: 4000,

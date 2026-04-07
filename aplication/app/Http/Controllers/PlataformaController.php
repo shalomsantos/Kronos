@@ -6,7 +6,6 @@ use Illuminate\Http\Request;
 use Inertia\Inertia;
 use App\Models\Plataforma;
 use App\Models\PlataformaItemSubitemFornecedor;
-use App\Models\User;
 
 class PlataformaController extends Controller
 {
@@ -15,16 +14,30 @@ class PlataformaController extends Controller
      */
     public function index(Request $request)
     {
-        if($request->expectsJson()) return Plataforma::all();
+        $plataformas = Plataforma::with('itens')->get();
+        // $plataformas = PlataformaItemSubitemFornecedor::with('item')->get();
 
-        $usuario_logado = User::find(auth()->id());
-        $preferencias = $usuario_logado->preferencia;
+        if ($request->expectsJson()) {
+            return response()->json([
+                'success' => true,
+                'data' => $plataformas
+            ], 200);
+        }
+        try {
+            $usuario_logado = auth()->user();
+            $preferencias = $usuario_logado->preferencia;
 
-        return Inertia::render('Crud/cadastros/plataformas/index', [
-            'plataformas' => Plataforma::all(),
-            'user' => $usuario_logado,
-            'preferencias' => $preferencias,
-        ]);
+            return Inertia::render('Crud/cadastros/plataformas/index', [
+                'plataformas' => $plataformas,
+                'user' => $usuario_logado,
+                'preferencias' => $preferencias,
+            ]);
+        } catch (\Throwable $e) {
+            return response()->json([
+                'success' => false,
+                'message' => $e->getMessage()
+            ], 500);
+        }
     }
 
     /**
@@ -49,10 +62,10 @@ class PlataformaController extends Controller
                 'created_at' => now(),
                 // 'updated_at' =>
             ]);
-            if($plataformaStore){
+            if ($plataformaStore) {
                 return response()->json([
                     'success' => true,
-                    'message' => "Plataforma: ".$request['nome'].", criado com sucesso."
+                    'message' => "Plataforma: " . $request['nome'] . ", criado com sucesso."
                 ]);
             }
             return response()->json([
@@ -62,7 +75,7 @@ class PlataformaController extends Controller
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
-                'message' => "Erro ao tentar inserir a plataforma: ".$request['nome'].".",
+                'message' => "Erro ao tentar inserir a plataforma: " . $request['nome'] . ".",
                 'details' => $e->getMessage()
             ]);
         }
@@ -89,7 +102,31 @@ class PlataformaController extends Controller
      */
     public function update(Request $request, string $id)
     {
-        //
+        try {
+            $plataforma = Plataforma::find($id);
+            if (!$plataforma) {
+                return response()->json([
+                    'success' => false,
+                    'message' => "Plataforma com ID: $id não encontrada."
+                ], 404);
+            }
+            $plataforma->update([
+                'nome' => $request['nome'],
+                'descricao' => $request['descricao'],
+                'updated_by' => auth()->id(),
+                'updated_at' => now(),
+            ]);
+            return response()->json([
+                'success' => true,
+                'message' => "Plataforma: " . $request['nome'] . ", atualizada com sucesso."
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => "Erro ao tentar atualizar a plataforma: " . $request['nome'] . ".",
+                'details' => $e->getMessage()
+            ]);
+        }
     }
 
     /**
@@ -115,4 +152,5 @@ class PlataformaController extends Controller
             ]);
         }
     }
+    public function insertPlataformasAssociaveis() {}
 }

@@ -4,8 +4,8 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Subitem;
-use App\Models\ItemSubitem;
 use App\Models\SubitemFornecedor;
+use Inertia\Inertia;
 
 class SubitemController extends Controller
 {
@@ -14,12 +14,36 @@ class SubitemController extends Controller
      */
     public function index(Request $request)
     {
-        if ($request->expectsJson()) return Subitem::all();
+        $subitens = Subitem::with('fornecedores')->get();
+        
+        if ($request->expectsJson()) {
+            try {
+                return response()->json([
+                    'success' => true,
+                    'data' => $subitens
+                ], 200);
+            } catch (\Throwable $e) {
+                return response()->json([
+                    'success' => false,
+                    'message' => $e->getMessage()
+                ], 500);
+            }
+        }
 
-        if($request['search']){
-            return response()->json([
-                'search' => $request['search']
+        try {
+            $usuario_logado = auth()->user();
+            $preferencias = $usuario_logado->preferencia;
+
+            return Inertia::render('Crud/cadastros/subitens/index', [
+                'subitens' => $subitens,
+                'user' => $usuario_logado,
+                'preferencias' => $preferencias,
             ]);
+        } catch (\Throwable $e) {
+            return response()->json([
+                'success' => false,
+                'message' => $e->getMessage()
+            ], 500);
         }
     }
 

@@ -1,7 +1,7 @@
 <template>
     <DefaultLayout
         v-model="viewOption"
-        :title="'Subitens lista'"
+        :title="'fornecedores lista'"
         :location="location"
     >
         <v-sheet class="d-flex ga-3 mb-3" color="transparent">
@@ -24,9 +24,9 @@
         <v-row>
             <v-col
                 cols="12"
-                v-for="(item, id) in subitens"
+                v-for="(item, id) in fornecedores"
                 :key="id"
-                v-if="subitens.length > 0 && viewOption"
+                v-if="fornecedores.length > 0 && viewOption"
             >
                 <v-hover>
                     <template v-slot:default="{ isHovering, props }">
@@ -38,10 +38,16 @@
                                 (dialogEditeItem = true))
                             "
                         >
+                            <template v-slot:prepend>
+                                <v-icon
+                                    icon="mdi-clipboard-file"
+                                    color="green-darken-1"
+                                ></v-icon>
+                            </template>
                             <template #title>
                                 <v-row no-gutters>
                                     <v-col cols="10">
-                                        {{ item.nome }}
+                                        {{ item.razao_social }}
                                     </v-col>
                                     <v-col cols="2" class="text-right">
                                         <p class="text-body-2 text-disabled">
@@ -75,7 +81,7 @@
                     </template>
                 </v-hover>
             </v-col>
-            <v-col cols="12" v-else-if="subitens.length > 0 && !viewOption">
+            <v-col cols="12" v-else-if="fornecedores.length > 0 && !viewOption">
                 <v-table
                     class="bg-green-lighten-5"
                     density="compact"
@@ -84,7 +90,6 @@
                     <thead>
                         <tr>
                             <th class="text-left">Nome</th>
-                            <th class="text-left">Subitens</th>
                             <th class="text-left">Criado em</th>
                             <th class="text-left">Criado por</th>
                             <th class="text-left">***</th>
@@ -92,7 +97,7 @@
                     </thead>
                     <tbody>
                         <tr
-                            v-for="(item, id) in subitens"
+                            v-for="(item, id) in fornecedores"
                             :key="id"
                             @click.prevent="
                                 ((projetoSelecionado = item),
@@ -100,17 +105,6 @@
                             "
                         >
                             <td>{{ item.nome }}</td>
-                            <td>
-                                <v-chip
-                                    size="x-small"
-                                    color="green"
-                                    variant="flat"
-                                    v-for="(subitem, id) in item.subitens"
-                                    :key="id"
-                                >
-                                    {{ subitem.nome }}
-                                </v-chip>
-                            </td>
                             <td>{{ isDate(item.created_at) }}</td>
                             <td>
                                 <v-chip
@@ -146,6 +140,14 @@ import DefaultLayout from "@/Layouts/DefaultLayout.vue";
 import EmptyData from "@/Components/EmptyData.vue";
 import NormalFeedback from "@/Components/Feedback/NormalFeedback.vue";
 import { ref } from "vue";
+
+const props = defineProps({
+    fornecedores: {},
+    user: {},
+    preferencias: {},
+});
+
+const viewOption = ref(props.preferencias?.listagem_menu ?? 0);
 
 const location = [
     { title: "Kronos", disabled: false, href: "/" },

@@ -48,7 +48,7 @@ class BzeroController extends Controller
                 : $start->copy()->endOfDay();
             dd($start, $end);
             $query->whereBetween('created_at', [$start, $end]);
-        }else if(isset($validated['created_at_start']) && !isset($validated['created_at_end'])){
+        } else if (isset($validated['created_at_start']) && !isset($validated['created_at_end'])) {
             $start = Carbon::parse($validated['created_at_start'])->startOfDay();
             $end = $start->copy()->endOfDay();
             $query->whereBetween('created_at', [$start, $end]);
@@ -76,14 +76,23 @@ class BzeroController extends Controller
      */
     public function index(Request $request)
     {
-        if ($request->expectsJson()) return Bzero::all();
+        try {
+            $bzeros = Bzero::all();
+            
+            if ($request->expectsJson()) return response()->json(['success' => true, 'data' => $bzeros], 200);
 
-        return Inertia::render('Dashboard', [
-            'canLogin' => Route::has('login'),
-            'canRegister' => Route::has('register'),
-            'laravelVersion' => Application::VERSION,
-            'phpVersion' => PHP_VERSION,
-        ]);
+            return Inertia::render('Dashboard', [
+                'canLogin' => Route::has('login'),
+                'canRegister' => Route::has('register'),
+                'laravelVersion' => Application::VERSION,
+                'phpVersion' => PHP_VERSION,
+            ]);
+        } catch (\Throwable $e) {
+            return response()->json([
+                'success' => false,
+                'message' => $e->getMessage(),
+            ], 500);
+        }
     }
 
     /**
@@ -110,7 +119,7 @@ class BzeroController extends Controller
                 'created_at' => now(),
                 // 'updated_at' =>
             ]);
-            if($bzeroStore){
+            if ($bzeroStore) {
                 return response()->json([
                     'success' => true,
                     'message' => "base criada com sucesso."
@@ -167,7 +176,7 @@ class BzeroController extends Controller
         try {
             $preferencia = Preferencia::updateOrCreate([
                 'user_id' => $request->input('user_id')
-            ],[
+            ], [
                 'listagem_menu' => $request->input('listagem_menu')
             ]);
 

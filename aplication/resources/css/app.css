@@ -8,12 +8,6 @@
 .work-sans {
   font-family: "Work Sans", sans-serif;
 }
-@keyframes rotation {
-    to { transform: rotate(360deg); }
-}
-.rotate{
-    animation: rotation 8s linear infinite;
-}
 thead{
     background-color: #4CAF50;
     font-weight: 800;

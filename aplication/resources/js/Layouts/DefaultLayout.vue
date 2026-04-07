@@ -10,13 +10,16 @@
             color="green-darken-4"
         >
             <v-list nav density="compact">
-                <v-list-item
-                    link
-                    href="/"
-                    class="text-center"
-                >
+                <v-list-item link href="/" class="text-center">
                     <template v-slot:title>
-                        <v-icon icon="mdi-alpha-k" :style="rail?'font-size: 2vw;':'transition: 250ms;font-size: 5vw;'"></v-icon>
+                        <v-icon
+                            icon="mdi-alpha-k"
+                            :style="
+                                rail
+                                    ? 'font-size: 2vw;'
+                                    : 'transition: 250ms;font-size: 5vw;'
+                            "
+                        ></v-icon>
                     </template>
                 </v-list-item>
                 <v-divider></v-divider>
@@ -109,7 +112,10 @@
                 <v-app-bar-nav-icon @click="rail = !rail"></v-app-bar-nav-icon>
             </template>
             <template v-slot:title>
-                <v-sheet class="d-flex align-center justify-space-between" color="transparent">
+                <v-sheet
+                    class="d-flex align-center justify-space-between"
+                    color="transparent"
+                >
                     <v-breadcrumbs :items="location">
                         <template v-slot:divider>
                             <v-icon
@@ -121,27 +127,29 @@
                             <p class="text-subtitle-1">{{ item.title }}</p>
                         </template>
                     </v-breadcrumbs>
-                    <v-sheet class="d-flex align-center ga-3" color="transparent">
+                    <v-sheet
+                        class="d-flex align-center ga-3"
+                        color="transparent"
+                    >
                         <!-- <v-switch prepend-icon="mdi-account" hide-details color="green-lighten-4"></v-switch> -->
-                        <v-radio-group
+                        <v-btn-toggle
                             v-if="props.modelValue != null"
                             :disabled="onLoad"
                             :model-value="props.modelValue"
                             @update:model-value="onViewChange"
                             class="me-3"
-                            inline
-                            hide-details
+                            variant="outlined"
+                            divided
+                            mandatory
                         >
-                            <v-radio
-                                prepend-icon="mdi-account"
-                                label="Tabela"
-                                :value="0"
-                            ></v-radio>
-                            <v-radio
-                                label="Cards"
-                                :value="1"
-                            ></v-radio>
-                        </v-radio-group>
+                            <v-btn :value="0" class="text-white" density="compact" title="Exibição por tabelas">
+                                <v-icon icon="mdi-table"></v-icon>
+                            </v-btn>
+
+                            <v-btn :value="1" class="text-white" density="compact" title="Exibição por cartões">
+                                <v-icon icon="mdi-card-multiple"></v-icon>
+                            </v-btn>
+                        </v-btn-toggle>
                     </v-sheet>
                 </v-sheet>
             </template>
@@ -152,7 +160,7 @@
                 <slot />
             </v-sheet>
         </v-main>
-        
+
         <NormalFeedback v-model="feedback" />
     </v-layout>
 </template>
@@ -167,7 +175,7 @@ const props = defineProps({
     modelValue: Number,
     title: {
         type: String,
-        default: 'None'
+        default: "None",
     },
     location: {},
 });
@@ -180,11 +188,11 @@ const rail = ref(false);
 const menu = ref(false);
 
 let cadMenuOptions = [
-    ["Projeto", "mdi-apps", route('projeto.index')],
-    ["Plataforma", "mdi-apps", route('plataforma.index')],
+    ["Projeto", "mdi-apps", route("projeto.index")],
+    ["Plataforma", "mdi-apps", route("plataforma.index")],
     ["Item", "mdi-apps", route("item.index")],
-    ["Subitem", "mdi-apps", "/"],
-    ["Fornecedor", "mdi-apps", "/"],
+    ["Subitem", "mdi-apps", route("subitem.index")],
+    ["Fornecedor", "mdi-apps", route("fornecedor.index")],
     ["Colaborador", "mdi-apps", "/"],
     ["Intermediário", "mdi-apps", "/"],
     ["Setor", "mdi-apps", "/"],
@@ -199,35 +207,37 @@ const feedback = ref({
     text: "",
 });
 
-async function onViewChange(value){
-    onLoad.value=true
+async function onViewChange(value) {
+    onLoad.value = true;
 
     let data = {
         user_id: user.id,
-        listagem_menu: value
-    }
+        listagem_menu: value,
+    };
 
-    await axios.post(route("preferencia.modify"), data)
-    .then((res) => {
-        if(res.data.success){
-            emit("update:modelValue", value);
-        }else{
+    await axios
+        .post(route("preferencia.modify"), data)
+        .then((res) => {
+            if (res.data.success) {
+                emit("update:modelValue", value);
+            } else {
+                feedback.value = {
+                    show: true,
+                    timeout: 4000,
+                    color: "error",
+                    text: res.data.message ?? res.data,
+                };
+            }
+            onLoad.value = false;
+        })
+        .catch((err) => {
             feedback.value = {
                 show: true,
                 timeout: 4000,
                 color: "error",
-                text: res.data.message ?? res.data,
+                text: err,
             };
-        }
-        onLoad.value=false
-    }).catch((err) => {
-        feedback.value = {
-            show: true,
-            timeout: 4000,
-            color: "error",
-            text: err,
-        };
-        onLoad.value=false
-    })
+            onLoad.value = false;
+        });
 }
 </script>
