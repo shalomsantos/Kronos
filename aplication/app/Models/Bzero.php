@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 
 class Bzero extends Model
 {
@@ -24,6 +25,12 @@ class Bzero extends Model
     {
         return $this->belongsTo(Projeto::class);
     }
+
+    public function plataformas(): BelongsToMany
+    {
+        return $this->belongsToMany(Bzero::class, 'bzero_plataforma', 'bzero_id', 'plataforma_id');
+    }
+
     public function status(): BelongsTo
     {
         return $this->belongsTo(Status::class);

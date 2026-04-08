@@ -159,7 +159,6 @@ const fornecedoresFiltrados = computed(() => {
     const termo = search.value.toLowerCase();
 
     return props.fornecedores.data.filter((item) => {
-        // Busca na Razão Social (Cards) ou Nome (Tabela)
         const razao = item.razao_social?.toLowerCase() || "";
         const nome = item.nome?.toLowerCase() || "";
 

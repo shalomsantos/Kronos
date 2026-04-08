@@ -4,24 +4,161 @@
         :title="'Bases Lista'"
         :location="location"
     >
-        <v-sheet class="d-flex ga-3 mb-3" color="transparent">
+        <v-sheet
+            class="d-flex ga-3 ma-5 position-absolute"
+            color="transparent"
+            style="z-index: 1"
+        >
             <v-btn
                 class="text-none"
-                prepend-icon="mdi-filter"
+                icon="mdi-filter"
                 color="green-darken-1"
+                size="x-large"
                 text="Filtro"
                 @click="dialogFilter = !dialogFilter"
             />
             <v-btn
                 class="text-none"
-                prepend-icon="mdi-plus"
+                icon="mdi-plus"
+                size="x-large"
                 color="green-darken-1"
                 text="Adicionar"
                 @click="dialogNewBasezero = !dialogNewBasezero"
             />
         </v-sheet>
-
-        <ViewOptionMode v-model="viewOption" :dados="dados" />
+        <v-row>
+            <v-col cols="6" v-if="dados.data.length > 0 && viewOption" v-for="(item, id) in dados.data" :key="id">
+                <v-hover>
+                    <template v-slot:default="{ isHovering, props }">
+                        <v-card
+                            v-bind="props"
+                            :color="
+                                isHovering ? 'teal-lighten-5' : undefined
+                            "
+                        >
+                            <template v-slot:title>
+                                <v-btn
+                                    variant="outlined"
+                                    color="green-darken-1"
+                                >
+                                    <p class="text-h6 text-green-darken-1">
+                                        #{{ item.id }}
+                                    </p>
+                                    <v-icon
+                                        icon="mdi-text-box"
+                                        color="green-darken-1"
+                                    ></v-icon>
+                                </v-btn>
+                                {{ item.projeto.nome }}
+                            </template>
+                            <template v-slot:item>
+                                <v-row no-gutters class="pt-2">
+                                    <v-col cols="4">
+                                        <p class="text-body-2">Status</p>
+                                        <div>
+                                            <p
+                                                class="text-body-2 text-disabled"
+                                            >
+                                                {{ item.status.nome }}
+                                            </p>
+                                        </div>
+                                    </v-col>
+                                    <v-col cols="4">
+                                        <p class="text-body-2">Ano</p>
+                                        <div>
+                                            <p
+                                                class="text-body-2 text-disabled"
+                                            >
+                                                {{ item.ano }}
+                                            </p>
+                                        </div>
+                                    </v-col>
+                                    <v-col cols="4">
+                                        <p class="text-body-2">Criado em</p>
+                                        <div>
+                                            <p
+                                                class="text-body-2 text-disabled"
+                                            >
+                                                {{
+                                                    isDate(item.created_at)
+                                                }}
+                                            </p>
+                                        </div>
+                                    </v-col>
+                                    <v-col cols="12">
+                                        <v-chip
+                                            size="x-small"
+                                            color="green"
+                                            variant="flat"
+                                        >
+                                            {{ item.created_by.name }}
+                                        </v-chip>
+                                    </v-col>
+                                </v-row>
+                            </template>
+                        </v-card>
+                    </template>
+                </v-hover>
+            </v-col>
+            <v-col cols="12" v-else-if="dados.data.length > 0 && !viewOption">
+                <v-table
+                    density="compact"
+                    class="bg-green-lighten-5"
+                    striped="even"
+                >
+                    <thead>
+                        <tr>
+                            <th class="text-left">Id</th>
+                            <th class="text-left">Projeto</th>
+                            <th class="text-left">Status</th>
+                            <th class="text-left">Ano</th>
+                            <th class="text-left">Criado em</th>
+                            <th class="text-left">Criador por</th>
+                            <th class="text-left">***</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr v-for="(item, id) in dados" :key="id">
+                            <td>{{ item.id }}</td>
+                            <td>{{ item.projeto.nome }}</td>
+                            <td>{{ item.status.nome }}</td>
+                            <td>{{ item.ano }}</td>
+                            <td>{{ isDate(item.created_at) }}</td>
+                            <td>
+                                <v-chip size="x-small" color="green" variant="flat">
+                                    {{ item.created_by.name }}
+                                </v-chip>
+                            </td>
+                            <td>
+                                <v-btn
+                                    class="text-none me-1"
+                                    icon="mdi-delete"
+                                    density="compact"
+                                    color="red-lighten-2"
+                                ></v-btn>
+                            </td>
+                        </tr>
+                    </tbody>
+                </v-table>
+            </v-col>
+            <v-col cols="12" v-else>
+                <EmptyData />
+            </v-col>
+            <v-col cols="12">
+                <v-pagination
+                    v-model="bzeros.current_page"
+                    :length="bzeros.last_page"
+                    :total-visible="4"
+                    @update:model-value="updatePage"
+                    class="position-absolute bottom-0 mb-3"
+                    style="left: 50%; transform: translateX(-50px); z-index: 1"
+                    active-color="green-darken-4"
+                    color="green-lighten-1"
+                    density="comfortable"
+                    variant="flat"
+                ></v-pagination>
+            </v-col>
+        </v-row>
 
         <!-- Dialogs -->
         <FiltroBase v-model="dialogFilter" @onFilter="filtrarBases" />
@@ -102,32 +239,35 @@
 </template>
 
 <script setup>
-import DefaultLayout from "@/Layouts/DefaultLayout.vue";
 import NormalFeedback from "@/Components/Feedback/NormalFeedback.vue";
 import FiltroBase from "@/Components/Dialogs/Bzero/FiltroBase.vue";
-import { usePage } from "@inertiajs/vue3";
-import { ref, onMounted } from "vue";
+import DefaultLayout from "@/Layouts/DefaultLayout.vue";
+import { ref, onMounted, computed } from "vue";
+import { router } from "@inertiajs/vue3";
 import axios from "axios";
-import ViewOptionMode from "@/Components/Bases/ViewOptionMode.vue";
 
-// <===> Context Var <===>
+const props = defineProps({
+    bzeros: Object,
+    user: Object,
+    preferencias: Object,
+});
+
 const location = [
     { title: "Kronos", disabled: false, href: "/" },
     { title: "Lista", disabled: true },
 ];
-const user = usePage().props.auth.user;
-const viewOption = ref(user?.preferencia?.listagem_menu ?? 0);
-const dados = ref([]);
-// <===> Form and Options <===>
+
+const viewOption = ref(props.preferencias?.listagem_menu ?? 0);
+
+const dados = computed(() => props.bzeros);
+
 const projetosValue = ref(null);
 const projetosOptions = ref([]);
 const ano = ref(null);
 const inputDescricao = ref(null);
 
-// <===> Default Load Page <===>
 onMounted(() => {
     carregandoTodosProjetos();
-    carregandoTodosBases();
 });
 
 // Feedback var
@@ -138,23 +278,11 @@ const feedback = ref({
     text: "",
 });
 
-// <===> Dialogs <===>
+// Dialogs
 const dialogFilter = ref(false);
 const dialogNewBasezero = ref(false);
 
-// <===> Functions <===>
-async function carregandoTodosBases() {
-    await axios
-        .get(route("bzero.index"), {
-            headers: {
-                Accept: "application/json",
-            },
-        })
-        .then((res) => {
-            dados.value = res.data;
-        })
-        .catch((err) => console.log(err));
-}
+// Functions
 async function carregandoTodosProjetos() {
     await axios
         .get(route("projeto.index"), {
@@ -230,11 +358,20 @@ async function filtrarBases(filtros) {
     await axios
         .post(route("bzero.filtro"), filtros)
         .then((res) => {
-            dados.value = res.data.data ?? [];
+            dados.data.value = res.data.data ?? [];
             dialogFilter.value = false;
         })
         .catch((err) => console.log(err));
 }
+const updatePage = (page) => {
+    router.get(route("bzero.index"),
+        { page: page },
+        {
+            preserveState: true,
+            preserveScroll: true,
+        },
+    );
+};
 </script>
 
 <style scoped>

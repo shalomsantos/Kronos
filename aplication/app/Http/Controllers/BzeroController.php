@@ -77,15 +77,17 @@ class BzeroController extends Controller
     public function index(Request $request)
     {
         try {
-            $bzeros = Bzero::all();
+            $bzeros = Bzero::with('plataformas')->paginate(6);
             
             if ($request->expectsJson()) return response()->json(['success' => true, 'data' => $bzeros], 200);
 
+            $usuario_logado = auth()->user();
+            $preferencias = $usuario_logado->preferencia;
+
             return Inertia::render('Dashboard', [
-                'canLogin' => Route::has('login'),
-                'canRegister' => Route::has('register'),
-                'laravelVersion' => Application::VERSION,
-                'phpVersion' => PHP_VERSION,
+                'bzeros' => $bzeros,
+                'user' => $usuario_logado,
+                'preferencias' => $preferencias
             ]);
         } catch (\Throwable $e) {
             return response()->json([
