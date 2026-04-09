@@ -55,6 +55,38 @@
                             max-height="340"
                             striped="even"
                         >
+                            <thead>
+                                <tr>
+                                    <th class="text-left">Nome</th>
+                                    <th class="text-left">Criado em</th>
+                                    <th class="text-left">Criador por</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr
+                                    v-for="(
+                                        item, id
+                                    ) in itemSelecionado?.subitens"
+                                    :key="id"
+                                >
+                                    <td>{{ item.nome }}</td>
+                                    <td>{{ isDate(item.created_at) }}</td>
+                                    <td>
+                                        <v-chip
+                                            size="x-small"
+                                            color="green"
+                                            variant="flat"
+                                        >
+                                            {{ item.created_by.name }}
+                                        </v-chip>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </v-table>
+                    </v-col>
+                </v-row>
+            </v-card-item>
+        </v-card>
         <!-- Dialogs -->
         <v-dialog v-model="dialogNovoSubitem" max-width="500">
             <v-toolbar title="Novo subitem" density="compact">
