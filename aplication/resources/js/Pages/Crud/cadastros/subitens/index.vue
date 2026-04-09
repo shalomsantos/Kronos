@@ -152,8 +152,7 @@
                                 clearable
                             ></v-text-field>
                         </v-col>
-                        <v-col cols="12">
-                            <!-- {{ optionsFornecedor }} -->
+                        <v-col cols="12" class="d-flex ga-3">
                             <v-select
                                 v-model="valueFornecedor"
                                 label="Fornecedor"
@@ -165,6 +164,12 @@
                                 hide-details="auto"
                                 clearable
                             ></v-select>
+                            <v-btn
+                                class="text-none rounded"
+                                color="green-darken-1"
+                                icon="mdi-plus"
+                                @click.prevent="updatePlataforma()"
+                            />
                         </v-col>
                     </v-row>
                 </v-col>
@@ -172,8 +177,7 @@
                     <v-btn
                         class="text-none w-100"
                         color="green-darken-1"
-                        size="large"
-                        prepend-icon="mdi-update"
+                        prepend-icon="mdi-playlist-plus"
                         @click.prevent="updatePlataforma()"
                         >Atualizar</v-btn
                     >
@@ -251,7 +255,7 @@ const location = [
 
 onMounted(() => {
     carregandoFornecedores();
-})
+});
 
 const dialogEditSubitem = ref(false);
 const subitemSelecionado = ref(null);
@@ -267,11 +271,13 @@ const feedback = ref({
 });
 
 const carregandoFornecedores = async () => {
-    await axios.get(route("fornecedor.index"))
-    .then((res) =>{
-        optionsFornecedor.value = res.data.data
-    }).catch((err) => console.error(err))
-}
+    await axios
+        .get(route("fornecedor.index"))
+        .then((res) => {
+            optionsFornecedor.value = res.data.data;
+        })
+        .catch((err) => console.error(err));
+};
 </script>
 
 <style scoped></style>

@@ -1,90 +1,147 @@
 <template>
-    <v-dialog v-model="model" max-width="50vw" height="100vh">
+    <v-dialog v-model="model" max-width="80vw">
         <v-card rounded="0" class="overflow-y-hidden w-100 h-100">
-            <v-toolbar title="Edição do item" density="compact">
+            <v-toolbar
+                title="Editar ou vincular subitens a este item?"
+                density="compact"
+            >
                 <v-btn
                     icon="mdi-close"
                     size="small"
                     @click="$emit('closeEvent')"
                 />
             </v-toolbar>
-            <v-card-item class="d-flex ma-0 pa-0">
-                <v-row class="px-4 pt-4">
-                    <v-col cols="6">
-                        <v-text-field
-                            v-model="inputItemNome"
-                            label="Nome do item*"
-                            variant="outlined"
-                            density="compact"
-                            hide-details="auto"
-                            clearable
-                        ></v-text-field>
-                    </v-col>
-                </v-row>
-                <v-row class="px-4">
-                    <v-col cols="6" class="d-flex ga-3">
-                        <v-select
-                            label="Subitens"
-                            :items="['Ativo', 'Inativo']"
-                            variant="outlined"
-                            density="compact"
-                            hide-details="auto"
-                            clearable
-                        ></v-select>
-                        <v-btn
-                            class="text-none rounded"
-                            color="green-darken-1"
-                            icon="mdi-plus"
-                            @click.prevent="dialogNovoSubitem = true"
-                        />
-                    </v-col>
-                    <v-col>
-                        <v-btn
-                            class="text-none w-100"
-                            color="green-darken-1"
-                            size="large"
-                            prepend-icon="mdi-playlist-plus"
-                            @click="carregandoSubitensPeloItemSelecionado"
-                            text="Adicionar"
-                        />
-                    </v-col>
-                    <v-col cols="12">
-                        <v-table
-                            density="compact"
-                            class="bg-green-lighten-5 overflow-y-auto"
-                            max-height="340"
-                            striped="even"
-                        >
-                            <thead>
-                                <tr>
-                                    <th class="text-left">Nome</th>
-                                    <th class="text-left">Criado em</th>
-                                    <th class="text-left">Criador por</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr
-                                    v-for="(
-                                        item, id
-                                    ) in itemSelecionado?.subitens"
-                                    :key="id"
+            <v-card-item class="ma-0 pa-0">
+                <v-sheet class="pa-4">
+                    <v-row dense>
+                        <v-col cols="4">
+                            <v-row>
+                                <v-col
+                                    class="d-flex align-center ga-3 mb-0 pb-0"
                                 >
-                                    <td>{{ item.nome }}</td>
-                                    <td>{{ isDate(item.created_at) }}</td>
-                                    <td>
-                                        <v-chip
-                                            size="x-small"
-                                            color="green"
-                                            variant="flat"
-                                        >
-                                            {{ item.created_by.name }}
-                                        </v-chip>
-                                    </td>
-                                </tr>
-                            </tbody>
-                        </v-table>
-                    </v-col>
-                </v-row>
+                                    <h4 class="text-green-darken-4">
+                                        {{ inputItemNome }}
+                                    </h4>
+                                    <v-btn
+                                        class="rounded"
+                                        icon="mdi-pencil"
+                                        variant="tonal"
+                                        size="x-small"
+                                        color="green-darken-4"
+                                        @click.prevent
+                                    ></v-btn>
+
+                                    <!-- <v-text-field
+                                        v-model="inputItemNome"
+                                        label="Nome do item*"
+                                        variant="outlined"
+                                        density="compact"
+                                        hide-details="auto"
+                                        clearable
+                                    ></v-text-field> -->
+                                </v-col>
+                                <v-col cols="12">
+                                    <v-combobox
+                                        v-model="inputSubitem"
+                                        :items="[
+                                            'Demostrativo um',
+                                            'Demostrativo Dois',
+                                            'Demostrativo três',
+                                        ]"
+                                        label="Escolher ou inserir subitem"
+                                        variant="outlined"
+                                        density="compact"
+                                        hide-details
+                                        item-title="nome"
+                                        clearable
+                                    >
+                                        <template v-slot:prepend-item>
+                                            <v-divider></v-divider>
+                                            <v-list-item
+                                                title="Deseja inserir um novo subitem?"
+                                                subtitle="Clique para cadastrar um novo"
+                                                prepend-icon="mdi-plus-circle-outline"
+                                                color="primary"
+                                                @click="
+                                                    dialogNovoSubitem = true
+                                                "
+                                            >
+                                            </v-list-item>
+                                            <v-divider></v-divider>
+                                        </template>
+
+                                        <template v-slot:no-data>
+                                            <v-list-item
+                                                title="Nenhum item encontrado"
+                                                subtitle="Clique aqui para criar um novo"
+                                                @click="
+                                                    dialogNovoSubitem = true
+                                                "
+                                            ></v-list-item>
+                                        </template>
+                                    </v-combobox>
+                                </v-col>
+                                <v-col cols="12">
+                                    <v-btn
+                                        class="text-none w-100"
+                                        color="green-darken-1"
+                                        prepend-icon="mdi-playlist-plus"
+                                        @click="
+                                            carregandoSubitensPeloItemSelecionado
+                                        "
+                                        text="Adicionar"
+                                    />
+                                </v-col>
+                            </v-row>
+                        </v-col>
+                        <v-col cols="8">
+                            <v-table
+                                density="compact"
+                                class="overflow-y-auto"
+                                height="200"
+                                striped="even"
+                            >
+                                <thead>
+                                    <tr>
+                                        <th class="text-left">Nome</th>
+                                        <th class="text-left">Criado em</th>
+                                        <th class="text-left">Criador por</th>
+                                        <th class="text-left">***</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr
+                                        v-for="(
+                                            item, id
+                                        ) in itemSelecionado?.subitens"
+                                        :key="id"
+                                    >
+                                        <td>{{ item.nome }}</td>
+                                        <td>{{ isDate(item.created_at) }}</td>
+                                        <td>
+                                            <v-chip
+                                                size="x-small"
+                                                color="green"
+                                                variant="flat"
+                                            >
+                                                {{ item.created_by.name }}
+                                            </v-chip>
+                                        </td>
+                                        <td>
+                                            <v-btn
+                                                icon="mdi-delete"
+                                                variant="text"
+                                                density="compact"
+                                                color="red"
+                                                @click.prevent="deleteItem()"
+                                            ></v-btn>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </v-table>
+                        </v-col>
+                    </v-row>
+                </v-sheet>
             </v-card-item>
         </v-card>
         <!-- Dialogs -->
@@ -97,6 +154,29 @@
                 />
             </v-toolbar>
             <v-card rounded="0" title="Shalom pereira"> </v-card>
+        </v-dialog>
+        <v-dialog v-model="confirmation" max-width="500">
+            <v-toolbar title="Confirmar operação?" density="compact"> </v-toolbar>
+            <v-card rounded="0" title="Lorem ipsum">
+                <v-card-item>
+                    Lorem, ipsum dolor sit amet consectetur adipisicing elit.
+                </v-card-item>
+                <v-card-actions>
+                    <v-btn
+                        size="small"
+                        text="Confirmar"
+                        color="success"
+                        @click.prevent="confirmation = false"
+                    />
+                    <v-spacer></v-spacer>
+                    <v-btn
+                        size="small"
+                        text="cancelar"
+                        color="red"
+                        @click.prevent="confirmation = false"
+                    />
+                </v-card-actions>
+            </v-card>
         </v-dialog>
         <!-- Feedback -->
         <NormalFeedback v-model="feedback" />
@@ -118,6 +198,8 @@ const props = defineProps({
 const itemId = computed(() => props.itemSelecionado?.id ?? null);
 const inputItemNome = ref("");
 const dialogNovoSubitem = ref(false);
+const confirmation = ref(false);
+const inputSubitem = ref([]);
 
 watch(
     () => props.itemSelecionado,
@@ -145,7 +227,9 @@ async function carregandoSubitensPeloItemSelecionado() {
         })
         .catch((err) => console.log(err));
 }
-
+function deleteItem() {
+    confirmation.value = true;
+}
 // function editEvent() {
 //     if (!inputPlataforma.value) {
 //         feedback.value = {
