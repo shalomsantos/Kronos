@@ -8,10 +8,9 @@
                     @click="$emit('closeEvent')"
                 />
             </v-toolbar>
-            <v-card-item class="d-flex ma-0 pa-2">
-                <v-row class="ma-0 pa-2">
-                    <v-col cols="12">
-                        <!-- :model-value="props.itemSelecionado?.nome" -->
+            <v-card-item class="d-flex ma-0 pa-0">
+                <v-row class="px-4 pt-4">
+                    <v-col cols="6">
                         <v-text-field
                             v-model="inputItemNome"
                             label="Nome do item*"
@@ -21,7 +20,9 @@
                             clearable
                         ></v-text-field>
                     </v-col>
-                    <v-col cols="6">
+                </v-row>
+                <v-row class="px-4">
+                    <v-col cols="6" class="d-flex ga-3">
                         <v-select
                             label="Subitens"
                             :items="['Ativo', 'Inativo']"
@@ -30,26 +31,22 @@
                             hide-details="auto"
                             clearable
                         ></v-select>
-                    </v-col>
-                    <v-col cols="3">
                         <v-btn
-                            class="text-none"
+                            class="text-none rounded"
                             color="green-darken-1"
-                            size="large"
-                            prepend-icon="mdi-plus"
+                            icon="mdi-plus"
                             @click.prevent="dialogNovoSubitem = true"
-                            >Criar novo</v-btn
-                        >
+                        />
                     </v-col>
-                    <v-col cols="3">
+                    <v-col>
                         <v-btn
-                            class="text-none"
+                            class="text-none w-100"
                             color="green-darken-1"
                             size="large"
                             prepend-icon="mdi-playlist-plus"
                             @click="carregandoSubitensPeloItemSelecionado"
-                            >Adicionar</v-btn
-                        >
+                            text="Adicionar"
+                        />
                     </v-col>
                     <v-col cols="12">
                         <v-table
@@ -122,13 +119,15 @@ const itemId = computed(() => props.itemSelecionado?.id ?? null);
 const inputItemNome = ref("");
 const dialogNovoSubitem = ref(false);
 
-watch(() => props.itemSelecionado,
+watch(
+    () => props.itemSelecionado,
     (novo) => {
         if (novo) {
             itemId.value = props.itemSelecionado.id;
             inputItemNome.value = props.itemSelecionado.nome;
         }
-});
+    },
+);
 
 const feedback = ref({
     show: false,
@@ -138,12 +137,13 @@ const feedback = ref({
 });
 
 async function carregandoSubitensPeloItemSelecionado() {
-    console.log(itemId.value)
+    console.log(itemId.value);
     await axios
         .post(route("subitem.subitensAssociaveis"), { itemId: itemId.value })
         .then((res) => {
             console.log(res);
-        }).catch((err) => console.log(err));
+        })
+        .catch((err) => console.log(err));
 }
 
 // function editEvent() {

@@ -2,54 +2,10 @@
 @tailwind components;
 @tailwind utilities; */
 @import url('https://fonts.googleapis.com/css2?family=Nunito:ital,wght@0,200..1000;1,200..1000&family=Work+Sans:ital,wght@0,100..900;1,100..900&display=swap');
-.nunito {
-  font-family: "Nunito", sans-serif;
-}
-.work-sans {
-  font-family: "Work Sans", sans-serif;
-}
 html{
     overflow: hidden !important;
-}
-thead{
-    background-color: #4CAF50;
-    font-weight: 800;
-    font-family: "Nunito", sans-serif;
-    color: white;
+    font-family: "Work Sans", sans-serif;
 }
 tbody tr:hover {
-    background-color: #d1d1d1;
-}
-.hyper-t, .hyper-b, .hyper-l, .hyper-r{
-    position: relative;
-}
-.hyper-t::before, .hyper-b::before, .hyper-l::before, .hyper-r::before{
-    content: '';
-    position: absolute;
-    border-radius: 1rem;
-    background-color: #37474F;
-}
-.hyper-t::before{
-    width: 100%;
-    height: 0.2rem;
-    top: 0;
-    left: 0;
-}
-.hyper-b::before{
-    width: 100%;
-    height: 0.2rem;
-    bottom: 0;
-    left: 0;
-}
-.hyper-l::before{
-    width: 0.2rem;
-    height: 100%;
-    top: 0;
-    left: 0;
-}
-.hyper-r::before{
-    width: 0.2rem;
-    height: 100%;
-    bottom: 0;
-    right: 0;
+    background-color: #C8E6C9;
 }

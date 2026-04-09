@@ -27,14 +27,17 @@
             />
         </v-sheet>
         <v-row>
-            <v-col cols="6" v-if="dados.data.length > 0 && viewOption" v-for="(item, id) in dados.data" :key="id">
+            <v-col
+                cols="6"
+                v-if="dados.data.length > 0 && viewOption"
+                v-for="(item, id) in dados.data"
+                :key="id"
+            >
                 <v-hover>
                     <template v-slot:default="{ isHovering, props }">
                         <v-card
                             v-bind="props"
-                            :color="
-                                isHovering ? 'teal-lighten-5' : undefined
-                            "
+                            :color="isHovering ? 'teal-lighten-5' : undefined"
                         >
                             <template v-slot:title>
                                 <v-btn
@@ -79,9 +82,7 @@
                                             <p
                                                 class="text-body-2 text-disabled"
                                             >
-                                                {{
-                                                    isDate(item.created_at)
-                                                }}
+                                                {{ isDate(item.created_at) }}
                                             </p>
                                         </div>
                                     </v-col>
@@ -125,7 +126,11 @@
                             <td>{{ item.ano }}</td>
                             <td>{{ isDate(item.created_at) }}</td>
                             <td>
-                                <v-chip size="x-small" color="green" variant="flat">
+                                <v-chip
+                                    size="x-small"
+                                    color="green"
+                                    variant="flat"
+                                >
                                     {{ item.created_by.name }}
                                 </v-chip>
                             </td>
@@ -144,14 +149,12 @@
             <v-col cols="12" v-else>
                 <EmptyData />
             </v-col>
-            <v-col cols="12">
+            <v-col cols="12" class="d-flex justify-center">
                 <v-pagination
                     v-model="bzeros.current_page"
                     :length="bzeros.last_page"
                     :total-visible="4"
                     @update:model-value="updatePage"
-                    class="position-absolute bottom-0 mb-3"
-                    style="left: 50%; transform: translateX(-50px); z-index: 1"
                     active-color="green-darken-4"
                     color="green-lighten-1"
                     density="comfortable"
@@ -364,7 +367,8 @@ async function filtrarBases(filtros) {
         .catch((err) => console.log(err));
 }
 const updatePage = (page) => {
-    router.get(route("bzero.index"),
+    router.get(
+        route("bzero.index"),
         { page: page },
         {
             preserveState: true,

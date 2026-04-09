@@ -249,10 +249,7 @@ import { ref } from "vue";
 
 const props = defineProps({
     modelValue: Number,
-    title: {
-        type: String,
-        default: "None",
-    },
+    title: String,
     location: {},
 });
 const onLoad = ref(false);

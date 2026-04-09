@@ -24,7 +24,7 @@ class User extends Authenticatable
         'email',
         'password',
     ];
-    protected $with = ['cargo', 'preferencia'];
+    // protected $with = ['cargo', 'preferencia'];
 
     public function cargo(): BelongsTo
     {
