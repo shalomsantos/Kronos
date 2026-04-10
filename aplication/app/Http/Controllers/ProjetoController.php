@@ -14,13 +14,20 @@ class ProjetoController extends Controller
      */
     public function index(Request $request)
     {
-        if ($request->expectsJson()) return Projeto::with('tipoProjeto')->get();
+        $query = Projeto::query();
 
-        $usuario_logado = auth()->user();
-        $preferencias = $usuario_logado->preferencia;
+        if ($request->filled('search')) {
+            $query->where('nome', 'like', "%{$request->search}%");
+        }
+
+        if ($request->expectsJson()) {
+            return response()->json($query->with('tipoProjeto')->get());
+        }
+            $usuario_logado = auth()->user();
+            $preferencias = $usuario_logado->preferencia;
 
         return Inertia::render('Crud/cadastros/projetos/index', [
-            'projetos' => Projeto::with('tipoProjeto')->get(),
+            'projetos' => $query->with('tipoProjeto')->get(),
             'tiposProjetos' => TipoProjeto::all(),
             'user' => $usuario_logado,
             'preferencias' => $preferencias,
@@ -50,10 +57,10 @@ class ProjetoController extends Controller
                 'created_at' => now(),
                 // 'updated_at' =>
             ]);
-            if($projetoStore){
+            if ($projetoStore) {
                 return response()->json([
                     'success' => true,
-                    'message' => "Projeto: ".$request['nome'].", criado com sucesso."
+                    'message' => "Projeto: " . $request['nome'] . ", criado com sucesso."
                 ]);
             }
             return response()->json([
@@ -63,7 +70,7 @@ class ProjetoController extends Controller
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
-                'message' => "Erro ao tentar inserir o projeto: ".$request['nome'].".",
+                'message' => "Erro ao tentar inserir o projeto: " . $request['nome'] . ".",
                 'details' => $e->getMessage()
             ]);
         }
@@ -111,21 +118,20 @@ class ProjetoController extends Controller
                 'descricao' => $request['descricao'] ?? '',
                 'updated_by' => auth()->id(),
             ]);
-            if($projetoAtualizado){
+            if ($projetoAtualizado) {
                 return response()->json([
                     'success' => true,
-                    'message' => "Projeto: ".$request['nome'].", atualizado com sucesso."
+                    'message' => "Projeto: " . $request['nome'] . ", atualizado com sucesso."
                 ]);
             }
             return response()->json([
                 'success' => false,
                 'message' => "Nenhuma alteração detectada no projeto."
             ]);
-
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,
-                'message' => "Erro ao tentar atualizar o projeto: ".$request['nome'].".",
+                'message' => "Erro ao tentar atualizar o projeto: " . $request['nome'] . ".",
                 'details' => $e->getMessage()
             ], 500);
         }
