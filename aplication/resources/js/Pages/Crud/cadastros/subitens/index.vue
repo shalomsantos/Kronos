@@ -122,6 +122,7 @@
                                     icon="mdi-delete"
                                     density="comfortable"
                                     color="red-lighten-2"
+                                    @click.prevent="confirmation = true"
                                 ></v-btn>
                             </td>
                         </tr>
@@ -139,54 +140,86 @@
             width="60vw"
             @onCloseDialog="dialogEditSubitem = false"
         >
-            <v-row class="align-end">
-                <v-col cols="6">
+            <v-row dense>
+                <v-col cols="5">
                     <v-row>
-                        <v-col cols="12">
-                            <v-text-field
-                                v-model="subitemSelecionado.nome"
-                                label="Nome"
-                                variant="outlined"
-                                density="compact"
-                                hide-details="auto"
-                                clearable
-                            ></v-text-field>
-                        </v-col>
-                        <v-col cols="12" class="d-flex ga-3">
-                            <v-select
-                                v-model="valueFornecedor"
-                                label="Fornecedor"
-                                :items="optionsFornecedor"
-                                item-title="optionsFornecedor.razao_social"
-                                item-value="optionsFornecedor.id"
-                                variant="outlined"
-                                density="compact"
-                                hide-details="auto"
-                                clearable
-                            ></v-select>
+                        <v-col class="d-flex align-center ga-3 mb-0 pb-0">
+                            <h4 class="text-green-darken-4">
+                                {{ subitemSelecionado.nome }}
+                            </h4>
                             <v-btn
-                                class="text-none rounded"
+                                class="rounded"
+                                icon="mdi-pencil"
+                                variant="tonal"
+                                size="x-small"
+                                color="green-darken-4"
+                                @click.prevent
+                            ></v-btn>
+
+                            <!-- <v-text-field
+                                        v-model="inputItemNome"
+                                        label="Nome do item*"
+                                        variant="outlined"
+                                        density="compact"
+                                        hide-details="auto"
+                                        clearable
+                                    ></v-text-field> -->
+                        </v-col>
+                        <v-col cols="12">
+                            <v-combobox
+                                v-model="inputSubitem"
+                                :items="[
+                                    'Demostrativo um',
+                                    'Demostrativo Dois',
+                                    'Demostrativo três',
+                                ]"
+                                label="Escolher ou inserir subitem"
+                                variant="outlined"
+                                density="compact"
+                                hide-details
+                                item-title="nome"
+                                clearable
+                            >
+                                <template v-slot:prepend-item>
+                                    <v-divider></v-divider>
+                                    <v-list-item
+                                        title="Não encontrou?"
+                                        subtitle="Clique para cadastrar um novo"
+                                        prepend-icon="mdi-plus-circle-outline"
+                                        color="primary"
+                                        @click="dialogNovoSubitem = true"
+                                    >
+                                    </v-list-item>
+                                    <v-divider></v-divider>
+                                </template>
+
+                                <template v-slot:no-data>
+                                    <v-list-item
+                                        title="Nenhum item encontrado"
+                                        subtitle="Clique aqui para criar um novo"
+                                        @click="dialogNovoSubitem = true"
+                                    ></v-list-item>
+                                </template>
+                            </v-combobox>
+                        </v-col>
+                        <v-col cols="12">
+                            <v-btn
+                                class="text-none w-100"
                                 color="green-darken-1"
-                                icon="mdi-plus"
-                                @click.prevent="updatePlataforma()"
+                                prepend-icon="mdi-playlist-plus"
+                                @click="carregandoSubitensPeloItemSelecionado"
+                                text="Adicionar"
                             />
                         </v-col>
                     </v-row>
                 </v-col>
-                <v-col cols="6">
-                    <v-btn
-                        class="text-none w-100"
-                        color="green-darken-1"
-                        prepend-icon="mdi-playlist-plus"
-                        @click.prevent="updatePlataforma()"
-                        >Atualizar</v-btn
-                    >
-                </v-col>
-                <v-col cols="12">
+                <v-col cols="7">
                     <v-table
-                        class="bg-green-lighten-5 overflow-y-auto"
                         density="compact"
+                        class="overflow-y-auto"
+                        height="200"
                         striped="even"
+                        fixed-header
                     >
                         <thead>
                             <tr>
@@ -216,10 +249,11 @@
                                 </td>
                                 <td>
                                     <v-btn
-                                        class="text-none me-1"
+                                        variant="text"
                                         icon="mdi-delete"
-                                        density="comfortable"
-                                        color="red-lighten-2"
+                                        density="compact"
+                                        color="red"
+                                        @click.prevent="confirmation = true"
                                     ></v-btn>
                                 </td>
                             </tr>
@@ -228,6 +262,30 @@
                 </v-col>
             </v-row>
         </Dialog>
+
+        <v-dialog v-model="confirmation" max-width="500">
+            <v-toolbar title="Confirmar operação?" density="compact"></v-toolbar>
+            <v-card rounded="0" title="Lorem ipsum">
+                <v-card-item>
+                    Lorem, ipsum dolor sit amet consectetur adipisicing elit.
+                </v-card-item>
+                <v-card-actions>
+                    <v-btn
+                        size="small"
+                        text="Confirmar"
+                        color="success"
+                        @click.prevent="confirmation = false"
+                    />
+                    <v-spacer></v-spacer>
+                    <v-btn
+                        size="small"
+                        text="cancelar"
+                        color="red"
+                        @click.prevent="confirmation = false"
+                    />
+                </v-card-actions>
+            </v-card>
+        </v-dialog>
 
         <NormalFeedback v-model="feedback"></NormalFeedback>
     </DefaultLayout>
@@ -258,6 +316,7 @@ onMounted(() => {
 });
 
 const dialogEditSubitem = ref(false);
+const confirmation = ref(false);
 const subitemSelecionado = ref(null);
 // dialog forms
 const valueFornecedor = ref(null);

@@ -1,5 +1,5 @@
 <template>
-    <v-dialog v-model="model" max-width="80vw">
+    <v-dialog v-model="model" max-width="50vw">
         <v-card rounded="0" class="overflow-y-hidden w-100 h-100">
             <v-toolbar
                 title="Editar ou vincular subitens a este item?"
@@ -14,7 +14,7 @@
             <v-card-item class="ma-0 pa-0">
                 <v-sheet class="pa-4">
                     <v-row dense>
-                        <v-col cols="4">
+                        <v-col cols="5">
                             <v-row>
                                 <v-col
                                     class="d-flex align-center ga-3 mb-0 pb-0"
@@ -94,18 +94,18 @@
                                 </v-col>
                             </v-row>
                         </v-col>
-                        <v-col cols="8">
+                        <v-col cols="7">
                             <v-table
                                 density="compact"
                                 class="overflow-y-auto"
                                 height="200"
                                 striped="even"
+                                fixed-header
                             >
                                 <thead>
                                     <tr>
-                                        <th class="text-left">Nome</th>
-                                        <th class="text-left">Criado em</th>
-                                        <th class="text-left">Criador por</th>
+                                        <th class="text-left">Subitem</th>
+                                        <th class="text-left">Por</th>
                                         <th class="text-left">***</th>
                                     </tr>
                                 </thead>
@@ -116,8 +116,9 @@
                                         ) in itemSelecionado?.subitens"
                                         :key="id"
                                     >
-                                        <td>{{ item.nome }}</td>
-                                        <td>{{ isDate(item.created_at) }}</td>
+                                        <td>
+                                            {{ item.nome }}<br><p class="text-body-2 text-disabled">{{ isDate(item.created_at) }}</p>
+                                        </td>
                                         <td>
                                             <v-chip
                                                 size="x-small"

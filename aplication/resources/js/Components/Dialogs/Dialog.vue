@@ -1,5 +1,5 @@
 <template>
-    <v-dialog v-model="model" :max-width="width ?? '90vw'" :height="height ?? '60vh'">
+    <v-dialog v-model="model" :max-width="width ?? '90vw'" :height="height ?? 'auto'">
         <v-toolbar :title="title" density="compact"
             ><v-btn
                 icon="mdi-close"

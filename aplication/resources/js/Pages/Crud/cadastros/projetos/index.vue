@@ -137,26 +137,14 @@ import EmptyData from "@/Components/EmptyData.vue";
 import NormalFeedback from "@/Components/Feedback/NormalFeedback.vue";
 import { ref } from "vue";
 import axios from "axios";
-// dados trazidos com a rota.
+
 const props = defineProps({
-    projetos: {
-        type: Object,
-        required: true,
-    },
-    tiposProjetos: {
-        type: Object,
-        required: true,
-    },
-    user: {
-        type: Object,
-        required: true,
-    },
-    preferencias: {
-        type: Object,
-        required: true,
-    },
+    projetos: Object,
+    tiposProjetos: Object,
+    user: Object,
+    preferencias: Object
 });
-// Content var
+
 const location = [
     { title: "Kronos", disabled: false, href: "/" },
     { title: "Projetos", disabled: true },
@@ -203,6 +191,7 @@ async function insertProjeto(projeto) {
                     color: "success",
                     text: res.data.message,
                 };
+                return;
             }
             feedback.value = {
                 show: true,

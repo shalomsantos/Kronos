@@ -1,87 +1,104 @@
 <template>
-    <div>
-        <v-dialog v-model="model" max-width="500">
-            <v-toolbar title="Novo projeto" density="compact"
-                ><v-btn
-                    icon="mdi-close"
-                    size="small"
-                    @click.prevent="
-                        (model = false),
-                            (inputProjeto = null),
-                            (valueTipoProjetos = null),
-                            (inputDescricao = null)
-                    "
-                ></v-btn
-            ></v-toolbar>
-            <v-card rounded="0">
-                <v-card-item class="ma-0 pa-2">
-                    <v-row class="pa-2">
-                        <v-col cols="12">
-                            <v-text-field
-                                v-model="inputProjeto"
-                                label="Nome*"
-                                variant="outlined"
-                                density="compact"
-                                hide-details="auto"
-                                clearable
-                            ></v-text-field>
-                        </v-col>
-                        <v-col cols="12" class="d-flex ga-2 align-center">
-                            <v-select
-                                v-model="valueTipoProjetos"
-                                label="Tipo do projeto*"
-                                :items="itensTipoProjetos"
-                                item-title="label"
-                                item-value="id"
-                                clearable
-                                variant="outlined"
-                                density="compact"
-                                hide-details="auto"
-                            ></v-select>
-                            <v-btn
-                                class="text-none"
-                                prepend-icon="mdi-plus"
-                                color="green-darken-1"
-                                @click.prevent="dialogNovoTipoProjeto = true"
-                                >Tipo</v-btn
-                            >
-                        </v-col>
-                        <v-col cols="12">
-                            <v-textarea
-                                v-model="inputDescricao"
-                                clearable
-                                label="Descrição"
-                                variant="outlined"
-                                density="compact"
-                                hide-details
-                                rows="2"
-                                auto-grow
-                                counter
-                            ></v-textarea>
-                        </v-col>
-                        <v-col cols="12" class="pt-3">
-                            <v-btn
-                                class="text-none"
-                                color="green-darken-1"
-                                size="large"
-                                prepend-icon="mdi-content-save"
-                                @click.prevent="insertEvent"
-                                >Salvar</v-btn
-                            >
-                        </v-col>
-                    </v-row>
-                </v-card-item>
-            </v-card>
-        </v-dialog>
-        <!-- Dialog -->
-        <NovoTipoProjeto
-            v-model="dialogNovoTipoProjeto"
-            max-width="500"
-            @insertProcess="insertTipoProjeto"
-        />
-        <!-- Feedback -->
-        <NormalFeedback v-model="feedback" />
-    </div>
+    <v-dialog v-model="model" max-width="500">
+        <v-toolbar title="Novo projeto" density="compact"
+            ><v-btn
+                icon="mdi-close"
+                size="small"
+                @click.prevent="
+                    ((model = false),
+                    (inputProjeto = null),
+                    (valueTipoProjetos = null),
+                    (inputDescricao = null))
+                "
+            ></v-btn
+        ></v-toolbar>
+        <v-card rounded="0">
+            <v-card-item class="ma-0 pa-2">
+                <v-row class="pa-2">
+                    <v-col cols="12">
+                        <v-text-field
+                            v-model="inputProjeto"
+                            label="Nome*"
+                            variant="outlined"
+                            density="compact"
+                            hide-details="auto"
+                            clearable
+                        ></v-text-field>
+                    </v-col>
+                    <v-col cols="12" class="d-flex ga-2 align-center">
+                        <v-combobox
+                            v-model="valueTipoProjetos"
+                            :items="itensTipoProjetos"
+                            item-title="label"
+                            item-value="id"
+                            :return-object="false" 
+                            label="Escolher ou inserir tipo projeto"
+                            variant="outlined"
+                            density="compact"
+                            hide-details
+                            clearable
+                        >
+                            <template v-slot:prepend-item>
+                                <v-divider></v-divider>
+                                <v-list-item
+                                    title="Não encontrou?"
+                                    subtitle="Clique para cadastrar um novo"
+                                    prepend-icon="mdi-plus-circle-outline"
+                                    color="primary"
+                                    @click.prevent="
+                                        dialogNovoTipoProjeto = true
+                                    "
+                                >
+                                </v-list-item>
+                                <v-divider></v-divider>
+                            </template>
+
+                            <template v-slot:no-data>
+                                <v-list-item
+                                    title="Nenhum item encontrado"
+                                    subtitle="Clique aqui para criar um novo"
+                                    @click.prevent="
+                                        dialogNovoTipoProjeto = true
+                                    "
+                                ></v-list-item>
+                            </template>
+                        </v-combobox>
+                    </v-col>
+                    <v-col cols="12">
+                        <v-textarea
+                            v-model="inputDescricao"
+                            clearable
+                            label="Descrição"
+                            variant="outlined"
+                            density="compact"
+                            hide-details
+                            rows="3"
+                            auto-grow
+                            counter
+                        ></v-textarea>
+                    </v-col>
+                    <v-col cols="12" class="pt-3">
+                        <v-btn
+                            class="text-none"
+                            color="green-darken-1"
+                            size="large"
+                            prepend-icon="mdi-content-save"
+                            @click.prevent="insertEvent"
+                            >Salvar</v-btn
+                        >
+                    </v-col>
+                </v-row>
+            </v-card-item>
+        </v-card>
+    </v-dialog>
+    <!-- Dialog -->
+    <NovoTipoProjeto
+        v-model="dialogNovoTipoProjeto"
+        max-width="500"
+        @insertProcess="insertTipoProjeto"
+    />
+    <!-- Feedback -->
+    <NormalFeedback v-model="feedback" />
 </template>
 
 <script setup>
@@ -152,6 +169,7 @@ function insertEvent() {
         };
         return;
     }
+    
     let projeto = {
         nome: inputProjeto.value,
         tipo_projeto_id: valueTipoProjetos.value,
