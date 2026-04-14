@@ -17,8 +17,12 @@ class UserController extends Controller
             return User::all();
         }
 
+        $usuario_logado = auth()->user();
+        $preferencias = $usuario_logado->preferencia;
         return Inertia::render('Usuarios', [
-            'usuarios' => User::all()
+            'usuarios' => User::with(['cargo'])->get(),
+            'user'         => $usuario_logado,
+            'preferencias' => $preferencias,
         ]);
     }
 

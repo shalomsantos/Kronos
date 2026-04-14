@@ -4,29 +4,23 @@
         title="Bases Lista"
         :location="location"
     >
-        <v-sheet
-            class="d-flex ga-3 ma-5 position-absolute"
-            color="transparent"
-            style="z-index: 1"
-        >
-            <v-btn
-                class="text-none"
-                icon="mdi-filter"
-                color="green-darken-1"
-                size="x-large"
-                text="Filtro"
-                @click="dialogFilter = !dialogFilter"
-            />
-            <v-btn
-                class="text-none"
-                icon="mdi-plus"
-                size="x-large"
-                color="green-darken-1"
-                text="Adicionar"
-                @click="dialogNewBasezero = !dialogNewBasezero"
-            />
-        </v-sheet>
-        <v-row>
+        <v-row dense>
+            <v-col cols="12" class="d-flex justify-end ga-3">
+                <v-btn
+                    class="text-none"
+                    prepend-icon="mdi-filter"
+                    color="green-darken-1"
+                    text="Filtro"
+                    @click="dialogFilter = true"
+                />
+                <v-btn
+                    class="text-none"
+                    prepend-icon="mdi-plus"
+                    color="green-darken-1"
+                    text="Nova base"
+                    @click="dialogNewBasezero = !dialogNewBasezero"
+                />
+            </v-col>
             <v-col
                 cols="6"
                 v-if="dados.data.length > 0 && viewOption"
@@ -245,6 +239,7 @@
 import NormalFeedback from "@/Components/Feedback/NormalFeedback.vue";
 import FiltroBase from "@/Components/Dialogs/Bzero/FiltroBase.vue";
 import DefaultLayout from "@/Layouts/DefaultLayout.vue";
+import EmptyData from "@/Components/EmptyData.vue";
 import { ref, onMounted, computed } from "vue";
 import { router } from "@inertiajs/vue3";
 import axios from "axios";
@@ -261,9 +256,7 @@ const location = [
 ];
 
 const viewOption = ref(props.preferencias?.listagem_menu ?? 0);
-
 const dados = computed(() => props.bzeros);
-
 const projetosValue = ref(null);
 const projetosOptions = ref([]);
 const ano = ref(null);
@@ -378,9 +371,4 @@ const updatePage = (page) => {
 };
 </script>
 
-<style scoped>
-.position-absolute {
-    bottom: 0;
-    right: 0;
-}
-</style>
+<style scoped></style>

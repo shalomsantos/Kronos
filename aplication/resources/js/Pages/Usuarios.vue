@@ -96,17 +96,15 @@
 <script setup>
 import DefaultLayout from '@/Layouts/DefaultLayout.vue';
 import { ref, watch } from "vue";
-import { usePage } from "@inertiajs/vue3";
 import axios from 'axios';
 
 const props = defineProps({
-    usuarios: {}
+    usuarios: Object,
+    preferencias: Object
 })
 
+const viewOption = ref(props.preferencias?.listagem_menu ?? 0);
 const dados = ref(props.usuarios ?? [])
-
-const user = usePage().props.auth.user;
-const viewOption = ref(user?.preferencia?.listagem_menu ?? 0);
 
 watch(viewOption, () => {
     carregandoTodosUsuarios()

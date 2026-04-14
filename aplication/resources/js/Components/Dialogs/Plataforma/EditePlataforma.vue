@@ -2,8 +2,8 @@
     <Dialog
         v-model="model"
         title="Editar Plataforma"
-        :width="80"
-        @onCloseDialog="$emit('closeEditPlataforma')"
+        width="80vw"
+        @onCloseDialog="$emit('onCloseDialog')"
     >
         <v-row>
             <v-col cols="3">
@@ -207,7 +207,7 @@ import Dialog from "../Dialog.vue";
 const props = defineProps({
     plataforma: Object,
 });
-
+const emit = defineEmits(['onCloseDialog']);
 const inputIdPlataforma = ref("");
 const inputPlataforma = ref("");
 const inputDescricao = ref("");
@@ -243,7 +243,6 @@ watch(
             inputPlataforma.value = novo.nome ?? "";
             inputDescricao.value = novo.descricao ?? "";
             carregandoPlataformaItemSubitemFornecedor(novo.id);
-            // PlataformaItemSubitemFornecedor.value = novo.itens ?? [];
             carregandoTodosItens();
         }
     },
@@ -351,16 +350,7 @@ const carregandoTodosItens = async () => {
     await axios
         .get(route("item.index"), { headers: { Accept: "application/json" } })
         .then((res) => {
-            if (res.data.success) {
-                itens.value = res.data.data;
-                return;
-            }
-            feedback.value = {
-                show: true,
-                timeout: 3000,
-                color: "error",
-                text: res.data.message,
-            };
+            itens.value = res.data;
         })
         .catch((err) => {
             feedback.value = {

@@ -128,13 +128,14 @@
         <EditePlataforma
             v-model="dialogEditePlataforma"
             :plataforma="plataformaSelecionada"
-            @closeEditPlataforma="
+            @onCloseDialog="
                 ((plataformaSelecionada = null),
                 (dialogEditePlataforma = false))
             "
         />
         <NovaPlataforma
             v-model="dialogNovaPlataforma"
+            @onCloseDialog="((dialogNovaPlataforma = false))"
             @insertProcess="insertPlataforma"
         />
         <!-- Feedback -->

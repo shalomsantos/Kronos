@@ -28,6 +28,7 @@ const props = defineProps({
     width: String,
     height: String,
 });
+const emit = defineEmits(['onCloseDialog']);
 </script>
 
 <style scoped></style>
