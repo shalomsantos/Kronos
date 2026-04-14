@@ -1,7 +1,7 @@
 <template>
     <DefaultLayout
         v-model="viewOption"
-        :title="'Bases Lista'"
+        title="Bases Lista"
         :location="location"
     >
         <v-sheet

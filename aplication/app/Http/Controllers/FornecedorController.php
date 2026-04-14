@@ -13,18 +13,26 @@ class FornecedorController extends Controller
      */
     public function index(Request $request)
     {
-        try {
-            if ($request->expectsJson()) return response()->json(['success' => true, 'data' => Fornecedor::all()], 200);
-            
-            $fornecedores = Fornecedor::paginate(5);
+        $perPage = $request->input('per_page', 6);
 
+        $query = Fornecedor::query();
+
+        if ($request->filled('search')) {
+            $query->where('razao_social', 'like', "%{$request->search}%")
+                ->orWhere('cnpj', 'like', "%{$request->search}%");
+        }
+        $fornecedores = $query->paginate($perPage)->withQueryString();
+
+        if ($request->expectsJson()) return $fornecedores;
+
+        try {
             $usuario_logado = auth()->user();
             $preferencias = $usuario_logado->preferencia;
 
             return Inertia::render('Crud/cadastros/fornecedores/index', [
                 'fornecedores' => $fornecedores,
-                'user' => $usuario_logado,
-                'preferencias'=> $preferencias
+                'user'         => $usuario_logado,
+                'preferencias' => $preferencias
             ]);
         } catch (\Throwable $e) {
             return response()->json(['success' => false, 'message' => $e->getMessage()], 500);

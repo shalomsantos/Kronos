@@ -25,8 +25,8 @@ const model = defineModel();
 
 const props = defineProps({
     title: String,
-    width: Number,
-    height: Number,
+    width: String,
+    height: String,
 });
 </script>
 

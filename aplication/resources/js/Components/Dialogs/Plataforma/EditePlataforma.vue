@@ -1,222 +1,229 @@
 <template>
-    <v-dialog v-model="model" max-width="90vw" height="90vh">
-        <v-card rounded="0" class="overflow-y-hidden w-100 h-100">
-            <v-toolbar title="Edição da plataforma" density="compact">
-                <v-btn
-                    icon="mdi-close"
-                    size="small"
-                    @click.prevent="model = false"
-                />
-            </v-toolbar>
-            <v-card-item class="d-flex ma-0 pa-0">
-                <v-row class="px-4 pt-4">
-                    <v-col cols="3">
-                        <v-row>
-                            <v-col cols="12">
-                                <v-text-field
-                                    v-model="inputPlataforma"
-                                    label="Nome da plataforma*"
-                                    variant="outlined"
-                                    density="compact"
-                                    hide-details="auto"
-                                    clearable
-                                ></v-text-field>
-                            </v-col>
-                            <v-col cols="12">
-                                <v-textarea
-                                    v-model="inputDescricao"
-                                    label="Descrição"
-                                    variant="outlined"
-                                    density="compact"
-                                    rows="2"
-                                    clearable
-                                    hide-details
-                                    auto-grow
-                                    counter
-                                ></v-textarea>
-                            </v-col>
-                        </v-row>
-                    </v-col>
-                    <v-col cols="9" class="pa-5">
-                        <v-row class="border rounded">
-                            <v-col cols="12" class="text-center ma-0 pa-0">
-                                <p class="text-disabled">
-                                    Associe o item novo à plataforma
-                                </p>
-                            </v-col>
-                            <v-col cols="4">
-                                <v-select
-                                    v-model="valueItens"
-                                    label="Item"
-                                    :items="itens"
-                                    item-title="nome"
-                                    item-value="id"
-                                    variant="outlined"
-                                    density="compact"
-                                    hide-details="auto"
-                                    clearable
-                                ></v-select>
-                            </v-col>
-                            <v-col cols="4">
-                                <v-select
-                                    v-model="valueSubItens"
-                                    label="Subitem"
-                                    :items="subItens"
-                                    item-title="subitem.nome"
-                                    item-value="subitem_id"
-                                    variant="outlined"
-                                    density="compact"
-                                    hide-details="auto"
-                                    clearable
-                                ></v-select>
-                            </v-col>
-                            <v-col cols="4">
-                                <v-select
-                                    v-model="valueFornecedores"
-                                    label="Fornecedor"
-                                    :items="fornecedores"
-                                    item-title="fornecedor.razao_social"
-                                    item-value="fornecedor_id"
-                                    variant="outlined"
-                                    density="compact"
-                                    hide-details="auto"
-                                    clearable
-                                ></v-select>
-                            </v-col>
-                            <v-col cols="4">
-                                <v-text-field
-                                    v-model="valorUnitario"
-                                    label="Valor Unitário"
-                                    variant="outlined"
-                                    density="compact"
-                                    hide-details="auto"
-                                    @keypress="onlyNumbers"
-                                    prefix="R$"
-                                    clearable
-                                ></v-text-field>
-                            </v-col>
-                            <v-col cols="2">
-                                <v-text-field
-                                    type="number"
-                                    v-model.number="qt_unidade_cot"
-                                    label="Quantidade"
-                                    variant="outlined"
-                                    density="compact"
-                                    hide-details="auto"
-                                    clearable
-                                ></v-text-field>
-                            </v-col>
-                            <v-col cols="2">
-                                <v-text-field
-                                    type="number"
-                                    v-model.number="qt_multip_uni_cot"
-                                    label="Unidade"
-                                    variant="outlined"
-                                    density="compact"
-                                    hide-details="auto"
-                                    clearable
-                                ></v-text-field>
-                            </v-col>
-                            <v-col>
-                                <v-btn
-                                    class="text-none w-100"
-                                    color="green-darken-1"
-                                    size="large"
-                                    prepend-icon="mdi-update"
-                                    @click.prevent="updatePlataforma()"
-                                    >Atualizar</v-btn
-                                >
-                            </v-col>
-                        </v-row>
-                    </v-col>
-                </v-row>
-                <v-row class="px-4">
+    <Dialog
+        v-model="model"
+        title="Editar Plataforma"
+        :width="80"
+        @onCloseDialog="$emit('closeEditPlataforma')"
+    >
+        <v-row>
+            <v-col cols="3">
+                <v-row>
                     <v-col cols="12">
-                        <v-sheet v-if="loading" color="green-lighten-5">
-                            <v-skeleton-loader
-                                class="mx-auto border"
-                                type="table-row-divider@6"
-                            ></v-skeleton-loader>
-                        </v-sheet>
-
-                        <v-table
-                            v-else-if="
-                                PlataformaItemSubitemFornecedor.length > 0
-                            "
-                            class="bg-green-lighten-5 overflow-y-scroll"
-                            style="height: 17rem"
+                        <v-text-field
+                            v-model="inputPlataforma"
+                            label="Nome da plataforma*"
+                            variant="outlined"
                             density="compact"
-                            striped="even"
-                        >
-                            <thead>
-                                <tr>
-                                    <th class="text-left">Item</th>
-                                    <th class="text-left">Subitem</th>
-                                    <th class="text-left">Fornecedor</th>
-                                    <th class="text-left">Valor Unit.</th>
-                                    <th class="text-left">Quant.</th>
-                                    <th class="text-left">Unid.</th>
-                                    <th class="text-left">Valor Total</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                <tr
-                                    v-for="(
-                                        item, id
-                                    ) in PlataformaItemSubitemFornecedor"
-                                    :key="id"
-                                >
-                                    <td>{{ item.item.nome }}</td>
-                                    <td>{{ item.subitem.nome }}</td>
-                                    <td>{{ item.fornecedor?.razao_social }}</td>
-                                    <td>R$ {{ item.vl_unit_cot.replace(".", ",") }}</td>
-                                    <td>{{ item.qt_unidade_cot }}</td>
-                                    <td>{{ item.qt_multip_uni_cot }}</td>
-                                    <td>R$ {{ ((item.vl_unit_cot * item.qt_unidade_cot) * item.qt_multip_uni_cot).toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 }) }}</td>
-                                </tr>
-                            </tbody>
-                        </v-table>
-
-                        <v-sheet
-                            v-else
-                            color="green-lighten-5"
-                            class="text-center pt-8 pb-16 rounded border border-success"
-                        >
-                            <h3 class="text-grey-darken-1">
-                                Nenhum resultado encontrado.
-                            </h3>
-                        </v-sheet>
+                            hide-details="auto"
+                            clearable
+                        ></v-text-field>
+                    </v-col>
+                    <v-col cols="12">
+                        <v-textarea
+                            v-model="inputDescricao"
+                            label="Descrição"
+                            variant="outlined"
+                            density="compact"
+                            rows="2"
+                            clearable
+                            hide-details
+                            auto-grow
+                            counter
+                        ></v-textarea>
                     </v-col>
                 </v-row>
-            </v-card-item>
-        </v-card>
-        <!-- Feedback -->
+            </v-col>
+            <v-col cols="9" class="pa-5">
+                <v-row class="border rounded">
+                    <v-col cols="12" class="text-center ma-0 pa-0">
+                        <p class="text-disabled">
+                            Vincular item à plataforma.
+                        </p>
+                    </v-col>
+                    <v-col cols="4">
+                        <v-select
+                            v-model="valueItens"
+                            label="Item"
+                            :items="itens"
+                            item-title="nome"
+                            item-value="id"
+                            variant="outlined"
+                            density="compact"
+                            hide-details="auto"
+                            clearable
+                        ></v-select>
+                    </v-col>
+                    <v-col cols="4">
+                        <v-select
+                            v-model="valueSubItens"
+                            label="Subitem"
+                            :items="subItens"
+                            item-title="subitem.nome"
+                            item-value="subitem_id"
+                            variant="outlined"
+                            density="compact"
+                            hide-details="auto"
+                            clearable
+                        ></v-select>
+                    </v-col>
+                    <v-col cols="4">
+                        <v-select
+                            v-model="valueFornecedores"
+                            label="Fornecedor"
+                            :items="fornecedores"
+                            item-title="fornecedor.razao_social"
+                            item-value="fornecedor_id"
+                            variant="outlined"
+                            density="compact"
+                            hide-details="auto"
+                            clearable
+                        ></v-select>
+                    </v-col>
+                    <v-col cols="4">
+                        <v-text-field
+                            v-model="valorUnitario"
+                            label="Valor Unitário"
+                            variant="outlined"
+                            density="compact"
+                            hide-details="auto"
+                            @keypress="onlyNumbers"
+                            prefix="R$"
+                            clearable
+                        ></v-text-field>
+                    </v-col>
+                    <v-col cols="2">
+                        <v-text-field
+                            type="number"
+                            v-model.number="qt_unidade_cot"
+                            label="Quantidade"
+                            variant="outlined"
+                            density="compact"
+                            hide-details="auto"
+                            clearable
+                        ></v-text-field>
+                    </v-col>
+                    <v-col cols="2">
+                        <v-text-field
+                            type="number"
+                            v-model.number="qt_multip_uni_cot"
+                            label="Unidade"
+                            variant="outlined"
+                            density="compact"
+                            hide-details="auto"
+                            clearable
+                        ></v-text-field>
+                    </v-col>
+                    <v-col>
+                        <v-btn
+                            class="text-none w-100"
+                            color="green-darken-1"
+                            size="large"
+                            prepend-icon="mdi-update"
+                            @click.prevent="updatePlataforma()"
+                            >Atualizar</v-btn
+                        >
+                    </v-col>
+                </v-row>
+            </v-col>
+        </v-row>
+        <v-row>
+            <v-col cols="12">
+                <v-sheet v-if="loading" color="green-lighten-5">
+                    <v-skeleton-loader
+                        class="mx-auto border"
+                        type="table-row-divider@6"
+                    ></v-skeleton-loader>
+                </v-sheet>
+
+                <v-table
+                    v-else-if="PlataformaItemSubitemFornecedor.length > 0"
+                    class="bg-green-lighten-5 overflow-y-scroll"
+                    style="height: 17rem"
+                    density="compact"
+                    striped="even"
+                >
+                    <thead>
+                        <tr>
+                            <th class="text-left">Item</th>
+                            <th class="text-left">Subitem</th>
+                            <th class="text-left">Fornecedor</th>
+                            <th class="text-left">Valor Unit.</th>
+                            <th class="text-left">Quant.</th>
+                            <th class="text-left">Unid.</th>
+                            <th class="text-left">Valor Total</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr
+                            v-for="(
+                                item, id
+                            ) in PlataformaItemSubitemFornecedor"
+                            :key="id"
+                        >
+                            <td>{{ item.item.nome }}</td>
+                            <td>{{ item.subitem.nome }}</td>
+                            <td>{{ item.fornecedor?.razao_social }}</td>
+                            <td>R$ {{ item.vl_unit_cot.replace(".", ",") }}</td>
+                            <td>{{ item.qt_unidade_cot }}</td>
+                            <td>{{ item.qt_multip_uni_cot }}</td>
+                            <td>
+                                R$
+                                {{
+                                    (
+                                        item.vl_unit_cot *
+                                        item.qt_unidade_cot *
+                                        item.qt_multip_uni_cot
+                                    ).toLocaleString("pt-BR", {
+                                        minimumFractionDigits: 2,
+                                        maximumFractionDigits: 2,
+                                    })
+                                }}
+                            </td>
+                        </tr>
+                    </tbody>
+                </v-table>
+
+                <v-sheet
+                    v-else
+                    color="green-lighten-5"
+                    class="text-center pt-8 pb-16 rounded border border-success"
+                >
+                    <h3 class="text-grey-darken-1">
+                        Nenhum resultado encontrado.
+                    </h3>
+                </v-sheet>
+            </v-col>
+        </v-row>
         <NormalFeedback v-model="feedback" />
-    </v-dialog>
+    </Dialog>
 </template>
 
 <script setup>
 const model = defineModel();
 import NormalFeedback from "@/Components/Feedback/NormalFeedback.vue";
 import { ref, watch, computed } from "vue";
+import Dialog from "../Dialog.vue";
 
 const props = defineProps({
-    plataformaSelecionada: { type: Object },
+    plataforma: Object,
 });
 
-// selects on load choose and normals inputs
-const inputIdPlataforma = ref(""); // normais
-const inputPlataforma = ref(""); // normais
-const inputDescricao = ref(""); // normais
+const inputIdPlataforma = ref("");
+const inputPlataforma = ref("");
+const inputDescricao = ref("");
+
 const valueItens = ref(null);
 const itens = ref([]);
+
 const valueSubItens = ref(null);
 const subItens = ref([]);
+
 const valueFornecedores = ref(null);
 const fornecedores = ref([]);
-const vl_unit_cot = ref(0); // normais
-const qt_unidade_cot = ref(1); // normais
-const qt_multip_uni_cot = ref(1); // normais
+
+const vl_unit_cot = ref(0);
+const qt_unidade_cot = ref(1);
+const qt_multip_uni_cot = ref(1);
 // dados
 const PlataformaItemSubitemFornecedor = ref([]);
 // feedbacks
@@ -229,7 +236,7 @@ const feedback = ref({
 });
 
 watch(
-    () => props.plataformaSelecionada,
+    () => props.plataforma,
     (novo) => {
         if (novo) {
             inputIdPlataforma.value = novo.id ?? "";
@@ -268,20 +275,20 @@ watch(
 );
 
 const valorUnitario = computed({
-  get() {    
-    return vl_unit_cot.value.toLocaleString('pt-BR', {
-      minimumFractionDigits: 2,
-      maximumFractionDigits: 2,
-    });
-  },
-  set(newValue) {
-    if (!newValue) {
-      vl_unit_cot.value = 0;
-      return;
-    }
-    let value = String(newValue).replace(/\D/g, '');
-    vl_unit_cot.value = parseFloat(value) / 100;
-  }
+    get() {
+        return vl_unit_cot.value.toLocaleString("pt-BR", {
+            minimumFractionDigits: 2,
+            maximumFractionDigits: 2,
+        });
+    },
+    set(newValue) {
+        if (!newValue) {
+            vl_unit_cot.value = 0;
+            return;
+        }
+        let value = String(newValue).replace(/\D/g, "");
+        vl_unit_cot.value = parseFloat(value) / 100;
+    },
 });
 const onlyNumbers = (event) => {
     if (!/[0-9]/.test(event.key)) {

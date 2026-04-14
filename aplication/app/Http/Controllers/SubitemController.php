@@ -14,36 +14,23 @@ class SubitemController extends Controller
      */
     public function index(Request $request)
     {
-        $subitens = Subitem::with('fornecedores')->get();
+        $query = Subitem::with('fornecedores');
         
-        if ($request->expectsJson()) {
-            try {
-                return response()->json([
-                    'success' => true,
-                    'data' => $subitens
-                ], 200);
-            } catch (\Throwable $e) {
-                return response()->json([
-                    'success' => false,
-                    'message' => $e->getMessage()
-                ], 500);
-            }
-        }
+        if ($request->filled('search')) $query->where('nome', 'like', "%{$request->search}%");
+
+        if ($request->expectsJson()) return response()->json($query->get());
 
         try {
             $usuario_logado = auth()->user();
             $preferencias = $usuario_logado->preferencia;
 
             return Inertia::render('Crud/cadastros/subitens/index', [
-                'subitens' => $subitens,
+                'subitens' => $query->get(),
                 'user' => $usuario_logado,
                 'preferencias' => $preferencias,
             ]);
         } catch (\Throwable $e) {
-            return response()->json([
-                'success' => false,
-                'message' => $e->getMessage()
-            ], 500);
+            return response()->json(['success' => false, 'message' => $e->getMessage()], 500);
         }
     }
 

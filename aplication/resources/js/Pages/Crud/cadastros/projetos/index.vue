@@ -1,7 +1,7 @@
 <template>
     <DefaultLayout
         v-model="viewOption"
-        :title="'Projetos lista'"
+        title="Projetos"
         :location="location"
     >
         <v-row dense>
@@ -123,9 +123,7 @@
             v-model="dialogEditProjeto"
             :projeto="projetoSelecionado"
             :tipos="tiposProjetos"
-            @closeEditProjeto="
-                ((projetoSelecionado = null), (dialogEditProjeto = false))
-            "
+            @closeEditProjeto="((projetoSelecionado = null), (dialogEditProjeto = false))"
             @editeProcess="editProjeto"
         />
         <NovoProjeto
@@ -163,17 +161,17 @@ const viewOption = ref(props.preferencias?.listagem_menu ?? 0);
 const dados = ref(props.projetos ?? []);
 const projetoSelecionado = ref(null);
 const search = ref("");
-// Dialogs var
+// dialogs
 const dialogNewProjeto = ref(false);
 const dialogEditProjeto = ref(false);
-// Feedback var
+// Feedback
 const feedback = ref({
     show: false,
     timeout: 2000,
     color: "success",
     text: "",
 });
-// CRUD'S
+// functions
 async function insertProjeto(projeto) {
     await axios
         .post(route("projeto.store"), projeto)
@@ -238,7 +236,6 @@ async function editProjeto(projeto) {
             };
         });
 }
-// ON SEARCH
 function executarBusca() {
     carregandoTodosProjetos(search.value);
 }

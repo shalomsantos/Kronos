@@ -87,7 +87,7 @@
                                         color="green-darken-1"
                                         prepend-icon="mdi-playlist-plus"
                                         @click="
-                                            carregandoSubitensPeloItemSelecionado
+                                            carregandoSubitensPeloitem
                                         "
                                         text="Adicionar"
                                     />
@@ -113,7 +113,7 @@
                                     <tr
                                         v-for="(
                                             item, id
-                                        ) in itemSelecionado?.subitens"
+                                        ) in item?.subitens"
                                         :key="id"
                                     >
                                         <td>
@@ -193,23 +193,23 @@ const model = defineModel();
 const emit = defineEmits(["editeProcess"]);
 
 const props = defineProps({
-    itemSelecionado: {},
+    item: {},
 });
 
-const itemId = computed(() => props.itemSelecionado?.id ?? null);
+const itemId = computed(() => props.item?.id ?? null);
 const inputItemNome = ref("");
 const dialogNovoSubitem = ref(false);
 const confirmation = ref(false);
-const inputSubitem = ref([]);
+const inputSubitem = ref(null);
 
 watch(
-    () => props.itemSelecionado,
+    () => props.item,
     (novo) => {
         if (novo) {
-            itemId.value = props.itemSelecionado.id;
-            inputItemNome.value = props.itemSelecionado.nome;
+            itemId.value = props.item.id;
+            inputItemNome.value = props.item.nome;
         }
-    },
+    }, { immediate: true }
 );
 
 const feedback = ref({
@@ -218,8 +218,7 @@ const feedback = ref({
     color: "success",
     text: "",
 });
-
-async function carregandoSubitensPeloItemSelecionado() {
+async function carregandoSubitensPeloitem() {
     console.log(itemId.value);
     await axios
         .post(route("subitem.subitensAssociaveis"), { itemId: itemId.value })
@@ -231,33 +230,6 @@ async function carregandoSubitensPeloItemSelecionado() {
 function deleteItem() {
     confirmation.value = true;
 }
-// function editEvent() {
-//     if (!inputPlataforma.value) {
-//         feedback.value = {
-//             show: true,
-//             timeout: 4000,
-//             color: "warning",
-//             text: "O campo nome da plataforma é obrigatório!",
-//         };
-//         return;
-//     }
-//     let plataforma = {
-//         id: props.plataformaSelecionada.id,
-//         nome: inputPlataforma.value,
-//         descricao: inputDescricao.value,
-//     };
-//     inputPlataforma.value = null;
-//     inputDescricao.value = null;
-//     model.value = false;
-//     emit("editeProcess", plataforma);
-// }
 </script>
 
-<style scoped>
-.h-10 {
-    height: 9% !important;
-}
-.h-90 {
-    height: 91% !important;
-}
-</style>
+<style scoped></style>

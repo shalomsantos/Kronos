@@ -175,61 +175,6 @@
         <v-main class="bg-green-lighten-5 overflow-x-auto pt-0" style="margin-top: 10vh; height: 90vh;">
             <v-sheet color="transparent">
                 <v-row class="ma-0 pa-0">
-                    <!-- <v-col class="d-flex align-center" cols="6">
-                        <v-btn
-                            icon="mdi-menu"
-                            color="green-darken-1"
-                            @click="rail = !rail"
-                            variant="text"
-                        ></v-btn>
-                        <v-breadcrumbs 
-                            :items="location" 
-                            color="green-darken-1"
-                            active-color="green-darken-4"
-                        >
-                            <template v-slot:divider>
-                                <v-icon
-                                    icon="mdi mdi-slash-forward"
-                                    color="green-darken-1"
-                                    size="x-small"
-                                ></v-icon>
-                            </template>
-                            <template v-slot:title="{ item }">
-                                <p class="text-subtitle-1">{{ item.title }}</p>
-                            </template>
-                        </v-breadcrumbs>
-                    </v-col>
-                    <v-col cols="6" class="d-flex justify-end align-center">
-                        <v-btn-toggle
-                            v-if="props.modelValue != null"
-                            :disabled="onLoad"
-                            :model-value="props.modelValue"
-                            @update:model-value="onViewChange"
-                            class="me-3"
-                            variant="outlined"
-                            active-color="green-darken-4"
-                            base-color="green-lighten-1"
-                            divided
-                            density="compact"
-                            mandatory
-                        >
-                            <v-btn
-                                :value="0"
-                                variant="text"
-                                title="Exibição por tabelas"
-                            >
-                                <v-icon icon="mdi-table"></v-icon>
-                            </v-btn>
-    
-                            <v-btn
-                                :value="1"
-                                variant="text"
-                                title="Exibição por cartões"
-                            >
-                                <v-icon icon="mdi-card-multiple"></v-icon>
-                            </v-btn>
-                        </v-btn-toggle>
-                    </v-col> -->
                     <v-col cols="12">
                         <slot />
                     </v-col>
@@ -257,7 +202,7 @@ const user = usePage().props.auth.user;
 const emit = defineEmits(["update:modelValue"]);
 
 const drawer = ref(true);
-const rail = ref(false);
+const rail = ref(true);
 const menu = ref(false);
 
 let cadMenuOptions = [

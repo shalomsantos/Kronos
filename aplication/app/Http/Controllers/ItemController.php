@@ -14,17 +14,19 @@ class ItemController extends Controller
      */
     public function index(Request $request)
     {
+        $query = Item::query();
+
+        if ($request->filled('search')) $query->where('nome', 'like', "%{$request->search}%");
+
+        if ($request->expectsJson()) return response()->json($query->get());
+
         try {
-            $itens = Item::all();
-    
-            if($request->expectsJson()) return response()->json(['success' => true, 'data' => $itens], 200);
-    
             $usuario_logado = auth()->user();
             $preferencias = $usuario_logado->preferencia;
-    
+
             return Inertia::render('Crud/cadastros/itens/index', [
-                'itens' => $itens, 
-                'user' => $usuario_logado,
+                'itens'        => $query->get(),
+                'user'         => $usuario_logado,
                 'preferencias' => $preferencias,
             ]);
         } catch (\Throwable $e) {

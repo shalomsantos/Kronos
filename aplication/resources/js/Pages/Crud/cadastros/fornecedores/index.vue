@@ -1,50 +1,55 @@
 <template>
     <DefaultLayout
         v-model="viewOption"
-        :title="'fornecedores lista'"
+        title="Fornecedores"
         :location="location"
     >
-        <v-row>
-            <v-col class="d-flex ga-3" cols="12">
-                <v-btn
-                    @click.prevent="dialogNovoItem = true"
-                    class="text-none"
-                    color="green-darken-1"
-                    prepend-icon="mdi-plus"
-                    text="Adicionar"
-                />
-                <v-text-field
-                    v-model="search"
-                    placeholder="Pesquisar aqui..."
-                    variant="outlined"
-                    density="compact"
-                    hide-details="auto"
-                    clearable
-                />
+        <v-row dense>
+            <v-col cols="12">
+                <v-row>
+                    <v-col cols="4">
+                        <v-text-field
+                            v-model="search"
+                            placeholder="Aperte a tecla enter para buscar..."
+                            variant="outlined"
+                            density="compact"
+                            hide-details="auto"
+                            color="green-darken-3"
+                            clearable
+                            append-inner-icon="mdi-magnify"
+                            @keydown.enter="executarBusca"
+                            @click:clear="carregandoTodasFornecedores('')"
+                        />
+                    </v-col>
+                    <v-col align="end">
+                        <v-btn
+                            @click.prevent="dialogNovoFornecedor = true"
+                            class="text-none"
+                            color="green-darken-1"
+                            prepend-icon="mdi-store-plus"
+                            text="Novo fornecedor"
+                        />
+                    </v-col>
+                </v-row>
             </v-col>
             <v-col
                 cols="6"
-                v-for="(item, id) in fornecedoresFiltrados"
+                v-if="dados.data.length > 0 && viewOption"
+                v-for="(item, id) in dados.data"
                 :key="id"
-                v-if="fornecedoresFiltrados.length > 0 && viewOption"
             >
                 <v-hover>
                     <template v-slot:default="{ isHovering, props }">
                         <v-card
                             v-bind="props"
                             :title="item.razao_social"
+                            prepend-icon="mdi-store"
                             :color="isHovering ? 'green-lighten-5' : undefined"
                             @click.prevent="
-                                ((itemSelecionado = item),
-                                (dialogEditeItem = true))
+                                ((fornecedorSelecionado = item),
+                                (dialogEditeFornecedor = true))
                             "
                         >
-                            <template v-slot:prepend>
-                                <v-icon
-                                    icon="mdi-store"
-                                    color="green-darken-1"
-                                ></v-icon>
-                            </template>
                             <template #subtitle>
                                 <p class="text-body-2 text-disabled">
                                     Criado em:
@@ -58,10 +63,7 @@
                     </template>
                 </v-hover>
             </v-col>
-            <v-col
-                cols="12"
-                v-else-if="fornecedoresFiltrados.length > 0 && !viewOption"
-            >
+            <v-col cols="12" v-else-if="dados.data.length > 0 && !viewOption">
                 <v-table
                     class="bg-green-lighten-5"
                     density="compact"
@@ -77,11 +79,11 @@
                     </thead>
                     <tbody>
                         <tr
-                            v-for="(item, id) in fornecedoresFiltrados"
+                            v-for="(item, id) in dados.data"
                             :key="id"
                             @click.prevent="
-                                ((projetoSelecionado = item),
-                                (dialogEditProjeto = true))
+                                ((fornecedorSelecionado = item),
+                                (dialogEditeFornecedor = true))
                             "
                         >
                             <td>{{ item.razao_social }}</td>
@@ -112,12 +114,12 @@
             </v-col>
             <v-col cols="12">
                 <v-pagination
-                    v-model="fornecedores.current_page"
-                    :length="fornecedores.last_page"
+                    v-model="dados.current_page"
+                    :length="dados.last_page"
                     :total-visible="4"
                     @update:model-value="updatePage"
                     class="position-absolute bottom-0 mb-3"
-                    style="left: 50%; transform: translateX(-50px); z-index: 15"
+                    style="left: 50%; transform: translateX(-50%); z-index: 15"
                     active-color="green-darken-4"
                     color="green-lighten-1"
                     density="comfortable"
@@ -125,16 +127,33 @@
                 ></v-pagination>
             </v-col>
         </v-row>
+
+        <EditeFornecedor
+            v-model="dialogEditeFornecedor"
+            :fornecedor="fornecedorSelecionado"
+            @onCloseDialog="
+                ((dialogEditeFornecedor = false),
+                (fornecedorSelecionado = null))
+            "
+        />
+        
+        <NovoFornecedor
+            v-model="dialogNovoFornecedor"
+            @onCloseDialog="dialogNovoFornecedor = false"
+        />
+
         <NormalFeedback v-model="feedback"></NormalFeedback>
     </DefaultLayout>
 </template>
 
 <script setup>
 import DefaultLayout from "@/Layouts/DefaultLayout.vue";
+import EditeFornecedor from "@/Components/Dialogs/Fornecedores/EditeFornecedor.vue";
+import NovoFornecedor from "@/Components/Dialogs/Fornecedores/NovoFornecedor.vue";
 import EmptyData from "@/Components/EmptyData.vue";
 import NormalFeedback from "@/Components/Feedback/NormalFeedback.vue";
 import { router } from "@inertiajs/vue3";
-import { ref, computed } from "vue";
+import { ref } from "vue";
 
 const props = defineProps({
     fornecedores: Object,
@@ -142,48 +161,61 @@ const props = defineProps({
     preferencias: Object,
 });
 
-const viewOption = ref(props.preferencias?.listagem_menu ?? 0);
-const search = ref("");
-
 const location = [
     { title: "Kronos", disabled: false, href: "/" },
     { title: "Fornecedores", disabled: true },
     { title: "Lista", disabled: true },
 ];
 
-const fornecedoresFiltrados = computed(() => {
-    if (!search.value) {
-        return props.fornecedores.data;
-    }
+const viewOption = ref(props.preferencias?.listagem_menu ?? 0);
+const dados = ref(props.fornecedores ?? []);
+const fornecedorSelecionado = ref(null);
+const search = ref("");
 
-    const termo = search.value.toLowerCase();
-
-    return props.fornecedores.data.filter((item) => {
-        const razao = item.razao_social?.toLowerCase() || "";
-        const nome = item.nome?.toLowerCase() || "";
-
-        return razao.includes(termo) || nome.includes(termo);
-    });
-});
+const dialogEditeFornecedor = ref(false);
+const dialogNovoFornecedor = ref(false);
 
 const updatePage = (page) => {
     router.get(
         route("fornecedor.index"),
-        { page: page },
+        {
+            page: page,
+            search: search.value,
+        },
         {
             preserveState: true,
             preserveScroll: true,
+            onSuccess: (page) => {
+                dados.value = page.props.fornecedores;
+            },
         },
     );
 };
 
-// Feedback var
+// Feedback
 const feedback = ref({
     show: false,
     timeout: 2000,
     color: "success",
     text: "",
 });
+
+function executarBusca() {
+    carregandoTodasFornecedores(search.value);
+}
+async function carregandoTodasFornecedores(termo = "") {
+    await axios
+        .get(route("fornecedor.index"), {
+            params: { search: termo },
+            headers: {
+                Accept: "application/json",
+            },
+        })
+        .then((res) => {
+            dados.value = res.data;
+        })
+        .catch((err) => console.log(err));
+}
 </script>
 
 <style scoped></style>

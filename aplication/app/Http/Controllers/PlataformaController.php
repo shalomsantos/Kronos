@@ -14,29 +14,23 @@ class PlataformaController extends Controller
      */
     public function index(Request $request)
     {
-        $plataformas = Plataforma::with('itens')->get();
-        // $plataformas = PlataformaItemSubitemFornecedor::with('item')->get();
+        $query = Plataforma::with('itens');
 
-        if ($request->expectsJson()) {
-            return response()->json([
-                'success' => true,
-                'data' => $plataformas
-            ], 200);
-        }
+        if ($request->filled('search')) $query->where('nome', 'like', "%{$request->search}%");
+
+        if ($request->expectsJson()) return response()->json($query->get());
+        
         try {
             $usuario_logado = auth()->user();
             $preferencias = $usuario_logado->preferencia;
 
             return Inertia::render('Crud/cadastros/plataformas/index', [
-                'plataformas' => $plataformas,
-                'user' => $usuario_logado,
+                'plataformas'  => $query->get(), 
+                'user'         => $usuario_logado,
                 'preferencias' => $preferencias,
             ]);
         } catch (\Throwable $e) {
-            return response()->json([
-                'success' => false,
-                'message' => $e->getMessage()
-            ], 500);
+            return response()->json(['success' => false, 'message' => $e->getMessage()], 500);
         }
     }
 
