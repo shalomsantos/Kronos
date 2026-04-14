@@ -1,125 +1,124 @@
 <template>
-    <v-dialog v-model="model" max-width="500">
-        <v-toolbar title="Filtro" density="compact"
-            ><v-btn
-                icon="mdi-close"
-                size="small"
-                @click.prevent="
-                    (model = false),
-                    (id = null),
-                    (projeto_id = null),
-                    (status_id = null),
-                    (ano = null),
-                    (created_at_start = null),
-                    (created_at_end = null)
-                "
-            ></v-btn
-        ></v-toolbar>
-        <v-card rounded="0">
-            <v-card-item class="ma-0 pa-2">
-                <v-row class="pa-2">
-                    <v-col cols="3">
-                        <v-text-field
-                            v-model="id"
-                            label="Id"
-                            variant="outlined"
-                            density="compact"
-                            hide-details="auto"
-                            clearable
-                        ></v-text-field>
-                    </v-col>
-                    <v-col cols="9">
-                        <v-select
-                            v-model="projeto_id"
-                            label="Projetos"
-                            :items="itensProjetos"
-                            item-title="label"
-                            item-value="id"
-                            clearable
-                            variant="outlined"
-                            density="compact"
-                            hide-details="auto"
-                        ></v-select>
-                    </v-col>
-                    <v-col cols="3">
-                        <v-text-field
-                            v-model="ano"
-                            label="Ano"
-                            variant="outlined"
-                            density="compact"
-                            hide-details="auto"
-                            clearable
-                        ></v-text-field>
-                    </v-col>
-                    <v-col cols="9">
-                        <v-select
-                            v-model="status_id"
-                            label="Status"
-                            :items="itensStatus"
-                            item-title="label"
-                            item-value="id"
-                            clearable
-                            variant="outlined"
-                            density="compact"
-                            hide-details="auto"
-                        ></v-select>
-                    </v-col>
-                    <v-col cols="12"
-                        ><p class="text-disabled">Criado Entre:</p></v-col
-                    >
-                    <v-col cols="4">
-                        <v-text-field
-                            v-model="created_at_start"
-                            type="date"
-                            label="Início"
-                            variant="outlined"
-                            density="compact"
-                            hide-details="auto"
-                            clearable
-                        ></v-text-field>
-                    </v-col>
-                    <v-col cols="4">
-                        <v-text-field
-                            v-model="created_at_end"
-                            type="date"
-                            label="Fim"
-                            variant="outlined"
-                            density="compact"
-                            hide-details="auto"
-                            clearable
-                        ></v-text-field>
-                    </v-col>
-                    <v-col cols="12" class="d-flex justify-space-between ga-2 pt-3">
-                        <v-btn
-                            class="text-none"
-                            size="large"
-                            color="green-darken-3"
-                            prepend-icon="mdi-filter-outline"
-                            @click.prevent="carregar()"
-                            >Carregar</v-btn
-                        >
-                        <v-btn
-                            class="text-none"
-                            size="large"
-                            color="blue-darken-3"
-                            prepend-icon="mdi-backspace-outline"
-                            @click.prevent="
-                                (id = null),
-                                (projeto_id = null),
-                                (status_id = null),
-                                (ano = null),
-                                (created_at_start = null),
-                                (created_at_end = null)
-                            "
-                        >Limpar</v-btn>
-                    </v-col>
-                </v-row>
-            </v-card-item>
-        </v-card>
-    </v-dialog>
+    <Dialog
+        v-model="model"
+        title="Filtro da base"
+        width="40vw"
+        @onCloseDialog="
+            ((model = false),
+            (id = null),
+            (projeto_id = null),
+            (status_id = null),
+            (ano = null),
+            (created_at_start = null),
+            (created_at_end = null))
+        "
+    >
+        <v-row>
+            <v-col cols="3">
+                <v-text-field
+                    v-model="id"
+                    label="Id"
+                    variant="outlined"
+                    density="compact"
+                    hide-details="auto"
+                    clearable
+                ></v-text-field>
+            </v-col>
+            <v-col cols="9">
+                <v-select
+                    v-model="projeto_id"
+                    label="Projetos"
+                    :items="itensProjetos"
+                    item-title="label"
+                    item-value="id"
+                    clearable
+                    variant="outlined"
+                    density="compact"
+                    hide-details="auto"
+                ></v-select>
+            </v-col>
+            <v-col cols="3">
+                <v-text-field
+                    v-model="ano"
+                    label="Ano"
+                    variant="outlined"
+                    density="compact"
+                    hide-details="auto"
+                    clearable
+                ></v-text-field>
+            </v-col>
+            <v-col cols="9">
+                <v-select
+                    v-model="status_id"
+                    label="Status"
+                    :items="itensStatus"
+                    item-title="label"
+                    item-value="id"
+                    clearable
+                    variant="outlined"
+                    density="compact"
+                    hide-details="auto"
+                ></v-select>
+            </v-col>
+            <v-col cols="12"
+                ><p class="text-disabled">Criado Entre:</p></v-col
+            >
+            <v-col cols="6">
+                <v-text-field
+                    v-model="created_at_start"
+                    type="date"
+                    label="Início"
+                    variant="outlined"
+                    density="compact"
+                    hide-details="auto"
+                    clearable
+                ></v-text-field>
+            </v-col>
+            <v-col cols="6">
+                <v-text-field
+                    v-model="created_at_end"
+                    type="date"
+                    label="Fim"
+                    variant="outlined"
+                    density="compact"
+                    hide-details="auto"
+                    clearable
+                ></v-text-field>
+            </v-col>
+            <v-col
+                cols="12"
+                class="d-flex justify-space-between ga-2 pt-3"
+            >
+                <v-btn
+                    class="text-none"
+                    size="large"
+                    color="green-darken-3"
+                    prepend-icon="mdi-filter-outline"
+                    @click.prevent="carregar()"
+                    >Carregar</v-btn
+                >
+                <v-btn
+                    class="text-none"
+                    size="large"
+                    color="blue-darken-3"
+                    prepend-icon="mdi-backspace-outline"
+                    @click.prevent="
+                        ((id = null),
+                        (projeto_id = null),
+                        (status_id = null),
+                        (ano = null),
+                        (created_at_start = null),
+                        (created_at_end = null))
+                    "
+                    >Limpar</v-btn
+                >
+            </v-col>
+        </v-row>
+    </Dialog>
 </template>
 
 <script setup>
+import Dialog from "../Dialog.vue";
 import { ref, onMounted } from "vue";
 import axios from "axios";
 

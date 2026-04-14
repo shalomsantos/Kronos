@@ -18,15 +18,10 @@
                     prepend-icon="mdi-plus"
                     color="green-darken-1"
                     text="Nova base"
-                    @click="dialogNewBasezero = !dialogNewBasezero"
+                    @click="dialogNewBasezero = true"
                 />
             </v-col>
-            <v-col
-                cols="6"
-                v-if="dados.data.length > 0 && viewOption"
-                v-for="(item, id) in dados.data"
-                :key="id"
-            >
+            <v-col cols="6" v-if="dados.data.length > 0 && viewOption" v-for="(item, id) in dados.data" :key="id">
                 <v-hover>
                     <template v-slot:default="{ isHovering, props }">
                         <v-card
@@ -113,7 +108,7 @@
                         </tr>
                     </thead>
                     <tbody>
-                        <tr v-for="(item, id) in dados" :key="id">
+                        <tr v-for="(item, id) in dados.data" :key="id">
                             <td>{{ item.id }}</td>
                             <td>{{ item.projeto.nome }}</td>
                             <td>{{ item.status.nome }}</td>
@@ -145,12 +140,14 @@
             </v-col>
             <v-col cols="12" class="d-flex justify-center">
                 <v-pagination
-                    v-model="bzeros.current_page"
-                    :length="bzeros.last_page"
+                    v-model="dados.current_page"
+                    :length="dados.last_page"
                     :total-visible="4"
                     @update:model-value="updatePage"
                     active-color="green-darken-4"
                     color="green-lighten-1"
+                    class="position-absolute bottom-0 mb-3"
+                    style="left: 50%; transform: translateX(-50%); z-index: 15"
                     density="comfortable"
                     variant="flat"
                 ></v-pagination>
@@ -160,76 +157,7 @@
         <!-- Dialogs -->
         <FiltroBase v-model="dialogFilter" @onFilter="filtrarBases" />
 
-        <v-dialog v-model="dialogNewBasezero" max-width="650">
-            <v-toolbar title="Nova Base zero" density="compact"
-                ><v-btn
-                    icon="mdi-close"
-                    size="small"
-                    @click.prevent="
-                        ((dialogNewBasezero = false), endingProcess())
-                    "
-                ></v-btn
-            ></v-toolbar>
-            <v-card rounded="0">
-                <v-card-item class="ma-0 pa-2">
-                    <v-row class="pa-2">
-                        <v-col cols="9" class="d-flex ga-2 align-center">
-                            <v-select
-                                v-model="projetosValue"
-                                clearable
-                                label="Projetos"
-                                :items="projetosOptions"
-                                item-title="label"
-                                item-value="id"
-                                variant="outlined"
-                                density="compact"
-                                hide-details="auto"
-                            ></v-select>
-                            <v-btn
-                                class="text-none"
-                                :href="route('projeto.index')"
-                                prepend-icon="mdi-plus"
-                                color="green-darken-1"
-                                >Projeto</v-btn
-                            >
-                        </v-col>
-                        <v-col cols="3">
-                            <v-text-field
-                                v-model="ano"
-                                label="Ano"
-                                variant="outlined"
-                                density="compact"
-                                hide-details="auto"
-                                clearable
-                            ></v-text-field>
-                        </v-col>
-                        <v-col cols="12">
-                            <v-textarea
-                                v-model="inputDescricao"
-                                label="Descrição"
-                                variant="outlined"
-                                density="compact"
-                                clearable
-                                hide-details
-                                rows="2"
-                                auto-grow
-                                counter
-                            ></v-textarea>
-                        </v-col>
-                        <v-col cols="12" class="pt-3">
-                            <v-btn
-                                class="text-none"
-                                color="green-darken-1"
-                                size="large"
-                                prepend-icon="mdi-content-save"
-                                @click.prevent="insertBzero"
-                                >Salvar</v-btn
-                            >
-                        </v-col>
-                    </v-row>
-                </v-card-item>
-            </v-card>
-        </v-dialog>
+        <NovaBase v-model="dialogNewBasezero" :projetos="props.projetos" @onCloseDialog="dialogNewBasezero = false"/>
         <!-- Feedback -->
         <NormalFeedback v-model="feedback" />
     </DefaultLayout>
@@ -238,15 +166,16 @@
 <script setup>
 import NormalFeedback from "@/Components/Feedback/NormalFeedback.vue";
 import FiltroBase from "@/Components/Dialogs/Bzero/FiltroBase.vue";
+import NovaBase from "@/Components/Dialogs/Bzero/NovaBase.vue";
 import DefaultLayout from "@/Layouts/DefaultLayout.vue";
 import EmptyData from "@/Components/EmptyData.vue";
-import { ref, onMounted, computed } from "vue";
 import { router } from "@inertiajs/vue3";
+import { ref } from "vue";
 import axios from "axios";
 
 const props = defineProps({
     bzeros: Object,
-    user: Object,
+    projetos: Object,
     preferencias: Object,
 });
 
@@ -256,17 +185,13 @@ const location = [
 ];
 
 const viewOption = ref(props.preferencias?.listagem_menu ?? 0);
-const dados = computed(() => props.bzeros);
-const projetosValue = ref(null);
-const projetosOptions = ref([]);
-const ano = ref(null);
-const inputDescricao = ref(null);
+const dados = ref(props.bzeros);
 
-onMounted(() => {
-    carregandoTodosProjetos();
-});
+// Dialogs
+const dialogFilter = ref(false);
+const dialogNewBasezero = ref(false);
 
-// Feedback var
+// Feedback
 const feedback = ref({
     show: false,
     timeout: 2000,
@@ -274,23 +199,7 @@ const feedback = ref({
     text: "",
 });
 
-// Dialogs
-const dialogFilter = ref(false);
-const dialogNewBasezero = ref(false);
-
 // Functions
-async function carregandoTodosProjetos() {
-    await axios
-        .get(route("projeto.index"), {
-            headers: {
-                Accept: "application/json",
-            },
-        })
-        .then((res) => {
-            projetosOptions.value = reducingContent(res.data);
-        })
-        .catch((err) => console.log(err));
-}
 async function insertBzero() {
     if (projetosValue.value == null || ano.value == null) {
         alert(
@@ -336,12 +245,6 @@ async function insertBzero() {
             };
         });
 }
-function reducingContent(data) {
-    return data.map((item) => ({
-        id: item.id,
-        label: item.nome || item.label || "",
-    }));
-}
 function endingProcess() {
     carregandoTodosBases();
     projetosValue.value = null;
@@ -354,7 +257,7 @@ async function filtrarBases(filtros) {
     await axios
         .post(route("bzero.filtro"), filtros)
         .then((res) => {
-            dados.data.value = res.data.data ?? [];
+            dados.value = res.data.data || res.data;
             dialogFilter.value = false;
         })
         .catch((err) => console.log(err));
@@ -366,6 +269,9 @@ const updatePage = (page) => {
         {
             preserveState: true,
             preserveScroll: true,
+            onSuccess: (page) => {
+                dados.value = page.props.bzeros;
+            },
         },
     );
 };
