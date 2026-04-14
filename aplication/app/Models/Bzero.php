@@ -28,7 +28,7 @@ class Bzero extends Model
 
     public function plataformas(): BelongsToMany
     {
-        return $this->belongsToMany(Bzero::class, 'bzero_plataforma', 'bzero_id', 'plataforma_id');
+        return $this->belongsToMany(Plataforma::class, 'bzero_plataforma', 'bzero_id', 'plataforma_id');
     }
 
     public function status(): BelongsTo

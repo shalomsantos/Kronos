@@ -5,7 +5,7 @@
         :location="location"
     >
         <v-row dense>
-            <v-col cols="12" class="d-flex justify-end ga-3">
+            <v-col cols="12" class="d-flex justify-end ga-3 mb-1">
                 <v-btn
                     class="text-none"
                     prepend-icon="mdi-filter"
@@ -45,7 +45,7 @@
                             </template>
                             <template v-slot:item>
                                 <v-row no-gutters class="pt-2">
-                                    <v-col cols="4">
+                                    <v-col cols="3">
                                         <p class="text-body-2">Status</p>
                                         <div>
                                             <p
@@ -55,7 +55,7 @@
                                             </p>
                                         </div>
                                     </v-col>
-                                    <v-col cols="4">
+                                    <v-col cols="3">
                                         <p class="text-body-2">Ano</p>
                                         <div>
                                             <p
@@ -65,7 +65,7 @@
                                             </p>
                                         </div>
                                     </v-col>
-                                    <v-col cols="4">
+                                    <v-col cols="3">
                                         <p class="text-body-2">Criado em</p>
                                         <div>
                                             <p
@@ -75,15 +75,30 @@
                                             </p>
                                         </div>
                                     </v-col>
-                                    <v-col cols="12">
-                                        <v-chip
-                                            size="x-small"
-                                            color="green"
-                                            variant="flat"
-                                        >
-                                            {{ item.created_by.name }}
-                                        </v-chip>
+                                    <v-col cols="3">
+                                        <p class="text-body-2">Por</p>
+                                        <div>
+                                            <p
+                                                class="text-body-2 text-disabled"
+                                            >
+                                                {{ item.created_by.name }}
+                                            </p>
+                                        </div>
                                     </v-col>
+                                    
+                                    <v-sheet
+                                            class="d-flex flex-wrap ga-2 bg-transparent pt-3"
+                                        >
+                                            <v-chip
+                                                size="x-small"
+                                                color="green"
+                                                variant="flat"
+                                                v-for="plataforma in item.plataformas"
+                                                :key="plataforma.id"
+                                            >
+                                                {{ plataforma.nome }}
+                                            </v-chip>
+                                        </v-sheet>
                                 </v-row>
                             </template>
                         </v-card>
