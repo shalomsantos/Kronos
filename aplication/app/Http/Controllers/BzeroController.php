@@ -7,6 +7,7 @@ use Carbon\Carbon;
 use Inertia\Inertia;
 use App\Models\Preferencia;
 use App\Models\Bzero;
+use App\Models\PlataformaItemSubitemFornecedor;
 use App\Models\Projeto;
 
 class BzeroController extends Controller
@@ -122,7 +123,15 @@ class BzeroController extends Controller
      */
     public function show(string $id)
     {
-        //
+        $bzero = Bzero::with(['plataformas.itensPivot'])->findOrFail($id);
+
+        $usuario_logado = auth()->user();
+        $preferencias = $usuario_logado->preferencia;
+
+        return Inertia::render('Crud/basezero/EditeBzero', [
+            'bzero' => $bzero,
+            'preferencias' => $preferencias
+        ]);
     }
 
     /**

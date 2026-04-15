@@ -27,6 +27,7 @@
                         <v-card
                             v-bind="props"
                             :color="isHovering ? 'teal-lighten-5' : undefined"
+                            @click="exibirDetalhes(item.id)"
                         >
                             <template v-slot:title>
                                 <v-btn
@@ -193,19 +194,15 @@ const props = defineProps({
     projetos: Object,
     preferencias: Object,
 });
-
 const location = [
     { title: "Kronos", disabled: false, href: "/" },
     { title: "Lista", disabled: true },
 ];
-
 const viewOption = ref(props.preferencias?.listagem_menu ?? 0);
 const dados = ref(props.bzeros);
-
 // Dialogs
 const dialogFilter = ref(false);
 const dialogNewBasezero = ref(false);
-
 // Feedback
 const feedback = ref({
     show: false,
@@ -213,7 +210,6 @@ const feedback = ref({
     color: "success",
     text: "",
 });
-
 // Functions
 async function insertBzero() {
     if (projetosValue.value == null || ano.value == null) {
@@ -276,6 +272,9 @@ async function filtrarBases(filtros) {
             dialogFilter.value = false;
         })
         .catch((err) => console.log(err));
+}
+function exibirDetalhes(id) {
+    router.get(route('bzero.show', id));
 }
 const updatePage = (page) => {
     router.get(
