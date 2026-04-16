@@ -207,7 +207,7 @@ import Dialog from "../Dialog.vue";
 const props = defineProps({
     plataforma: Object,
 });
-const emit = defineEmits(['onCloseDialog']);
+const emit = defineEmits(['onCloseDialog', 'refresh']);
 const inputIdPlataforma = ref("");
 const inputPlataforma = ref("");
 const inputDescricao = ref("");
@@ -295,7 +295,7 @@ const onlyNumbers = (event) => {
     }
 };
 // metodos principais
-const updatePlataforma = async () => {
+const updatePlataforma = async() => {
     let plataforma = {
         id: inputIdPlataforma.value,
         nome: inputPlataforma.value,
@@ -310,14 +310,15 @@ const updatePlataforma = async () => {
         qt_unidade_cot: qt_unidade_cot.value,
         qt_multip_uni_cot: qt_multip_uni_cot.value,
     };
-    atualizarPlataforma(plataforma);
-    inserirAssociacaoItemSubitemFornecedor(associacao);
+    await atualizarPlataforma(plataforma);
+    await inserirAssociacaoItemSubitemFornecedor(associacao);
     valueItens.value = null;
     valueSubItens.value = null;
     valueFornecedores.value = null;
     vl_unit_cot.value = 0;
     qt_unidade_cot.value = 1;
     qt_multip_uni_cot.value = 1;
+    emit('refresh');
 };
 const carregandoPlataformaItemSubitemFornecedor = async (id) => {
     if (!id) return;
@@ -416,15 +417,7 @@ const atualizarPlataforma = async (plataforma) => {
     await axios
         .put(route("plataforma.update", { id: plataforma.id }), plataforma)
         .then((res) => {
-            if (res.data.success) {
-                feedback.value = {
-                    show: true,
-                    timeout: 4000,
-                    color: "success",
-                    text: res.data.message,
-                };
-                return;
-            }
+            if (res.data.success) return;
             feedback.value = {
                 show: true,
                 timeout: 4000,
@@ -446,9 +439,7 @@ const inserirAssociacaoItemSubitemFornecedor = async (el) => {
         .post("/plataformaitemsubitemfornecedor", el)
         .then((res) => {
             if (res.data.success) {
-                carregandoPlataformaItemSubitemFornecedor(
-                    inputIdPlataforma.value,
-                );
+                carregandoPlataformaItemSubitemFornecedor(inputIdPlataforma.value);
                 feedback.value = {
                     show: true,
                     timeout: 4000,

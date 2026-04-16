@@ -128,6 +128,7 @@
         <EditePlataforma
             v-model="dialogEditePlataforma"
             :plataforma="plataformaSelecionada"
+            @refresh="carregandoTodasPlataformas"
             @onCloseDialog="
                 ((plataformaSelecionada = null),
                 (dialogEditePlataforma = false))
@@ -221,6 +222,7 @@ async function carregandoTodasPlataformas(termo = "") {
             },
         })
         .then((res) => {
+            dados.value = [];
             dados.value = res.data;
         })
         .catch((err) => console.log(err));

@@ -50,12 +50,7 @@
                     </template>
                 </v-card>
             </v-col>
-            <v-col
-                cols="12"
-                v-if="dados && viewOption"
-                v-for="(item, id) in dados.plataformas"
-                :key="id"
-            >
+            <v-col cols="12" v-if="dados && viewOption" v-for="(item, id) in dados.plataformas" :key="id">
                 <v-card v-bind="props" color="green-lighten-4">
                     <template #title>
                         {{ item.nome }}
@@ -94,7 +89,8 @@
                                         <p>{{ itemPivot.qt_multip_uni_cot }}</p>
                                         <div class="d-flex ga-1">
                                             <p class="text-caption text-disabled">R$</p>
-                                            <p class="">{{ (
+                                            <p class="">{{ 
+                                                (
                                                     itemPivot.vl_unit_cot *
                                                     itemPivot.qt_unidade_cot *
                                                     itemPivot.qt_multip_uni_cot

@@ -46,6 +46,7 @@ class PlataformaItemSubitemFornecedorController extends Controller
             ]);
             return response()->json([
                 'success' => true,
+                'message' => 'Operação bem sucedida!',
                 'data' => $relationchip
             ]);
         } catch (\Throwable $e) {
