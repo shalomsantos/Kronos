@@ -13,60 +13,42 @@
                         </p>
                     </template>
                     <template #text>
-                        <v-row>
-                            <v-col cols="4" lg="2">
+                        <v-sheet class="d-flex ga-3">
+                            <v-sheet>
                                 <p class="text-body-2">Status</p>
                                 <div>
                                     <p class="text-body-2 text-disabled">
                                         {{ dados.status.nome }}
                                     </p>
                                 </div>
-                            </v-col>
-                            <v-col cols="4" lg="2">
+                            </v-sheet>
+                            <v-sheet>
                                 <p class="text-body-2">Ano</p>
                                 <div>
                                     <p class="text-body-2 text-disabled">
                                         {{ dados.ano }}
                                     </p>
                                 </div>
-                            </v-col>
-                            <v-col cols="4" lg="2">
+                            </v-sheet>
+                            <v-sheet>
                                 <p class="text-body-2">Criado em</p>
                                 <div>
                                     <p class="text-body-2 text-disabled">
                                         {{ isDate(dados.created_at) }}
                                     </p>
                                 </div>
-                            </v-col>
-                            <v-col cols="4" lg="2">
+                            </v-sheet>
+                            <v-sheet>
                                 <p class="text-body-2">Por</p>
                                 <div>
                                     <p class="text-body-2 text-disabled">
                                         {{ dados.created_by.name }}
                                     </p>
                                 </div>
-                            </v-col>
-                        </v-row>
+                            </v-sheet>
+                        </v-sheet>
                     </template>
                 </v-card>
-            </v-col>
-            <v-col
-                cols="12"
-                v-if="dados && !viewOption"
-            >
-                <v-table density="compact" striped="even">
-                        <thead>
-                            <tr>
-                                <th class="text-left normal">Item</th>
-                                <th class="text-left normal">Subitem</th>
-                                <th class="text-left normal">Fornecedor</th>
-                                <th class="text-left small">Valor Unit.</th>
-                                <th class="text-left small">Quant.</th>
-                                <th class="text-left small">Unid.</th>
-                                <th class="text-left small">Valor Total</th>
-                            </tr>
-                        </thead>
-                </v-table>
             </v-col>
             <v-col
                 cols="6"
@@ -80,7 +62,7 @@
                     </template>
                     <template #item>
                         <v-sheet class="d-flex flex-wrap ga-2 pa-1">
-                            <v-card
+                            <v-card 
                                 v-for="itemPivot in item.itens_pivot"
                                 :key="id"
                                 elevation="5"
@@ -99,43 +81,98 @@
                     </template>
                 </v-card>
             </v-col>
-            <v-col
-                cols="12"
-                v-else-if="dados && !viewOption"
-                v-for="plataforma in dados.plataformas"
-                :key="plataforma.id"
-            >
-                <h4>{{ plataforma.nome }}</h4>
-                <v-table density="compact" striped="even">
-                    <tbody>
-                        <tr
-                            v-for="itemPivot in plataforma.itens_pivot"
-                            :key="id"
+            <v-col cols="12" v-else-if="dados && !viewOption">
+                <v-row
+                    no-gutters
+                    class="bg-grey-lighten-4 pa-2 d-none d-md-flex"
+                >
+                    <v-col cols="2">Item</v-col>
+                    <v-col cols="2">Subitem</v-col>
+                    <v-col cols="2">Fornecedor</v-col>
+                    <v-col cols="1" class="text-right">Vl. unit.</v-col>
+                    <v-col cols="1" class="text-center">Qtd.</v-col>
+                    <v-col cols="1" class="text-center">Mult.</v-col>
+                    <v-col cols="1" class="text-right">Total</v-col>
+                    <v-col class="text-right"></v-col>
+                </v-row>
+
+                <div
+                    v-for="plataforma in dados.plataformas"
+                    :key="plataforma.id"
+                    class="mb-4"
+                >
+                    <v-row no-gutters>
+                        <v-col cols="12" class="bg-green-lighten-5 pa-2 border">
+                            <h4 class="text-green-darken-3">
+                                <v-icon
+                                    icon="mdi-layers-outline"
+                                    start
+                                ></v-icon>
+                                {{ plataforma.nome }}
+                            </h4>
+                        </v-col>
+                    </v-row>
+
+                    <v-row
+                        v-for="itemPivot in plataforma.itens_pivot"
+                        :key="itemPivot.id"
+                        no-gutters
+                        class="bg-grey-lighten-4 align-center pa-2"
+                    >
+                        <v-col cols="12" md="2" class="text-truncate">
+                            {{ itemPivot.item.nome }}
+                        </v-col>
+                        <v-col cols="12" md="2" class="text-truncate">
+                            {{ itemPivot.subitem.nome }}
+                        </v-col>
+                        <v-col
+                            cols="12"
+                            md="2"
+                            class="text-truncate text-grey-darken-1"
                         >
-                            <td class="normal">{{ itemPivot.item.nome }}</td>
-                            <td class="normal">{{ itemPivot.subitem.nome }}</td>
-                            <td class="normal">{{ itemPivot.fornecedor?.razao_social }}</td>
-                            <td class="small">
-                                R$ {{ itemPivot.vl_unit_cot.replace(".", ",") }}
-                            </td>
-                            <td class="small">{{ itemPivot.qt_unidade_cot }}</td>
-                            <td class="small">{{ itemPivot.qt_multip_uni_cot }}</td>
-                            <td class="small">
-                                R$
-                                {{
-                                    (
-                                        itemPivot.vl_unit_cot *
-                                        itemPivot.qt_unidade_cot *
-                                        itemPivot.qt_multip_uni_cot
-                                    ).toLocaleString("pt-BR", {
-                                        minimumFractionDigits: 2,
-                                        maximumFractionDigits: 2,
-                                    })
-                                }}
-                            </td>
-                        </tr>
-                    </tbody>
-                </v-table>
+                            {{ itemPivot.fornecedor?.razao_social }}
+                        </v-col>
+                        <v-col cols="3" md="1" class="text-right">
+                            R$
+                            {{
+                                itemPivot.vl_unit_cot
+                                    .toString()
+                                    .replace(".", ",")
+                            }}
+                        </v-col>
+                        <v-col cols="3" md="1" class="text-center">
+                            {{ itemPivot.qt_unidade_cot }}
+                        </v-col>
+                        <v-col cols="3" md="1" class="text-center">
+                            {{ itemPivot.qt_multip_uni_cot }}
+                        </v-col>
+                        <v-col cols="3" md="1" class="text-right">
+                            R$
+                            {{
+                                (
+                                    itemPivot.vl_unit_cot *
+                                    itemPivot.qt_unidade_cot *
+                                    itemPivot.qt_multip_uni_cot
+                                ).toLocaleString("pt-BR", {
+                                    minimumFractionDigits: 2,
+                                })
+                            }}
+                        </v-col>
+                        <v-col class="ps-4">
+                            <v-menu location="top">
+                                <template v-slot:activator="{ props }">
+                                    <v-btn
+                                        v-bind="props"
+                                        icon="mdi-dots-vertical"
+                                        variant="text"
+                                        density="compact"
+                                    ></v-btn>
+                                </template>
+                                <v-list :items="items" density="compact" />
+                            </v-menu>
+                        </v-col>
+                    </v-row>
+                </div>
             </v-col>
             <v-col cols="12" v-else>
                 <EmptyData />
@@ -150,6 +187,7 @@ import NormalFeedback from "@/Components/Feedback/NormalFeedback.vue";
 import DefaultLayout from "@/Layouts/DefaultLayout.vue";
 import EmptyData from "@/Components/EmptyData.vue";
 import { ref } from "vue";
+import { ClickOutside } from "vuetify/directives";
 
 const props = defineProps({
     bzero: Object,
@@ -172,21 +210,32 @@ const feedback = ref({
     color: "success",
     text: "",
 });
+
+const items = [
+    {
+        title: "Anexar",
+        value: 1,
+        props: {
+            prependIcon: "mdi-tag",
+        },
+    },
+    {
+        title: "Editar",
+        value: 2,
+        props: {
+            prependIcon: "mdi-pencil",
+        },
+    },
+];
 </script>
 
 <style scoped>
 .border-s-lg {
     border-color: #81c784 !important;
 }
-th.normal, td.normal{
-    width: 10vw;
-    margin: 0;
-    padding: 0;
-}
-th.small, td.small{
-    width: 3vw;
-    margin: 0;
-    padding: 0;
-    background-color: rgba(128, 128, 128, 0.474);
+.text-truncate {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 </style>

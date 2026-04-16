@@ -124,7 +124,7 @@
                         </tr>
                     </thead>
                     <tbody>
-                        <tr v-for="(item, id) in dados.data" :key="id">
+                        <tr v-for="(item, id) in dados.data" :key="id" @click="exibirDetalhes(item.id)">
                             <td>{{ item.id }}</td>
                             <td>{{ item.projeto.nome }}</td>
                             <td>{{ item.status.nome }}</td>

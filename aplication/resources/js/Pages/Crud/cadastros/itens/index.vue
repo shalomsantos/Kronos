@@ -1,90 +1,90 @@
 <template>
     <DefaultLayout v-model="viewOption" title="Itens" :location="location">
         <v-row dense>
-            <v-col cols="4">
-                <v-text-field
-                    v-model="search"
-                    placeholder="Aperte a tecla enter para buscar..."
-                    variant="outlined"
-                    density="compact"
-                    hide-details="auto"
-                    color="green-darken-3"
-                    clearable
-                    append-inner-icon="mdi-magnify"
-                    @keydown.enter="executarBusca"
-                    @click:clear="carregandoTodasItens('')"
-                />
-            </v-col>
-            <v-col align="end">
-                <v-btn
-                    @click.prevent="dialogNovoItem = true"
-                    class="text-none"
-                    color="green-darken-1"
-                    prepend-icon="mdi-invoice-text-plus"
-                    text="Novo item"
-                />
-            </v-col>
-            <v-col cols="12" v-if="dados.length > 0 && viewOption">
+            <v-col cols="12">
                 <v-row>
-                    <v-col cols="6" v-for="(item, id) in dados" :key="id">
-                        <v-hover>
-                            <template v-slot:default="{ isHovering, props }">
-                                <v-card
-                                    v-bind="props"
-                                    :title="item.nome"
-                                    prepend-icon="mdi-invoice-list"
-                                    :color="
-                                        isHovering
-                                            ? 'green-lighten-5'
-                                            : undefined
-                                    "
-                                    @click.prevent="
-                                        ((itemSelecionado = item),
-                                        (dialogEditeItem = true))
-                                    "
-                                >
-                                    <template #subtitle>
-                                        <v-row no-gutters>
-                                            <v-col cols="2">
-                                                <p
-                                                    class="text-body-2 text-disabled"
-                                                >
-                                                    Criado em:
-                                                    {{
-                                                        isDate(item.created_at)
-                                                    }}
-                                                </p>
-                                                <p
-                                                    class="text-body-2 text-disabled"
-                                                >
-                                                    Por:
-                                                    {{ item.created_by.name }}
-                                                </p>
-                                            </v-col>
-                                        </v-row>
-                                    </template>
-                                    <template #item>
-                                        <v-sheet
-                                            class="d-flex flex-wrap ga-2 bg-transparent pt-3"
-                                        >
-                                            <v-chip
-                                                size="x-small"
-                                                color="green"
-                                                variant="flat"
-                                                v-for="(
-                                                    subitem, id
-                                                ) in item.subitens"
-                                                :key="id"
-                                            >
-                                                {{ subitem.nome }}
-                                            </v-chip>
-                                        </v-sheet>
-                                    </template>
-                                </v-card>
-                            </template>
-                        </v-hover>
+                    <v-col cols="4">
+                        <v-text-field
+                            v-model="search"
+                            placeholder="Aperte a tecla enter para buscar..."
+                            variant="outlined"
+                            density="compact"
+                            hide-details="auto"
+                            color="green-darken-3"
+                            clearable
+                            append-inner-icon="mdi-magnify"
+                            @keydown.enter="executarBusca"
+                            @click:clear="carregandoTodasItens('')"
+                        />
+                    </v-col>
+                    <v-col align="end">
+                        <v-btn
+                            @click.prevent="dialogNovoItem = true"
+                            class="text-none"
+                            color="green-darken-1"
+                            prepend-icon="mdi-invoice-text-plus"
+                            text="Novo item"
+                        />
                     </v-col>
                 </v-row>
+            </v-col>
+            <v-col cols="6" v-if="dados.length > 0 && viewOption" v-for="(item, id) in dados" :key="id">
+                <v-hover>
+                    <template v-slot:default="{ isHovering, props }">
+                        <v-card
+                            v-bind="props"
+                            :title="item.nome"
+                            prepend-icon="mdi-invoice-list"
+                            :color="
+                                isHovering
+                                    ? 'green-lighten-5'
+                                    : undefined
+                            "
+                            @click.prevent="
+                                ((itemSelecionado = item),
+                                (dialogEditeItem = true))
+                            "
+                        >
+                            <template #subtitle>
+                                <v-row no-gutters>
+                                    <v-col cols="2">
+                                        <p
+                                            class="text-body-2 text-disabled"
+                                        >
+                                            Criado em:
+                                            {{
+                                                isDate(item.created_at)
+                                            }}
+                                        </p>
+                                        <p
+                                            class="text-body-2 text-disabled"
+                                        >
+                                            Por:
+                                            {{ item.created_by.name }}
+                                        </p>
+                                    </v-col>
+                                </v-row>
+                            </template>
+                            <template #item>
+                                <v-sheet
+                                    class="d-flex flex-wrap ga-2 bg-transparent pt-3"
+                                >
+                                    <v-chip
+                                        size="x-small"
+                                        color="green"
+                                        variant="flat"
+                                        v-for="(
+                                            subitem, id
+                                        ) in item.subitens"
+                                        :key="id"
+                                    >
+                                        {{ subitem.nome }}
+                                    </v-chip>
+                                </v-sheet>
+                            </template>
+                        </v-card>
+                    </template>
+                </v-hover>
             </v-col>
             <v-col cols="12" v-else-if="dados.length > 0 && !viewOption">
                 <v-table
