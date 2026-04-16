@@ -106,21 +106,34 @@
                             v-for="(item, id) in dados"
                             :key="id"
                             @click.prevent="
-                                ((projetoSelecionado = item),
-                                (dialogEditProjeto = true))
+                                ((itemSelecionado = item),
+                                (dialogEditeItem = true))
                             "
                         >
                             <td>{{ item.nome }}</td>
                             <td>
                                 <v-chip
+                                    v-for="(subitem, idx) in item.subitens.slice(0, 2)"
+                                    :key="idx"
                                     size="x-small"
-                                    color="green"
-                                    variant="flat"
-                                    v-for="(subitem, id) in item.subitens"
-                                    :key="id"
+                                    color="green-darken-1"
+                                    variant="tonal"
+                                    class="font-weight-bold"
                                 >
                                     {{ subitem.nome }}
                                 </v-chip>
+                                <v-btn
+                                    v-if="item.subitens.length > 2"
+                                    class="text-none text-grey-darken-1 cursor-pointer"
+                                    variant="text"
+
+                                    @click.prevent="
+                                        ((itemSelecionado = item),
+                                        (dialogEditeItem = true))
+                                    "
+                                >
+                                    +{{ item.subitens.length - 2 }} itens
+                                </v-btn>
                             </td>
                             <td>{{ isDate(item.created_at) }}</td>
                             <td>
@@ -215,4 +228,8 @@ async function carregandoTodasItens(termo = "") {
 }
 </script>
 
-<style scoped></style>
+<style scoped>
+.cursor-pointer:hover{
+    text-decoration: underline;
+}
+</style>

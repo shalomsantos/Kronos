@@ -110,14 +110,14 @@
                                 >
                                     {{ fornecedor.razao_social }}
                                 </v-chip>
-                                <v-chip
+                                <a
                                     v-if="item.fornecedores.length > 2"
                                     size="x-small"
                                     variant="text"
                                     class="text-grey-darken-1"
                                 >
                                     +{{ item.fornecedores.length - 2 }} itens
-                                </v-chip>
+                                </a>
                             </td>
                             <td>{{ isDate(item.created_at) }}</td>
                             <td>

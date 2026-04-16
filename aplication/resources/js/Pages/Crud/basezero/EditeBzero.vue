@@ -13,7 +13,7 @@
                         </p>
                     </template>
                     <template #text>
-                        <v-sheet class="d-flex ga-3">
+                        <v-sheet class="d-flex ga-6">
                             <v-sheet>
                                 <p class="text-body-2">Status</p>
                                 <div>
@@ -51,20 +51,25 @@
                 </v-card>
             </v-col>
             <v-col
-                cols="6"
+                cols="12"
                 v-if="dados && viewOption"
                 v-for="(item, id) in dados.plataformas"
                 :key="id"
             >
-                <v-card v-bind="props">
+                <v-card v-bind="props" color="green-lighten-4">
                     <template #title>
                         {{ item.nome }}
                     </template>
                     <template #item>
-                        <v-sheet class="d-flex flex-wrap ga-2 pa-1">
-                            <v-card 
+                        <v-sheet
+                            class="d-flex flex-wrap ga-2 pa-1"
+                            color="transparent"
+                        >
+                            <v-card
                                 v-for="itemPivot in item.itens_pivot"
                                 :key="id"
+                                min-width="300px"
+                                color="green-lighten-5"
                                 elevation="5"
                             >
                                 <template #title>
@@ -75,6 +80,29 @@
                                 </template>
                                 <template #text>
                                     {{ itemPivot.fornecedor?.razao_social }}
+                                </template>
+                                <template #actions>
+                                    <v-sheet
+                                        class="d-flex justify-space-between w-100"
+                                        color="transparent"
+                                    >
+                                        <div class="d-flex ga-1">
+                                            <p class="text-caption text-disabled">R$</p>
+                                            <p class="">{{ itemPivot.vl_unit_cot.toString().replace(".", ",") }}</p>
+                                        </div>
+                                        <p>{{ itemPivot.qt_unidade_cot }}</p>
+                                        <p>{{ itemPivot.qt_multip_uni_cot }}</p>
+                                        <div class="d-flex ga-1">
+                                            <p class="text-caption text-disabled">R$</p>
+                                            <p class="">{{ (
+                                                    itemPivot.vl_unit_cot *
+                                                    itemPivot.qt_unidade_cot *
+                                                    itemPivot.qt_multip_uni_cot
+                                                ).toLocaleString("pt-BR", {
+                                                    minimumFractionDigits: 2,
+                                                }) }}</p>
+                                        </div>
+                                    </v-sheet>
                                 </template>
                             </v-card>
                         </v-sheet>

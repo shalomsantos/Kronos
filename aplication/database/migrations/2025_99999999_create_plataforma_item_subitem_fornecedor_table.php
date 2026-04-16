@@ -28,6 +28,10 @@ return new class extends Migration
             $table->unsignedDecimal('vl_unit_cot')->default(0);
             $table->unsignedTinyInteger('qt_unidade_cot')->default(1);
             $table->unsignedTinyInteger('qt_multip_uni_cot')->default(1);
+
+            $table->unsignedDecimal('vl_unit_apr')->default(0);
+            $table->unsignedTinyInteger('qt_unidade_apr')->default(1);
+            $table->unsignedTinyInteger('qt_multip_uni_apr')->default(1);
             // stamps
             $table->foreignId('created_by')->nullable()->constrained('users')->nullOnDelete();
             $table->foreignId('updated_by')->nullable()->constrained('users')->nullOnDelete();
