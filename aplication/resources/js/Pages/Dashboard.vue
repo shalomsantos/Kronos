@@ -26,22 +26,11 @@
                     <template v-slot:default="{ isHovering, props }">
                         <v-card
                             v-bind="props"
-                            :color="isHovering ? 'teal-lighten-5' : undefined"
+                            :color="isHovering ? 'green-lighten-5' : undefined"
+                            class="position-relative"
                             @click="exibirDetalhes(item.id)"
                         >
                             <template v-slot:title>
-                                <v-btn
-                                    variant="outlined"
-                                    color="green-darken-1"
-                                >
-                                    <p class="text-h6 text-green-darken-1">
-                                        #{{ item.id }}
-                                    </p>
-                                    <v-icon
-                                        icon="mdi-text-box"
-                                        color="green-darken-1"
-                                    ></v-icon>
-                                </v-btn>
                                 {{ item.projeto.nome }}
                             </template>
                             <template v-slot:item>
@@ -101,6 +90,13 @@
                                             </v-chip>
                                         </v-sheet>
                                 </v-row>
+                                <v-chip
+                                    variant="flat"
+                                    color="green-darken-1"
+                                    class="position-absolute top-0 right-0 rounded-bs-xl rounded-t-0"
+                                >
+                                    {{ item.id }}
+                                </v-chip>
                             </template>
                         </v-card>
                     </template>
@@ -108,8 +104,8 @@
             </v-col>
             <v-col cols="12" v-else-if="dados.data.length > 0 && !viewOption">
                 <v-table
+                    class="rounded-lg elevation-3"
                     density="compact"
-                    class="bg-green-lighten-5"
                     striped="even"
                 >
                     <thead>

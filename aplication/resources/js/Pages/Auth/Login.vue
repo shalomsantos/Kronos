@@ -5,7 +5,19 @@
         <v-row no-gutters class="fill-height">
             <v-col
                 cols="12"
-                md="6"
+                md="5"
+                class="bg-green-darken-4 d-none d-md-flex align-center justify-center"
+            >
+                <div class="text-center">
+                    <v-icon size="150" color="white"
+                        >mdi-clock-outline</v-icon
+                    >
+                    <h2 class="text-h2 text-white font-weight-thin">Kronos</h2>
+                </div>
+            </v-col>
+            <v-col
+                cols="12"
+                md="7"
                 class="d-flex align-center justify-center bg-white"
             >
                 <v-card flat max-width="400" width="100%" class="pa-4">
@@ -68,19 +80,6 @@
                         </form>
                     </v-card-text>
                 </v-card>
-            </v-col>
-
-            <v-col
-                cols="12"
-                md="6"
-                class="bg-green-darken-4 d-none d-md-flex align-center justify-center"
-            >
-                <div class="text-center">
-                    <v-icon size="150" color="white"
-                        >mdi-clock-outline</v-icon
-                    >
-                    <h2 class="text-h2 text-white font-weight-thin">Kronos</h2>
-                </div>
             </v-col>
         </v-row>
     </v-container>

@@ -12,6 +12,7 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('bzero_plataforma', function (Blueprint $table) {
+            $table->id();
             $table->foreignId('bzero_id')->nullable()->constrained();
 
             $table->foreignId('plataforma_id')->nullable()->constrained();

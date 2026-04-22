@@ -49,8 +49,42 @@
                         </v-sheet>
                     </template>
                 </v-card>
+                <!-- {{ plataformas }} -->
+                <v-row class="py-3">
+                    <v-col cols="6">
+                        <v-select
+                            v-model="valuePlataforma"
+                            clearable
+                            variant="outlined"
+                            label="Selecione uma plataforma"
+                            color="green-darken-3"
+                            :items="plataformas"
+                            item-title="nome"
+                            item-value="id"
+                            hide-details="auto"
+                        >
+                            <template #append>
+                                <v-btn
+                                    variant="flat"
+                                    color="green-darken-3"
+                                    icon="mdi-plus"
+                                    class="rounded"
+                                    :disabled="
+                                        valuePlataforma == null ? true : false
+                                    "
+                                    @click.prevent="hellow"
+                                />
+                            </template>
+                        </v-select>
+                    </v-col>
+                </v-row>
             </v-col>
-            <v-col cols="12" v-if="dados && viewOption" v-for="(item, id) in dados.plataformas" :key="id">
+            <v-col
+                cols="12"
+                v-if="dados && viewOption"
+                v-for="(item, id) in dados.plataformas"
+                :key="id"
+            >
                 <v-card v-bind="props" color="green-lighten-4">
                     <template #title>
                         {{ item.nome }}
@@ -68,13 +102,25 @@
                                 elevation="5"
                             >
                                 <template #title>
-                                    {{ itemPivot.subitem.nome }}
+                                    <v-sheet
+                                        class="d-flex justify-space-between"
+                                        color="transparent"
+                                    >
+                                        {{ itemPivot.subitem.nome }}
+                                        <v-btn
+                                            variant="text"
+                                            icon="mdi-dots-vertical"
+                                        ></v-btn>
+                                    </v-sheet>
                                 </template>
                                 <template #subtitle>
                                     {{ itemPivot.item.nome }}
                                 </template>
                                 <template #text>
-                                    {{ itemPivot.fornecedor?.razao_social }}
+                                    {{
+                                        itemPivot.fornecedor?.razao_social ??
+                                        "Sem"
+                                    }}
                                 </template>
                                 <template #actions>
                                     <v-sheet
@@ -82,21 +128,38 @@
                                         color="transparent"
                                     >
                                         <div class="d-flex ga-1">
-                                            <p class="text-caption text-disabled">R$</p>
-                                            <p class="">{{ itemPivot.vl_unit_cot.toString().replace(".", ",") }}</p>
+                                            <p
+                                                class="text-caption text-disabled"
+                                            >
+                                                R$
+                                            </p>
+                                            <p class="">
+                                                {{
+                                                    itemPivot.vl_unit_cot
+                                                        .toString()
+                                                        .replace(".", ",")
+                                                }}
+                                            </p>
                                         </div>
                                         <p>{{ itemPivot.qt_unidade_cot }}</p>
                                         <p>{{ itemPivot.qt_multip_uni_cot }}</p>
                                         <div class="d-flex ga-1">
-                                            <p class="text-caption text-disabled">R$</p>
-                                            <p class="">{{ 
-                                                (
-                                                    itemPivot.vl_unit_cot *
-                                                    itemPivot.qt_unidade_cot *
-                                                    itemPivot.qt_multip_uni_cot
-                                                ).toLocaleString("pt-BR", {
-                                                    minimumFractionDigits: 2,
-                                                }) }}</p>
+                                            <p
+                                                class="text-caption text-disabled"
+                                            >
+                                                R$
+                                            </p>
+                                            <p class="">
+                                                {{
+                                                    (
+                                                        itemPivot.vl_unit_cot *
+                                                        itemPivot.qt_unidade_cot *
+                                                        itemPivot.qt_multip_uni_cot
+                                                    ).toLocaleString("pt-BR", {
+                                                        minimumFractionDigits: 2,
+                                                    })
+                                                }}
+                                            </p>
                                         </div>
                                     </v-sheet>
                                 </template>
@@ -210,12 +273,14 @@
 import NormalFeedback from "@/Components/Feedback/NormalFeedback.vue";
 import DefaultLayout from "@/Layouts/DefaultLayout.vue";
 import EmptyData from "@/Components/EmptyData.vue";
-import { ref } from "vue";
-import { ClickOutside } from "vuetify/directives";
+import { ref, computed } from "vue";
+import axios from "axios";
+import { data } from "autoprefixer";
 
 const props = defineProps({
     bzero: Object,
     preferencias: Object,
+    plataformas: Object,
 });
 
 const location = [
@@ -226,6 +291,8 @@ const location = [
 
 const viewOption = ref(props.preferencias?.listagem_menu ?? 0);
 const dados = ref(props.bzero);
+const valuePlataforma = ref(null);
+const plataformas = computed(() => props.plataformas);
 
 // Feedback
 const feedback = ref({
@@ -251,6 +318,38 @@ const items = [
         },
     },
 ];
+
+async function hellow() {
+    await axios
+        .post(route("associar.plataforma", { id: dados.value.id }), { plataforma_id: valuePlataforma.value })
+        .then((res) => {
+            if (res.data.success) {
+                dados.value = res.data.data;
+                valuePlataforma.value = null;
+                feedback.value = {
+                    show: true,
+                    timeout: 3000,
+                    color: "success",
+                    text: res.data.message,
+                };
+                return;
+            }
+            feedback.value = {
+                show: true,
+                timeout: 3000,
+                color: "error",
+                text: res.data.message,
+            };
+        })
+        .catch((err) => {
+            feedback.value = {
+                show: true,
+                timeout: 3000,
+                color: "error",
+                text: err.data.message,
+            };
+        });
+}
 </script>
 
 <style scoped>

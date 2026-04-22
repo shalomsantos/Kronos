@@ -7,7 +7,8 @@ use Carbon\Carbon;
 use Inertia\Inertia;
 use App\Models\Preferencia;
 use App\Models\Bzero;
-use App\Models\PlataformaItemSubitemFornecedor;
+use App\Models\BzeroPlataforma;
+use App\Models\Plataforma;
 use App\Models\Projeto;
 
 class BzeroController extends Controller
@@ -130,6 +131,7 @@ class BzeroController extends Controller
 
         return Inertia::render('Crud/basezero/EditeBzero', [
             'bzero' => $bzero,
+            'plataformas' => Plataforma::all(),
             'preferencias' => $preferencias
         ]);
     }
@@ -158,6 +160,33 @@ class BzeroController extends Controller
         //
     }
 
+    public function associarPLataforma(string $id, Request $request) 
+    {
+        try {
+            $associado = BzeroPlataforma::insert([
+                'bzero_id' => $id,
+                'plataforma_id' => $request->input('plataforma_id')
+            ]);
+            if ($associado) {
+                $data = Bzero::with(['plataformas.itensPivot'])->findOrFail($id);
+                return response()->json([
+                    'success' => true,
+                    'message' => 'Associado com sucesso!',
+                    'data' => $data
+                ]);
+            }
+            return response()->json([
+                'success' => false,
+                'message' => "Houve um erro no procedimento de associação de registro."
+            ]);
+        } catch (\Throwable $e) {
+            return response()->json([
+                'success' => false,
+                'message' => "Erro ao tentar associar a plataforma a bzero.",
+                'details' => $e->getMessage()
+            ]);
+        }
+    }
     public function modify(Request $request)
     {
         try {

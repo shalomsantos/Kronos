@@ -79,7 +79,7 @@
             </v-col>
             <v-col cols="12" v-else-if="dados.length > 0 && !viewOption">
                 <v-table
-                    class="bg-green-lighten-5"
+                    class="rounded-lg elevation-3"
                     density="compact"
                     striped="even"
                 >
@@ -95,7 +95,10 @@
                         <tr
                             v-for="(item, id) in dados"
                             :key="id"
-                            @click.prevent="editePlataforma(item)"
+                            @click.prevent="
+                                ((plataformaSelecionada = item),
+                                (dialogEditePlataforma = true))
+                            "
                         >
                             <td>{{ item.nome }}</td>
                             <td>{{ isDate(item.created_at) }}</td>

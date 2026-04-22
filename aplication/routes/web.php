@@ -19,6 +19,7 @@ Route::middleware('auth')->group(function () {
     // Bzero
     Route::resource('bzero', BzeroController::class);
     Route::post('/bzerofiltro', [BzeroController::class, 'filtro'])->name('bzero.filtro');
+    Route::post('/associar/plataforma/{id}', [BzeroController::class, 'associarPLataforma'])->name('associar.plataforma');
     Route::post('/preferencia', [BzeroController::class, 'modify'])->name('preferencia.modify');
     // Projetos
     Route::resource('projeto', ProjetoController::class);
