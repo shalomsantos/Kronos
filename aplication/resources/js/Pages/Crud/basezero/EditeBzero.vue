@@ -1,7 +1,7 @@
 <template>
     <DefaultLayout
         v-model="viewOption"
-        title="Bases Lista"
+        title="Edição da base"
         :location="location"
     >
         <v-row dense>
@@ -49,9 +49,8 @@
                         </v-sheet>
                     </template>
                 </v-card>
-                <!-- {{ plataformas }} -->
                 <v-row class="py-3">
-                    <v-col cols="6">
+                    <v-col cols="4">
                         <v-select
                             v-model="valuePlataforma"
                             clearable
@@ -59,6 +58,7 @@
                             label="Selecione uma plataforma"
                             color="green-darken-3"
                             :items="plataformas"
+                            density="compact"
                             item-title="nome"
                             item-value="id"
                             hide-details="auto"
@@ -69,10 +69,11 @@
                                     color="green-darken-3"
                                     icon="mdi-plus"
                                     class="rounded"
+                                    density="comfortable"
                                     :disabled="
                                         valuePlataforma == null ? true : false
                                     "
-                                    @click.prevent="hellow"
+                                    @click.prevent="associarPlataforma"
                                 />
                             </template>
                         </v-select>
@@ -85,21 +86,29 @@
                 v-for="(item, id) in dados.plataformas"
                 :key="id"
             >
-                <v-card v-bind="props" color="green-lighten-4">
+                <v-card v-bind="props" class="border-s-lg">
                     <template #title>
                         {{ item.nome }}
+                        <v-divider></v-divider>
                     </template>
                     <template #item>
                         <v-sheet
-                            class="d-flex flex-wrap ga-2 pa-1"
+                            class="d-flex flex-wrap ga-2 mt-2"
                             color="transparent"
                         >
+                            <v-btn
+                                icon="mdi-plus"
+                                class="h-auto rounded"
+                                min-height="160"
+                                color="green-lighten-5"
+                                @click.prevent="dialogAdicionaritem=true"
+                            ></v-btn>
                             <v-card
                                 v-for="itemPivot in item.itens_pivot"
                                 :key="id"
                                 min-width="300px"
                                 color="green-lighten-5"
-                                elevation="5"
+                                elevation="0"
                             >
                                 <template #title>
                                     <v-sheet
@@ -107,10 +116,22 @@
                                         color="transparent"
                                     >
                                         {{ itemPivot.subitem.nome }}
-                                        <v-btn
-                                            variant="text"
-                                            icon="mdi-dots-vertical"
-                                        ></v-btn>
+                                        <v-menu location="top">
+                                            <template
+                                                v-slot:activator="{ props }"
+                                            >
+                                                <v-btn
+                                                    v-bind="props"
+                                                    icon="mdi-dots-vertical"
+                                                    variant="text"
+                                                    density="compact"
+                                                ></v-btn>
+                                            </template>
+                                            <v-list
+                                                :items="items"
+                                                density="compact"
+                                            />
+                                        </v-menu>
                                     </v-sheet>
                                 </template>
                                 <template #subtitle>
@@ -183,13 +204,20 @@
                     <v-col class="text-right"></v-col>
                 </v-row>
 
-                <div
+                <v-sheet
                     v-for="plataforma in dados.plataformas"
                     :key="plataforma.id"
-                    class="mb-4"
+                    class="border mb-3"
                 >
                     <v-row no-gutters>
-                        <v-col cols="12" class="bg-green-lighten-5 pa-2 border">
+                        <v-col cols="12" class="d-flex align-center ga-3 bg-green-lighten-5">
+                            <v-btn
+                                icon="mdi-plus"
+                                class="rounded"
+                                density="comfortable"
+                                color="green-lighten-5"
+                                @click.prevent="dialogAdicionaritem=true"
+                            ></v-btn>
                             <h4 class="text-green-darken-3">
                                 <v-icon
                                     icon="mdi-layers-outline"
@@ -259,23 +287,28 @@
                             </v-menu>
                         </v-col>
                     </v-row>
-                </div>
+                </v-sheet>
             </v-col>
             <v-col cols="12" v-else>
                 <EmptyData />
             </v-col>
         </v-row>
+        <IncluirItem
+            v-model="dialogAdicionaritem" 
+            @incluirProcess="incluirItem"
+            @onCloseDialog="dialogAdicionaritem=false"
+        />
         <NormalFeedback v-model="feedback" />
     </DefaultLayout>
 </template>
 
 <script setup>
 import NormalFeedback from "@/Components/Feedback/NormalFeedback.vue";
+import IncluirItem from "@/Components/Dialogs/Bzero/IncluirItem.vue";
 import DefaultLayout from "@/Layouts/DefaultLayout.vue";
 import EmptyData from "@/Components/EmptyData.vue";
 import { ref, computed } from "vue";
 import axios from "axios";
-import { data } from "autoprefixer";
 
 const props = defineProps({
     bzero: Object,
@@ -293,8 +326,8 @@ const viewOption = ref(props.preferencias?.listagem_menu ?? 0);
 const dados = ref(props.bzero);
 const valuePlataforma = ref(null);
 const plataformas = computed(() => props.plataformas);
+const dialogAdicionaritem = ref(null);
 
-// Feedback
 const feedback = ref({
     show: false,
     timeout: 2000,
@@ -319,9 +352,11 @@ const items = [
     },
 ];
 
-async function hellow() {
+async function associarPlataforma() {
     await axios
-        .post(route("associar.plataforma", { id: dados.value.id }), { plataforma_id: valuePlataforma.value })
+        .post(route("associar.plataforma", { id: dados.value.id }), {
+            plataforma_id: valuePlataforma.value,
+        })
         .then((res) => {
             if (res.data.success) {
                 dados.value = res.data.data;
