@@ -188,6 +188,7 @@
 
 <script setup>
 import NormalFeedback from "@/Components/Feedback/NormalFeedback.vue";
+import { useFeedback } from "@/Composables/useFeedback";
 import { Link, usePage, Head } from "@inertiajs/vue3";
 import axios from "axios";
 import { ref } from "vue";
@@ -197,6 +198,9 @@ const props = defineProps({
     title: String,
     location: {},
 });
+
+const { feedback, trigger } = useFeedback()
+
 const onLoad = ref(false);
 const user = usePage().props.auth.user;
 const emit = defineEmits(["update:modelValue"]);
@@ -217,13 +221,6 @@ let cadMenuOptions = [
     ["Equipe", "mdi-apps", "/"],
     ["Precificação", "mdi-apps", "/"],
 ];
-// Feedback var
-const feedback = ref({
-    show: false,
-    timeout: 2000,
-    color: "success",
-    text: "",
-});
 
 async function onViewChange(value) {
     onLoad.value = true;
@@ -239,22 +236,12 @@ async function onViewChange(value) {
             if (res.data.success) {
                 emit("update:modelValue", value);
             } else {
-                feedback.value = {
-                    show: true,
-                    timeout: 4000,
-                    color: "error",
-                    text: res.data.message ?? res.data,
-                };
+                trigger(res.data.message ?? res.data, 'error')
             }
             onLoad.value = false;
         })
         .catch((err) => {
-            feedback.value = {
-                show: true,
-                timeout: 4000,
-                color: "error",
-                text: err,
-            };
+            trigger(err, 'error')
             onLoad.value = false;
         });
 }

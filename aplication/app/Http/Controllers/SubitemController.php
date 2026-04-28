@@ -25,7 +25,7 @@ class SubitemController extends Controller
             $preferencias = $usuario_logado->preferencia;
 
             return Inertia::render('Crud/cadastros/subitens/index', [
-                'subitens' => $query->get(),
+                'subitens' => $query->orderBy('id', 'desc')->get(),
                 'user' => $usuario_logado,
                 'preferencias' => $preferencias,
             ]);

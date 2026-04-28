@@ -25,7 +25,7 @@ class ItemController extends Controller
             $preferencias = $usuario_logado->preferencia;
 
             return Inertia::render('Crud/cadastros/itens/index', [
-                'itens'        => $query->get(),
+                'itens'        => $query->orderBy('id', 'desc')->get(),
                 'user'         => $usuario_logado,
                 'preferencias' => $preferencias,
             ]);

@@ -63,6 +63,7 @@
                                     class="d-flex flex-wrap ga-2 bg-transparent pt-3"
                                 >
                                     <v-chip
+                                        v-if="item.itens?.length > 0"
                                         size="x-small"
                                         color="green"
                                         variant="flat"
@@ -70,6 +71,13 @@
                                         :key="id"
                                     >
                                         {{ item1.nome }}
+                                    </v-chip>
+                                    <v-chip
+                                        v-else
+                                        size="x-small"
+                                        color="green"
+                                        style="width: 10rem;"
+                                    >
                                     </v-chip>
                                 </v-sheet>
                             </template>
@@ -142,31 +150,29 @@
             @onCloseDialog="((dialogNovaPlataforma = false))"
             @insertProcess="insertPlataforma"
         />
-        <!-- Feedback -->
-        <NormalFeedback v-model="feedback" />
     </DefaultLayout>
 </template>
 
 <script setup>
 import EditePlataforma from "@/Components/Dialogs/Plataforma/EditePlataforma.vue";
 import NovaPlataforma from "@/Components/Dialogs/Plataforma/NovaPlataforma.vue";
+import { useFeedback } from "@/Composables/useFeedback";
 import DefaultLayout from "@/Layouts/DefaultLayout.vue";
 import EmptyData from "@/Components/EmptyData.vue";
-import { ref } from "vue";
 import axios from "axios";
-import NormalFeedback from "@/Components/Feedback/NormalFeedback.vue";
+import { ref } from "vue";
 
 const props = defineProps({
     plataformas: Object,
     user: Object,
     preferencias: Object,
 });
-
 const location = [
     { title: "Kronos", disabled: false, href: "/" },
     { title: "Plataformas", disabled: true },
     { title: "Lista", disabled: true },
 ];
+const { trigger } = useFeedback();
 
 const viewOption = ref(props.preferencias?.listagem_menu ?? 0);
 const dados = ref(props.plataformas ?? []);
@@ -175,13 +181,6 @@ const search = ref("");
 // dialogs
 const dialogEditePlataforma = ref(false);
 const dialogNovaPlataforma = ref(false);
-// Feedback
-const feedback = ref({
-    show: false,
-    timeout: 2000,
-    color: "success",
-    text: "",
-});
 // functions
 async function insertPlataforma(plataforma) {
     await axios
@@ -189,29 +188,12 @@ async function insertPlataforma(plataforma) {
         .then((res) => {
             if (res.data.success) {
                 carregandoTodasPlataformas();
-                feedback.value = {
-                    show: true,
-                    timeout: 4000,
-                    color: "success",
-                    text: res.data.message,
-                };
+                trigger(res.data.message, 'success');
                 return;
             }
-            feedback.value = {
-                show: true,
-                timeout: 4000,
-                color: "error",
-                text: res.data.message,
-            };
+            trigger(res.data.message, 'error');
         })
-        .catch((err) => {
-            feedback.value = {
-                show: true,
-                timeout: 4000,
-                color: "error",
-                text: err,
-            };
-        });
+        .catch((err) => trigger(err, 'error'));
 }
 function executarBusca() {
     carregandoTodasPlataformas(search.value);
@@ -223,12 +205,10 @@ async function carregandoTodasPlataformas(termo = "") {
             headers: {
                 Accept: "application/json",
             },
-        })
-        .then((res) => {
-            dados.value = [];
+        }).then((res) => {
             dados.value = res.data;
         })
-        .catch((err) => console.log(err));
+        .catch((err) => trigger(err, 'error'));
 }
 </script>
 

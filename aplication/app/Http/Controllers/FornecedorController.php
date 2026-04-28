@@ -21,7 +21,7 @@ class FornecedorController extends Controller
             $query->where('razao_social', 'like', "%{$request->search}%")
                 ->orWhere('cnpj', 'like', "%{$request->search}%");
         }
-        $fornecedores = $query->paginate($perPage)->withQueryString();
+        $fornecedores = $query->orderBy('id', 'desc')->paginate($perPage);
 
         if ($request->expectsJson()) return $fornecedores;
 

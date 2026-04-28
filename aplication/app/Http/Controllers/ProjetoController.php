@@ -14,18 +14,18 @@ class ProjetoController extends Controller
      */
     public function index(Request $request)
     {
-        $query = Projeto::with('tipoProjeto');
+        $query = Projeto::with('tipoProjeto')->orderBy('id', 'desc');
 
         if ($request->filled('search')) $query->where('nome', 'like', "%{$request->search}%");
 
-        if ($request->expectsJson()) return response()->json($query->get());
+        if ($request->expectsJson()) return response()->json($query->orderBy('id', 'desc')->get());
         
         try {
             $usuario_logado = auth()->user();
             $preferencias = $usuario_logado->preferencia;
 
             return Inertia::render('Crud/cadastros/projetos/index', [
-            'projetos' => $query->get(),
+            'projetos' => $query->orderBy('id', 'desc')->get(),
             'tiposProjetos' => TipoProjeto::all(),
             'user' => $usuario_logado,
             'preferencias' => $preferencias,

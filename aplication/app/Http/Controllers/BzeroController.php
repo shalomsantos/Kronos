@@ -55,16 +55,16 @@ class BzeroController extends Controller
     public function index(Request $request)
     {
         try {
-            $bzeros = Bzero::with('plataformas')->paginate(6);
+            $bzeros = Bzero::with('plataformas')->orderBy('id', 'desc')->paginate(6);
 
-            if ($request->expectsJson()) return response()->json(['success' => true, 'data' => $bzeros], 200);
+            if ($request->expectsJson()) return response()->json(['success' => true, 'bzeros' => $bzeros], 200);
 
             $usuario_logado = auth()->user();
             $preferencias = $usuario_logado->preferencia;
 
             return Inertia::render('Dashboard', [
                 'bzeros' => $bzeros,
-                'projetos' => Projeto::all(),
+                'projetos' => Projeto::orderBy('id', 'desc')->get(),
                 'preferencias' => $preferencias
             ]);
         } catch (\Throwable $e) {

@@ -1,7 +1,7 @@
 <template>
     <Dialog
         v-model="model"
-        title="Editar Plataforma"
+        title="Editar Plataforma e Template"
         width="80vw"
         @onCloseDialog="$emit('onCloseDialog')"
     >
@@ -30,6 +30,15 @@
                             auto-grow
                             counter
                         ></v-textarea>
+                    </v-col>
+                    <v-col cols="12">
+                        <v-btn
+                            class="text-none w-100"
+                            color="green-darken-1"
+                            prepend-icon="mdi-update"
+                            text="Atualizar"
+                            @click.prevent="atualizar()"
+                        />
                     </v-col>
                 </v-row>
             </v-col>
@@ -117,28 +126,25 @@
                         <v-btn
                             class="text-none w-100"
                             color="green-darken-1"
-                            size="large"
-                            prepend-icon="mdi-update"
-                            @click.prevent="updatePlataforma()"
-                            >Atualizar</v-btn
-                        >
+                            prepend-icon="mdi-invoice-text-plus"
+                            text="Associar"
+                            @click.prevent="associar()"
+                            />
                     </v-col>
                 </v-row>
             </v-col>
-        </v-row>
-        <v-row>
-            <v-col cols="12">
+            <v-col cols="12" class="py-0">
                 <v-sheet v-if="loading" color="green-lighten-5">
                     <v-skeleton-loader
                         class="mx-auto border"
                         type="table-row-divider@6"
                     ></v-skeleton-loader>
                 </v-sheet>
-
+    
                 <v-table
                     v-else-if="PlataformaItemSubitemFornecedor.length > 0"
-                    class="bg-green-lighten-5 overflow-y-scroll"
-                    style="height: 17rem"
+                    style="height: 16rem"
+                    class="bg-green-lighten-5 overflow-y-auto rounded-lg elevation-3"
                     density="compact"
                     striped="even"
                 >
@@ -182,7 +188,7 @@
                         </tr>
                     </tbody>
                 </v-table>
-
+    
                 <v-sheet
                     v-else
                     color="green-lighten-5"
@@ -194,20 +200,22 @@
                 </v-sheet>
             </v-col>
         </v-row>
-        <NormalFeedback v-model="feedback" />
     </Dialog>
 </template>
 
 <script setup>
-const model = defineModel();
-import NormalFeedback from "@/Components/Feedback/NormalFeedback.vue";
+import { useFeedback } from "@/Composables/useFeedback";
 import { ref, watch, computed } from "vue";
 import Dialog from "../Dialog.vue";
 
+const model = defineModel();
 const props = defineProps({
     plataforma: Object,
 });
+
+const { trigger } = useFeedback();
 const emit = defineEmits(['onCloseDialog', 'refresh']);
+
 const inputIdPlataforma = ref("");
 const inputPlataforma = ref("");
 const inputDescricao = ref("");
@@ -228,12 +236,6 @@ const qt_multip_uni_cot = ref(1);
 const PlataformaItemSubitemFornecedor = ref([]);
 // feedbacks
 const loading = ref(false);
-const feedback = ref({
-    show: false,
-    timeout: 2000,
-    color: "success",
-    text: "",
-});
 
 watch(
     () => props.plataforma,
@@ -295,31 +297,6 @@ const onlyNumbers = (event) => {
     }
 };
 // metodos principais
-const updatePlataforma = async() => {
-    let plataforma = {
-        id: inputIdPlataforma.value,
-        nome: inputPlataforma.value,
-        descricao: inputDescricao.value,
-    };
-    let associacao = {
-        plataforma_id: inputIdPlataforma.value,
-        item_id: valueItens.value,
-        subitem_id: valueSubItens.value,
-        fornecedor_id: valueFornecedores.value,
-        vl_unit_cot: parseFloat(String(vl_unit_cot.value).replace(",", ".")),
-        qt_unidade_cot: qt_unidade_cot.value,
-        qt_multip_uni_cot: qt_multip_uni_cot.value,
-    };
-    await atualizarPlataforma(plataforma);
-    await inserirAssociacaoItemSubitemFornecedor(associacao);
-    valueItens.value = null;
-    valueSubItens.value = null;
-    valueFornecedores.value = null;
-    vl_unit_cot.value = 0;
-    qt_unidade_cot.value = 1;
-    qt_multip_uni_cot.value = 1;
-    emit('refresh');
-};
 const carregandoPlataformaItemSubitemFornecedor = async (id) => {
     if (!id) return;
     loading.value = true;
@@ -332,20 +309,47 @@ const carregandoPlataformaItemSubitemFornecedor = async (id) => {
                     PlataformaItemSubitemFornecedor.value = res.data.data;
                     return;
                 }
-                feedback.value = {
-                    show: true,
-                    timeout: 4000,
-                    color: "error",
-                    text: res.data.message,
-                };
+                trigger(res.data.message, 'error');
             })
             .catch((err) => console.error(err));
     } catch (err) {
-        console.error("Erro na requisição:", err);
+        trigger(err, 'error');
     } finally {
         loading.value = false;
     }
 };
+const atualizar = async() => {
+    let plataforma = {
+        id: inputIdPlataforma.value,
+        nome: inputPlataforma.value,
+        descricao: inputDescricao.value,
+    };    
+    await atualizarPlataforma(plataforma);
+    cleanAll()
+    emit('refresh');
+};
+const associar = async () => {
+    let associacao = {
+        plataforma_id: inputIdPlataforma.value,
+        item_id: valueItens.value,
+        subitem_id: valueSubItens.value,
+        fornecedor_id: valueFornecedores.value,
+        vl_unit_cot: parseFloat(String(vl_unit_cot.value).replace(",", ".")),
+        qt_unidade_cot: qt_unidade_cot.value,
+        qt_multip_uni_cot: qt_multip_uni_cot.value,
+    };
+    await inserirAssociacaoItemSubitemFornecedor(associacao);
+    cleanAll()
+    emit('refresh');
+}
+function cleanAll(){
+    valueItens.value = null;
+    valueSubItens.value = null;
+    valueFornecedores.value = null;
+    vl_unit_cot.value = 0;
+    qt_unidade_cot.value = 1;
+    qt_multip_uni_cot.value = 1;
+}
 // carregamentos
 const carregandoTodosItens = async () => {
     await axios
@@ -354,12 +358,7 @@ const carregandoTodosItens = async () => {
             itens.value = res.data;
         })
         .catch((err) => {
-            feedback.value = {
-                show: true,
-                timeout: 3000,
-                color: "error",
-                text: err,
-            };
+            trigger(err, 'error');
         });
 };
 const carregaItensSubitens = async (id) => {
@@ -371,20 +370,10 @@ const carregaItensSubitens = async (id) => {
                 subItens.value = res.data.data;
                 return;
             }
-            feedback.value = {
-                show: true,
-                timeout: 3000,
-                color: "error",
-                text: res.data.message,
-            };
+            trigger(res.data.message, 'error');
         })
         .catch((err) => {
-            feedback.value = {
-                show: true,
-                timeout: 3000,
-                color: "error",
-                text: err,
-            };
+            trigger(err, 'error');
         });
 };
 const carregaSubitensFornecedores = async (id) => {
@@ -396,20 +385,10 @@ const carregaSubitensFornecedores = async (id) => {
                 fornecedores.value = res.data.data;
                 return;
             }
-            feedback.value = {
-                show: true,
-                timeout: 3000,
-                color: "error",
-                text: res.data.message,
-            };
+            trigger(res.data.message, 'error');
         })
         .catch((err) => {
-            feedback.value = {
-                show: true,
-                timeout: 3000,
-                color: "error",
-                text: err,
-            };
+            trigger(err, 'error');
         });
 };
 // etapas de edição
@@ -418,20 +397,10 @@ const atualizarPlataforma = async (plataforma) => {
         .put(route("plataforma.update", { id: plataforma.id }), plataforma)
         .then((res) => {
             if (res.data.success) return;
-            feedback.value = {
-                show: true,
-                timeout: 4000,
-                color: "error",
-                text: res.data.message,
-            };
+            trigger(res.data.message, 'error');
         })
         .catch((err) => {
-            feedback.value = {
-                show: true,
-                timeout: 4000,
-                color: "error",
-                text: err,
-            };
+            trigger(err, 'error');
         });
 };
 const inserirAssociacaoItemSubitemFornecedor = async (el) => {
@@ -440,28 +409,13 @@ const inserirAssociacaoItemSubitemFornecedor = async (el) => {
         .then((res) => {
             if (res.data.success) {
                 carregandoPlataformaItemSubitemFornecedor(inputIdPlataforma.value);
-                feedback.value = {
-                    show: true,
-                    timeout: 4000,
-                    color: "success",
-                    text: res.data.message,
-                };
+                trigger(res.data.message, 'success');
                 return;
             }
-            feedback.value = {
-                show: true,
-                timeout: 4000,
-                color: "error",
-                text: res.data.message,
-            };
+            trigger(res.data.message, 'error');
         })
         .catch((err) => {
-            feedback.value = {
-                show: true,
-                timeout: 4000,
-                color: "error",
-                text: err,
-            };
+            trigger(err, 'error');
         });
 };
 </script>
