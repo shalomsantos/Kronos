@@ -38,7 +38,7 @@
                         <v-card
                             v-bind="props"
                             :title="item.nome"
-                            prepend-icon="mdi-clipboard-file"
+                            prepend-icon="mdi-clipboard"
                             @click.prevent="
                                 ((projetoSelecionado = item),
                                 (dialogEditProjeto = true))
@@ -130,17 +130,15 @@
             v-model="dialogNewProjeto"
             @insertProcess="insertProjeto"
         />
-        <!-- Feedback -->
-        <NormalFeedback v-model="feedback" />
     </DefaultLayout>
 </template>
 
 <script setup>
-import DefaultLayout from "@/Layouts/DefaultLayout.vue";
 import EditeProjeto from "@/Components/Dialogs/Projeto/EditeProjeto.vue";
 import NovoProjeto from "@/Components/Dialogs/Projeto/NovoProjeto.vue";
+import DefaultLayout from "@/Layouts/DefaultLayout.vue";
+import { useFeedback } from "@/Composables/useFeedback";
 import EmptyData from "@/Components/EmptyData.vue";
-import NormalFeedback from "@/Components/Feedback/NormalFeedback.vue";
 import { ref } from "vue";
 import axios from "axios";
 
@@ -150,12 +148,12 @@ const props = defineProps({
     user: Object,
     preferencias: Object
 });
-
 const location = [
     { title: "Kronos", disabled: false, href: "/" },
     { title: "Projetos", disabled: true },
     { title: "Lista", disabled: true },
 ];
+const { trigger } = useFeedback();
 
 const viewOption = ref(props.preferencias?.listagem_menu ?? 0);
 const dados = ref(props.projetos ?? []);
@@ -164,13 +162,6 @@ const search = ref("");
 // dialogs
 const dialogNewProjeto = ref(false);
 const dialogEditProjeto = ref(false);
-// Feedback
-const feedback = ref({
-    show: false,
-    timeout: 2000,
-    color: "success",
-    text: "",
-});
 // functions
 async function insertProjeto(projeto) {
     await axios
@@ -178,30 +169,12 @@ async function insertProjeto(projeto) {
         .then((res) => {
             if (res.data.success) {
                 carregandoTodosProjetos();
-
-                feedback.value = {
-                    show: true,
-                    timeout: 4000,
-                    color: "success",
-                    text: res.data.message,
-                };
+                trigger(res.data.message, 'success')
                 return;
             }
-            feedback.value = {
-                show: true,
-                timeout: 4000,
-                color: "error",
-                text: res.data.message,
-            };
+            trigger(res.data.message, 'error')
         })
-        .catch((err) => {
-            feedback.value = {
-                show: true,
-                timeout: 4000,
-                color: "error",
-                text: err,
-            };
-        });
+        .catch((err) => trigger(err, 'error'));
 }
 async function editProjeto(projeto) {
     const projectId = projeto.id;
@@ -250,7 +223,7 @@ async function carregandoTodosProjetos(termo = "") {
         .then((res) => {
             dados.value =  res.data; 
         })
-        .catch((err) => console.log(err));
+        .catch((err) => trigger(err, 'error'));
 }
 </script>
 

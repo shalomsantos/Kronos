@@ -14,6 +14,7 @@
                     item-value="id"
                     :return-object="false" 
                     label="Escolher ou inserir projeto"
+                    color="green-darken-3"
                     variant="outlined"
                     density="compact"
                     hide-details
@@ -44,8 +45,9 @@
                 <v-text-field
                     v-model="ano"
                     label="Ano"
-                    variant="outlined"
                     density="compact"
+                    color="green-darken-3"
+                    variant="outlined"
                     hide-details="auto"
                     clearable
                 ></v-text-field>
@@ -55,6 +57,7 @@
                     v-model="inputDescricao"
                     label="Descrição"
                     variant="outlined"
+                    color="green-darken-3"
                     density="compact"
                     :counter="255"
                     maxlength="255"
@@ -63,14 +66,14 @@
                     clearable
                 ></v-textarea>
             </v-col>
-            <v-col cols="12" class="pt-3">
+            <v-col cols="12">
                 <v-btn
                     class="text-none"
                     color="green-darken-1"
-                    prepend-icon="mdi-content-save"
+                    prepend-icon="mdi-check"
+                    text="Salvar"
                     @click.prevent="inserir"
-                    >Salvar</v-btn
-                >
+                    />
             </v-col>
         </v-row>
     </Dialog>

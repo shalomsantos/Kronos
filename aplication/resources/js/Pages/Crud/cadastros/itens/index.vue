@@ -28,18 +28,19 @@
                     </v-col>
                 </v-row>
             </v-col>
-            <v-col cols="6" v-if="dados.length > 0 && viewOption" v-for="(item, id) in dados" :key="id">
+            <v-col
+                cols="6"
+                v-if="dados.length > 0 && viewOption"
+                v-for="(item, id) in dados"
+                :key="id"
+            >
                 <v-hover>
                     <template v-slot:default="{ isHovering, props }">
                         <v-card
                             v-bind="props"
                             :title="item.nome"
                             prepend-icon="mdi-invoice-list"
-                            :color="
-                                isHovering
-                                    ? 'green-lighten-5'
-                                    : undefined
-                            "
+                            :color="isHovering ? 'green-lighten-5' : undefined"
                             @click.prevent="
                                 ((itemSelecionado = item),
                                 (dialogEditeItem = true))
@@ -48,17 +49,11 @@
                             <template #subtitle>
                                 <v-row no-gutters>
                                     <v-col cols="2">
-                                        <p
-                                            class="text-body-2 text-disabled"
-                                        >
+                                        <p class="text-body-2 text-disabled">
                                             Criado em:
-                                            {{
-                                                isDate(item.created_at)
-                                            }}
+                                            {{ isDate(item.created_at) }}
                                         </p>
-                                        <p
-                                            class="text-body-2 text-disabled"
-                                        >
+                                        <p class="text-body-2 text-disabled">
                                             Por:
                                             {{ item.created_by.name }}
                                         </p>
@@ -73,9 +68,7 @@
                                         size="x-small"
                                         color="green"
                                         variant="flat"
-                                        v-for="(
-                                            subitem, id
-                                        ) in item.subitens"
+                                        v-for="(subitem, id) in item.subitens"
                                         :key="id"
                                     >
                                         {{ subitem.nome }}
@@ -113,7 +106,9 @@
                             <td>{{ item.nome }}</td>
                             <td>
                                 <v-chip
-                                    v-for="(subitem, idx) in item.subitens.slice(0, 2)"
+                                    v-for="(
+                                        subitem, idx
+                                    ) in item.subitens.slice(0, 2)"
                                     :key="idx"
                                     size="x-small"
                                     color="green-darken-1"
@@ -126,7 +121,6 @@
                                     v-if="item.subitens.length > 2"
                                     class="text-none text-grey-darken-1 cursor-pointer"
                                     variant="text"
-
                                     @click.prevent="
                                         ((itemSelecionado = item),
                                         (dialogEditeItem = true))
@@ -161,7 +155,7 @@
                 <EmptyData />
             </v-col>
         </v-row>
-        <!-- Dialogs -->
+
         <EditeItem
             v-model="dialogEditeItem"
             :item="itemSelecionado"
@@ -169,17 +163,15 @@
             @editProcess="editItem"
         />
         <NovoItem v-model="dialogNovoItem" @insertProcess="insertItem" />
-        <!-- Feedback -->
-        <NormalFeedback v-model="feedback" />
     </DefaultLayout>
 </template>
 
 <script setup>
-import NormalFeedback from "@/Components/Feedback/NormalFeedback.vue";
 import NovoItem from "@/Components/Dialogs/Item/NovoItem.vue";
-import EmptyData from "@/Components/EmptyData.vue";
 import EditeItem from "@/Components/Dialogs/Item/EditeItem.vue";
+import { useFeedback } from "@/Composables/useFeedback";
 import DefaultLayout from "@/Layouts/DefaultLayout.vue";
+import EmptyData from "@/Components/EmptyData.vue";
 import { ref } from "vue";
 
 const props = defineProps({
@@ -187,12 +179,12 @@ const props = defineProps({
     user: Object,
     preferencias: Object,
 });
-
 const location = [
     { title: "Kronos", disabled: false, href: "/" },
     { title: "Itens", disabled: true },
     { title: "Lista", disabled: true },
 ];
+const { trigger } = useFeedback()
 
 const viewOption = ref(props.preferencias?.listagem_menu ?? 0);
 const dados = ref(props.itens ?? []);
@@ -201,17 +193,10 @@ const search = ref("");
 // Dialogs
 const dialogEditeItem = ref(false);
 const dialogNovoItem = ref(false);
-// Feedback
-const feedback = ref({
-    show: false,
-    timeout: 2000,
-    color: "success",
-    text: "",
-});
 // functions
 async function insertItem(item) {}
-function executarBusca() {
-    carregandoTodasItens(search.value);
+const executarBusca = async () => {
+    await carregandoTodasItens(search.value);
 }
 async function carregandoTodasItens(termo = "") {
     await axios
@@ -224,12 +209,12 @@ async function carregandoTodasItens(termo = "") {
         .then((res) => {
             dados.value = res.data;
         })
-        .catch((err) => console.log(err));
+        .catch((err) => trigger(err, 'error'));
 }
 </script>
 
 <style scoped>
-.cursor-pointer:hover{
+.cursor-pointer:hover {
     text-decoration: underline;
 }
 </style>

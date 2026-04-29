@@ -1,60 +1,45 @@
 <template>
-    <v-dialog v-model="model" max-width="500">
-        <v-toolbar title="Novo tipo de projeto" density="compact"
-            ><v-btn
-                icon="mdi-close"
-                size="small"
-                @click.prevent="
-                    (model=false), (tipoProjetoNome = null)
-                "
-            ></v-btn
-        ></v-toolbar>
-        <v-card rounded="0">
-            <v-card-item class="ma-0 pa-2">
-                <v-row class="pa-2">
-                    <v-col>
-                        <v-text-field
-                            v-model="tipoProjetoNome"
-                            label="Digite aqui o tipo de projeto"
-                            variant="outlined"
-                            density="compact"
-                            hide-details="auto"
-                            clearable
-                        ></v-text-field>
-                    </v-col>
-                    <v-col cols="12">
-                        <v-btn
-                            class="text-none"
-                            color="green-darken-1"
-                            size="large"
-                            prepend-icon="mdi-content-save"
-                            @click.prevent="insertEvent"
-                            >Salvar</v-btn
-                        >
-                    </v-col>
-                </v-row>
-            </v-card-item>
-        </v-card>
-        <NormalFeedback v-model="feedback" />
-    </v-dialog>
+    <Dialog
+        v-model="model"
+        title="Novo Tipo de Projeto"
+        width="40vw"
+        @onCloseDialog="((model = false), (tipoProjetoNome = null))"
+    >
+        <v-row>
+            <v-col>
+                <v-text-field
+                    v-model="tipoProjetoNome"
+                    label="Digite aqui o tipo de projeto"
+                    variant="outlined"
+                    density="compact"
+                    color="green-darken-3"
+                    hide-details
+                    clearable
+                ></v-text-field>
+            </v-col>
+            <v-col cols="12">
+                <v-btn
+                    class="text-none"
+                    color="green-darken-1"
+                    prepend-icon="mdi-check"
+                    text="Salvar"
+                    @click.prevent="insertEvent"
+                />
+            </v-col>
+        </v-row>
+    </Dialog>
 </template>
 
 <script setup>
-import NormalFeedback from "@/Components/Feedback/NormalFeedback.vue";
+import Dialog from "../Dialog.vue";
 import { ref } from "vue";
 
 const model = defineModel();
 
-const emit = defineEmits(['insertProcess'])
+const emit = defineEmits(["insertProcess"]);
 
 const tipoProjetoNome = ref(null);
-// Feedback var
-const feedback = ref({
-    show: false,
-    timeout: 2000,
-    color: "success",
-    text: "",
-});
+
 function insertEvent() {
     if (tipoProjetoNome.value == null) {
         feedback.value = {
@@ -73,7 +58,7 @@ function insertEvent() {
     // fechando dialog
     model.value = false;
     // emitindo evento para o pai
-    emit('insertProcess', tipoProjeto);
+    emit("insertProcess", tipoProjeto);
 }
 </script>
 

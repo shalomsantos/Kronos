@@ -139,7 +139,7 @@
         <EditePlataforma
             v-model="dialogEditePlataforma"
             :plataforma="plataformaSelecionada"
-            @refresh="carregandoTodasPlataformas"
+            @editProcess="carregandoTodasPlataformas"
             @onCloseDialog="
                 ((plataformaSelecionada = null),
                 (dialogEditePlataforma = false))

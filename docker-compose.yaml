@@ -50,7 +50,7 @@ services:
     depends_on:
       - my_aplication_nginx
     
-  # MYSQL:8.0
+  # MYSQL:5.7
   my_aplication_mysql:
     container_name: mysql
     image: mysql:5.7.22

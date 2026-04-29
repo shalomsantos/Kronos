@@ -109,6 +109,7 @@
                                 min-width="300px"
                                 color="green-lighten-5"
                                 elevation="0"
+                                border
                             >
                                 <template #title>
                                     <v-sheet

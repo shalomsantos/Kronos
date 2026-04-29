@@ -114,13 +114,21 @@
                                                 class="d-flex flex-wrap ga-2 bg-transparent pt-3"
                                             >
                                                 <v-chip
+                                                    v-if="item.plataformas?.length > 0"
+                                                    v-for="plataforma in item.plataformas"
                                                     size="x-small"
                                                     color="green"
                                                     variant="flat"
-                                                    v-for="plataforma in item.plataformas"
                                                     :key="plataforma.id"
                                                 >
                                                     {{ plataforma.nome }}
+                                                </v-chip>
+                                                <v-chip
+                                                    v-else
+                                                    size="x-small"
+                                                    color="green"
+                                                    style="width: 10rem;"
+                                                >
                                                 </v-chip>
                                             </v-sheet>
                                         </v-row>
@@ -210,7 +218,6 @@
             </v-col>
         </v-row>
 
-        <!-- Dialogs -->
         <FiltroBase v-model="dialogFilter" @onFilter="filtro" @insertEvent=""/>
 
         <NovaBase

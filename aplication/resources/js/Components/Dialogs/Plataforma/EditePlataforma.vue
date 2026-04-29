@@ -1,7 +1,7 @@
 <template>
     <Dialog
         v-model="model"
-        title="Editar Plataforma e Template"
+        title="Editar Plataforma e Modelo"
         width="80vw"
         @onCloseDialog="$emit('onCloseDialog')"
     >
@@ -14,21 +14,23 @@
                             label="Nome da plataforma*"
                             variant="outlined"
                             density="compact"
-                            hide-details="auto"
+                            color="green-darken-3"
+                            hide-details
                             clearable
                         ></v-text-field>
                     </v-col>
-                    <v-col cols="12">
+                    <v-col cols="12" class="pb-0 mb-0">
                         <v-textarea
                             v-model="inputDescricao"
                             label="Descrição"
                             variant="outlined"
                             density="compact"
-                            rows="2"
+                            color="green-darken-3"
+                            :counter="255"
+                            maxlength="255"
+                            rows="3"
                             clearable
-                            hide-details
                             auto-grow
-                            counter
                         ></v-textarea>
                     </v-col>
                     <v-col cols="12">
@@ -45,9 +47,7 @@
             <v-col cols="9" class="pa-5">
                 <v-row class="border rounded">
                     <v-col cols="12" class="text-center ma-0 pa-0">
-                        <p class="text-disabled">
-                            Vincular item à plataforma.
-                        </p>
+                        <p class="text-disabled">Vincular item à plataforma.</p>
                     </v-col>
                     <v-col cols="4">
                         <v-select
@@ -58,7 +58,8 @@
                             item-value="id"
                             variant="outlined"
                             density="compact"
-                            hide-details="auto"
+                            color="green-darken-3"
+                            hide-details
                             clearable
                         ></v-select>
                     </v-col>
@@ -71,7 +72,8 @@
                             item-value="subitem_id"
                             variant="outlined"
                             density="compact"
-                            hide-details="auto"
+                            color="green-darken-3"
+                            hide-details
                             clearable
                         ></v-select>
                     </v-col>
@@ -84,7 +86,8 @@
                             item-value="fornecedor_id"
                             variant="outlined"
                             density="compact"
-                            hide-details="auto"
+                            color="green-darken-3"
+                            hide-details
                             clearable
                         ></v-select>
                     </v-col>
@@ -94,7 +97,8 @@
                             label="Valor Unitário"
                             variant="outlined"
                             density="compact"
-                            hide-details="auto"
+                            color="green-darken-3"
+                            hide-details
                             @keypress="onlyNumbers"
                             prefix="R$"
                             clearable
@@ -107,7 +111,8 @@
                             label="Quantidade"
                             variant="outlined"
                             density="compact"
-                            hide-details="auto"
+                            color="green-darken-3"
+                            hide-details
                             clearable
                         ></v-text-field>
                     </v-col>
@@ -118,7 +123,8 @@
                             label="Unidade"
                             variant="outlined"
                             density="compact"
-                            hide-details="auto"
+                            color="green-darken-3"
+                            hide-details
                             clearable
                         ></v-text-field>
                     </v-col>
@@ -129,7 +135,7 @@
                             prepend-icon="mdi-invoice-text-plus"
                             text="Associar"
                             @click.prevent="associar()"
-                            />
+                        />
                     </v-col>
                 </v-row>
             </v-col>
@@ -140,12 +146,13 @@
                         type="table-row-divider@6"
                     ></v-skeleton-loader>
                 </v-sheet>
-    
+
                 <v-table
                     v-else-if="PlataformaItemSubitemFornecedor.length > 0"
                     style="height: 16rem"
-                    class="bg-green-lighten-5 overflow-y-auto rounded-lg elevation-3"
+                    class="overflow-y-auto rounded-lg elevation-3"
                     density="compact"
+                    fixed-header
                     striped="even"
                 >
                     <thead>
@@ -188,7 +195,7 @@
                         </tr>
                     </tbody>
                 </v-table>
-    
+
                 <v-sheet
                     v-else
                     color="green-lighten-5"
@@ -214,7 +221,7 @@ const props = defineProps({
 });
 
 const { trigger } = useFeedback();
-const emit = defineEmits(['onCloseDialog', 'refresh']);
+const emit = defineEmits(["onCloseDialog", "editProcess"]);
 
 const inputIdPlataforma = ref("");
 const inputPlataforma = ref("");
@@ -296,7 +303,7 @@ const onlyNumbers = (event) => {
         event.preventDefault();
     }
 };
-// metodos principais
+// carregamentos
 const carregandoPlataformaItemSubitemFornecedor = async (id) => {
     if (!id) return;
     loading.value = true;
@@ -309,48 +316,15 @@ const carregandoPlataformaItemSubitemFornecedor = async (id) => {
                     PlataformaItemSubitemFornecedor.value = res.data.data;
                     return;
                 }
-                trigger(res.data.message, 'error');
+                trigger(res.data.message, "error");
             })
-            .catch((err) => console.error(err));
+            .catch((err) => trigger(err, "error"));
     } catch (err) {
-        trigger(err, 'error');
+        trigger(err, "error");
     } finally {
         loading.value = false;
     }
 };
-const atualizar = async() => {
-    let plataforma = {
-        id: inputIdPlataforma.value,
-        nome: inputPlataforma.value,
-        descricao: inputDescricao.value,
-    };    
-    await atualizarPlataforma(plataforma);
-    cleanAll()
-    emit('refresh');
-};
-const associar = async () => {
-    let associacao = {
-        plataforma_id: inputIdPlataforma.value,
-        item_id: valueItens.value,
-        subitem_id: valueSubItens.value,
-        fornecedor_id: valueFornecedores.value,
-        vl_unit_cot: parseFloat(String(vl_unit_cot.value).replace(",", ".")),
-        qt_unidade_cot: qt_unidade_cot.value,
-        qt_multip_uni_cot: qt_multip_uni_cot.value,
-    };
-    await inserirAssociacaoItemSubitemFornecedor(associacao);
-    cleanAll()
-    emit('refresh');
-}
-function cleanAll(){
-    valueItens.value = null;
-    valueSubItens.value = null;
-    valueFornecedores.value = null;
-    vl_unit_cot.value = 0;
-    qt_unidade_cot.value = 1;
-    qt_multip_uni_cot.value = 1;
-}
-// carregamentos
 const carregandoTodosItens = async () => {
     await axios
         .get(route("item.index"), { headers: { Accept: "application/json" } })
@@ -358,7 +332,7 @@ const carregandoTodosItens = async () => {
             itens.value = res.data;
         })
         .catch((err) => {
-            trigger(err, 'error');
+            trigger(err, "error");
         });
 };
 const carregaItensSubitens = async (id) => {
@@ -370,10 +344,10 @@ const carregaItensSubitens = async (id) => {
                 subItens.value = res.data.data;
                 return;
             }
-            trigger(res.data.message, 'error');
+            trigger(res.data.message, "error");
         })
         .catch((err) => {
-            trigger(err, 'error');
+            trigger(err, "error");
         });
 };
 const carregaSubitensFornecedores = async (id) => {
@@ -385,39 +359,72 @@ const carregaSubitensFornecedores = async (id) => {
                 fornecedores.value = res.data.data;
                 return;
             }
-            trigger(res.data.message, 'error');
+            trigger(res.data.message, "error");
         })
         .catch((err) => {
-            trigger(err, 'error');
+            trigger(err, "error");
         });
 };
-// etapas de edição
-const atualizarPlataforma = async (plataforma) => {
+// metodos principais
+const atualizar = async () => {
+    let plataforma = {
+        id: inputIdPlataforma.value,
+        nome: inputPlataforma.value,
+        descricao: inputDescricao.value,
+    };
     await axios
         .put(route("plataforma.update", { id: plataforma.id }), plataforma)
         .then((res) => {
-            if (res.data.success) return;
-            trigger(res.data.message, 'error');
+            if (res.data.success) {
+                trigger(res.data.message, "success");
+                return;
+            };
+            trigger(res.data.message, "error");
         })
         .catch((err) => {
-            trigger(err, 'error');
+            trigger(err, "error");
         });
+
+    cleanAll();
+    emit("editProcess");
 };
-const inserirAssociacaoItemSubitemFornecedor = async (el) => {
+const associar = async () => {
+    let associacao = {
+        plataforma_id: inputIdPlataforma.value,
+        item_id: valueItens.value,
+        subitem_id: valueSubItens.value,
+        fornecedor_id: valueFornecedores.value,
+        vl_unit_cot: parseFloat(String(vl_unit_cot.value).replace(",", ".")),
+        qt_unidade_cot: qt_unidade_cot.value,
+        qt_multip_uni_cot: qt_multip_uni_cot.value,
+    };
+
     await axios
-        .post("/plataformaitemsubitemfornecedor", el)
+        .post("/plataformaitemsubitemfornecedor", associacao)
         .then((res) => {
             if (res.data.success) {
-                carregandoPlataformaItemSubitemFornecedor(inputIdPlataforma.value);
-                trigger(res.data.message, 'success');
+                carregandoPlataformaItemSubitemFornecedor(
+                    inputIdPlataforma.value,
+                );
+                trigger(res.data.message, "success");
                 return;
             }
-            trigger(res.data.message, 'error');
+            trigger(res.data.message, "error");
         })
         .catch((err) => {
-            trigger(err, 'error');
+            trigger(err, "error");
         });
+    cleanAll();
+    emit("editProcess");
 };
+function cleanAll() {
+    valueItens.value = null;
+    valueSubItens.value = null;
+    valueFornecedores.value = null;
+    vl_unit_cot.value = 0;
+    qt_unidade_cot.value = 1;
+    qt_multip_uni_cot.value = 1;
+}
 </script>
 
-<style lang="scss" scoped></style>
+<style scoped></style>

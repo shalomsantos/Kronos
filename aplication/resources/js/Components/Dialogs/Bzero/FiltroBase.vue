@@ -19,6 +19,7 @@
                     v-model="id"
                     label="Id"
                     variant="outlined"
+                    color="green-darken-3"
                     density="compact"
                     hide-details="auto"
                     clearable
@@ -34,7 +35,8 @@
                     clearable
                     variant="outlined"
                     density="compact"
-                    hide-details="auto"
+                    color="green-darken-3"
+                    hide-details
                 ></v-select>
             </v-col>
             <v-col cols="3">
@@ -43,7 +45,8 @@
                     label="Ano"
                     variant="outlined"
                     density="compact"
-                    hide-details="auto"
+                    color="green-darken-3"
+                    hide-details
                     clearable
                 ></v-text-field>
             </v-col>
@@ -57,33 +60,38 @@
                     clearable
                     variant="outlined"
                     density="compact"
-                    hide-details="auto"
+                    color="green-darken-3"
+                    hide-details
                 ></v-select>
             </v-col>
-            <v-col cols="12"
-                ><p class="text-disabled">Criado Entre:</p></v-col
-            >
-            <v-col cols="6">
-                <v-text-field
-                    v-model="created_at_start"
-                    type="date"
-                    label="Início"
-                    variant="outlined"
-                    density="compact"
-                    hide-details="auto"
-                    clearable
-                ></v-text-field>
-            </v-col>
-            <v-col cols="6">
-                <v-text-field
-                    v-model="created_at_end"
-                    type="date"
-                    label="Fim"
-                    variant="outlined"
-                    density="compact"
-                    hide-details="auto"
-                    clearable
-                ></v-text-field>
+            <v-col cols="12">
+                <v-row class="border rounded">
+                    <v-col cols="12"><p class="text-disabled">Criado Entre:</p></v-col>
+                    <v-col cols="5">
+                        <v-text-field
+                            v-model="created_at_start"
+                            type="date"
+                            label="Início"
+                            variant="outlined"
+                            density="compact"
+                            color="green-darken-3"
+                            hide-details
+                            clearable
+                        ></v-text-field>
+                    </v-col>
+                    <v-col cols="5">
+                        <v-text-field
+                            v-model="created_at_end"
+                            type="date"
+                            label="Fim"
+                            variant="outlined"
+                            density="compact"
+                            color="green-darken-3"
+                            hide-details
+                            clearable
+                        ></v-text-field>
+                    </v-col>
+                </v-row>
             </v-col>
             <v-col
                 cols="12"
@@ -91,17 +99,16 @@
             >
                 <v-btn
                     class="text-none"
-                    size="large"
                     color="green-darken-3"
                     prepend-icon="mdi-filter-outline"
+                    text="Carregar"
                     @click.prevent="carregar()"
-                    >Carregar</v-btn
-                >
+                />
                 <v-btn
                     class="text-none"
-                    size="large"
                     color="blue-darken-3"
                     prepend-icon="mdi-backspace-outline"
+                    text="Limpar"
                     @click.prevent="
                         ((id = null),
                         (projeto_id = null),
@@ -110,8 +117,7 @@
                         (created_at_start = null),
                         (created_at_end = null))
                     "
-                    >Limpar</v-btn
-                >
+                />
             </v-col>
         </v-row>
     </Dialog>
@@ -135,7 +141,7 @@ const ano = ref(null);
 const created_at_start = ref(null);
 const created_at_end = ref(null);
 
-onMounted(() => {
+onMounted(() => { // trazer da controller
     carregandoTodosProjetos();
     carregandoTodosStatus();
 });
