@@ -1,11 +1,11 @@
 <template>
     <Dialog
         v-model="model"
-        title="Editar Subitem"
         width="60vw"
+        title="Editar Subitem"
         @onCloseDialog="$emit('onCloseDialog')"
     >
-        <v-row dense>
+        <v-row>
             <v-col cols="5">
                 <v-row>
                     <v-col class="d-flex align-center ga-3 mb-0 pb-0">
@@ -18,7 +18,6 @@
                             variant="tonal"
                             size="x-small"
                             color="green-darken-4"
-                            @click.prevent
                         ></v-btn>
                     </v-col>
                     <v-col cols="12">
@@ -62,17 +61,18 @@
                             color="green-darken-1"
                             prepend-icon="mdi-playlist-plus"
                             text="Adicionar"
+                            :disabled="!inputSubitemNome"
+                            @click.prevent=""
                         />
                     </v-col>
                 </v-row>
             </v-col>
-            <v-col cols="7">
+            <v-col cols="7" class="my-0 py-0">
                 <v-table
-                    density="compact"
-                    class="overflow-y-auto"
-                    height="200"
-                    striped="even"
                     fixed-header
+                    density="compact"
+                    class="overflow-y-auto border rounded-lg elevation-3"
+                    height="200"
                 >
                     <thead>
                         <tr>
@@ -84,9 +84,7 @@
                     </thead>
                     <tbody>
                         <tr
-                            v-for="(
-                                item, id
-                            ) in subitem?.fornecedores"
+                            v-for="(item, id) in subitem?.fornecedores"
                             :key="id"
                         >
                             <td>{{ item.razao_social }}</td>
@@ -106,7 +104,6 @@
                                     icon="mdi-delete"
                                     density="compact"
                                     color="red"
-                                    @click.prevent="confirmation = true"
                                 ></v-btn>
                             </td>
                         </tr>
@@ -114,11 +111,20 @@
                 </v-table>
             </v-col>
         </v-row>
+
+        <Confirmation
+            v-model="dialogConfirmation"
+            @confirmed="editProcess"
+            @canceled="
+                ((inputSubitemNome = null), (dialogConfirmation = false))
+            "
+        />
     </Dialog>
 </template>
 
 <script setup>
 import Dialog from "../Dialog.vue";
+import Confirmation from "@/Components/Dialogs/Confirmation.vue";
 import { ref, watch } from "vue";
 
 const model = defineModel();
@@ -127,9 +133,13 @@ const props = defineProps({
     subitem: Object,
 });
 
+const emit = defineEmits(['editsubitem'])
+
 const subitemId = ref(null);
 const inputSubitemNome = ref("");
 const inputFornecedores = ref(null);
+
+const dialogConfirmation = ref(false);
 
 watch(
     () => props.subitem,
@@ -138,8 +148,12 @@ watch(
             subitemId.value = props.subitem?.id;
             inputSubitemNome.value = props.subitem?.nome;
         }
-    }, { immediate: true }
+    },
+    { immediate: true },
 );
+function editProcess(){
+    emit('editsubitem')
+}
 </script>
 
 <style scoped></style>

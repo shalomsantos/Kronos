@@ -27,18 +27,19 @@
                     </v-col>
                 </v-row>
             </v-col>
-            <v-col cols="6" v-if="dados.length > 0 && viewOption" v-for="(item, id) in dados" :key="id">
+            <v-col
+                cols="6"
+                v-if="dados.length > 0 && viewOption"
+                v-for="(item, id) in dados"
+                :key="id"
+            >
                 <v-hover>
                     <template v-slot:default="{ isHovering, props }">
                         <v-card
                             v-bind="props"
                             :title="item.nome"
                             prepend-icon="mdi-sitemap"
-                            :color="
-                                isHovering
-                                    ? 'green-lighten-5'
-                                    : undefined
-                            "
+                            :color="isHovering ? 'green-lighten-5' : undefined"
                             @click.prevent="
                                 ((subitemSelecionado = item),
                                 (dialogEditSubitem = true))
@@ -101,7 +102,9 @@
                             <td>{{ item.nome }}</td>
                             <td>
                                 <v-chip
-                                    v-for="(fornecedor, idx) in item.fornecedores.slice(0, 2)"
+                                    v-for="(
+                                        fornecedor, idx
+                                    ) in item.fornecedores.slice(0, 2)"
                                     :key="idx"
                                     size="x-small"
                                     color="green-darken-1"
@@ -146,7 +149,7 @@
                 <EmptyData />
             </v-col>
         </v-row>
-        <!-- Dialogs -->
+
         <EditeSubitem
             v-model="dialogEditSubitem"
             :subitem="subitemSelecionado"
@@ -154,42 +157,15 @@
                 ((subitemSelecionado = null), (dialogEditSubitem = false))
             "
         />
-        <v-dialog v-model="confirmation" max-width="500">
-            <v-toolbar
-                title="Confirmar operação?"
-                density="compact"
-            ></v-toolbar>
-            <v-card rounded="0" title="Lorem ipsum">
-                <v-card-item>
-                    Lorem, ipsum dolor sit amet consectetur adipisicing elit.
-                </v-card-item>
-                <v-card-actions>
-                    <v-btn
-                        size="small"
-                        text="Confirmar"
-                        color="success"
-                        @click.prevent="confirmation = false"
-                    />
-                    <v-spacer></v-spacer>
-                    <v-btn
-                        size="small"
-                        text="cancelar"
-                        color="red"
-                        @click.prevent="confirmation = false"
-                    />
-                </v-card-actions>
-            </v-card>
-        </v-dialog>
-        <!-- Feedback -->
-        <NormalFeedback v-model="feedback" />
     </DefaultLayout>
 </template>
 
 <script setup>
 import EditeSubitem from "@/Components/Dialogs/Subitens/EditeSubitem.vue";
+
+import { useFeedback } from "@/Composables/useFeedback";
 import DefaultLayout from "@/Layouts/DefaultLayout.vue";
 import EmptyData from "@/Components/EmptyData.vue";
-import NormalFeedback from "@/Components/Feedback/NormalFeedback.vue";
 import axios from "axios";
 import { ref } from "vue";
 
@@ -198,28 +174,21 @@ const props = defineProps({
     user: Object,
     preferencias: Object,
 });
-
 const location = [
     { title: "Kronos", disabled: false, href: "/" },
     { title: "Subitem", disabled: true },
     { title: "Lista", disabled: true },
 ];
+const { trigger } = useFeedback();
 
 const viewOption = ref(props.preferencias?.listagem_menu ?? 0);
 const dados = ref(props.subitens ?? []);
 const subitemSelecionado = ref(null);
-const confirmation = ref(false);
 const search = ref("");
 // dialog
 const dialogEditSubitem = ref(false);
+const dialogNovoSubitem = ref(false);
 
-// Feedback
-const feedback = ref({
-    show: false,
-    timeout: 2000,
-    color: "success",
-    text: "",
-});
 async function insertSubitem(item) {}
 
 const carregandoFornecedores = async () => {
@@ -228,11 +197,11 @@ const carregandoFornecedores = async () => {
         .then((res) => {
             optionsFornecedor.value = res.data.data;
         })
-        .catch((err) => console.error(err));
+        .catch((err) => trigger(err, "error"));
 };
-function executarBusca() {
-    carregandoTodasSubitens(search.value);
-}
+const executarBusca = async () => {
+    await carregandoTodasSubitens(search.value);
+};
 async function carregandoTodasSubitens(termo = "") {
     await axios
         .get(route("subitem.index"), {

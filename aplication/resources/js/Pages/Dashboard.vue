@@ -22,8 +22,6 @@
                 />
             </v-col>
             <v-row dense>
-                <v-col cols="12" class="d-flex justify-end ga-3 mb-1"> </v-col>
-
                 <v-col
                     v-if="carregando"
                     cols="12"
@@ -218,13 +216,16 @@
             </v-col>
         </v-row>
 
-        <FiltroBase v-model="dialogFilter" @onFilter="filtro" @insertEvent=""/>
+        <FiltroBase 
+            v-model="dialogFilter" 
+            @onFilter="filtro" 
+        />
 
         <NovaBase
             v-model="dialogNewBasezero"
             :projetos="props.projetos"
             @onCloseDialog="dialogNewBasezero = false"
-            @insertEvent="insertBzero"
+            @end="endInsert"
         />
     </DefaultLayout>
 </template>
@@ -248,9 +249,7 @@ const location = [
     { title: "Kronos", disabled: false, href: "/" },
     { title: "Lista", disabled: true },
 ];
-
 const { trigger } = useFeedback()
-
 // Variables
 const dados = ref(props.bzeros);
 const viewOption = ref(props.preferencias?.listagem_menu ?? 0);
@@ -259,7 +258,14 @@ const { carregando, carregarDados, filtrarBases } = useBzero();
 const dialogFilter = ref(false);
 const dialogNewBasezero = ref(false);
 // Functions
-async function insertBzero(res) {
+async function filtro(filtros) {
+    dialogFilter.value = false;
+    const res = await filtrarBases(filtros);
+    if (res.sucesso) {
+        dados.value = res.data;
+    }
+}
+async function endInsert(res) {
     if (res?.success) {
         dialogNewBasezero.value = false;
         trigger(res.message, 'success');
@@ -267,13 +273,6 @@ async function insertBzero(res) {
         dados.value = response.bzeros;
     } else {
         trigger(res?.message || "Erro desconhecido", 'error');
-    }
-}
-async function filtro(filtros) {
-    const res = await filtrarBases(filtros);
-    if (res.sucesso) {
-        dialogFilter.value = false;
-        dados.value = res.data;
     }
 }
 function exibirDetalhes(id) {

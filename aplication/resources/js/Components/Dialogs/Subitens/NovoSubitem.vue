@@ -12,7 +12,8 @@
                     label="Nome*"
                     variant="outlined"
                     density="compact"
-                    hide-details="auto"
+                    color="green-darken-3"
+                    hide-details
                     clearable
                 ></v-text-field>
             </v-col>
