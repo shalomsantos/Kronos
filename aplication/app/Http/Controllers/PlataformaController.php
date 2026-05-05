@@ -5,7 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 use App\Models\Plataforma;
-use App\Models\PlataformaItemSubitemFornecedor;
+use App\Models\PlataformaTemplate;
 
 class PlataformaController extends Controller
 {
@@ -134,7 +134,7 @@ class PlataformaController extends Controller
     public function plataformasAssociaveis(string $id)
     {
         try {
-            $relationchips = PlataformaItemSubitemFornecedor::where('plataforma_id', $id)->get();
+            $relationchips = PlataformaTemplate::where('plataforma_id', $id)->get();
             return response()->json([
                 'success' => true,
                 'data' => $relationchips

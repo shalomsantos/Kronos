@@ -11,7 +11,7 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('plataforma_item_subitem_fornecedor', function (Blueprint $table) {
+        Schema::create('plataforma_template', function (Blueprint $table) {
             $table->id();
             $table->unsignedBigInteger('plataforma_id');
             $table->foreign('plataforma_id')->references('id')->on('plataformas');
@@ -29,9 +29,6 @@ return new class extends Migration
             $table->unsignedTinyInteger('qt_unidade_cot')->default(1);
             $table->unsignedTinyInteger('qt_multip_uni_cot')->default(1);
 
-            $table->unsignedDecimal('vl_unit_apr')->default(0);
-            $table->unsignedTinyInteger('qt_unidade_apr')->default(1);
-            $table->unsignedTinyInteger('qt_multip_uni_apr')->default(1);
             // stamps
             $table->foreignId('created_by')->nullable()->constrained('users')->nullOnDelete();
             $table->foreignId('updated_by')->nullable()->constrained('users')->nullOnDelete();
@@ -44,6 +41,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('plataforma_item_subitem_fornecedor');
+        Schema::dropIfExists('plataforma_template');
     }
 };

@@ -5,9 +5,9 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class Bz_plat_item_subitem_form extends Model
+class BzeroPlataformaItemSubitemFornecedor extends Model
 {
-    protected $table = 'bz_plat_item_subitem_forms';
+    protected $table = 'bzero_plataforma_item_subitem_fornecedor';
 
     use HasFactory;
 

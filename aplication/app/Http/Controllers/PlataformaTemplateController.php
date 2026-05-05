@@ -2,15 +2,15 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\PlataformaItemSubitemFornecedor;
+use App\Models\PlataformaTemplate;
 use Illuminate\Http\Request;
 
-class PlataformaItemSubitemFornecedorController extends Controller
+class PlataformaTemplateController extends Controller
 {
     public function show(string $id)
     {
         try {
-            $relationchips = PlataformaItemSubitemFornecedor::where('plataforma_id', $id)->get();
+            $relationchips = PlataformaTemplate::where('plataforma_id', $id)->get();
             return response()->json([
                 'success' => true,
                 'data' => $relationchips
@@ -35,14 +35,14 @@ class PlataformaItemSubitemFornecedorController extends Controller
             'qt_multip_uni_cot' => 'required',
         ]);
         try {
-            $relationchip = PlataformaItemSubitemFornecedor::create([
-                'fornecedor_id' => $request->fornecedor_id,
-                'item_id' => $request->item_id,
+            $relationchip = PlataformaTemplate::create([
                 'plataforma_id' => $request->plataforma_id,
-                'qt_multip_uni_cot' => $request->qt_multip_uni_cot,
-                'qt_unidade_cot' => $request->qt_unidade_cot,
+                'item_id' => $request->item_id,
                 'subitem_id' => $request->subitem_id,
-                'vl_unit_cot' => $request->vl_unit_cot
+                'fornecedor_id' => $request->fornecedor_id,
+                'vl_unit_cot' => $request->vl_unit_cot,
+                'qt_unidade_cot' => $request->qt_unidade_cot,
+                'qt_multip_uni_cot' => $request->qt_multip_uni_cot
             ]);
             return response()->json([
                 'success' => true,

@@ -6,9 +6,9 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\Model;
 
-class PlataformaItemSubitemFornecedor extends Model
+class PlataformaTemplate extends Model
 {
-    protected $table = 'plataforma_item_subitem_fornecedor';
+    protected $table = 'plataforma_template';
 
     use HasFactory;
 

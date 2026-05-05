@@ -2,10 +2,12 @@
 
 namespace Database\Seeders;
 
+use App\Models\BzeroPlataforma;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 use App\Models\SubitemFornecedor;
 use App\Models\ItemSubitem;
+use App\Models\PlataformaTemplate;
 
 class TabelasAuxiliaresSeeder extends Seeder
 {
@@ -102,5 +104,26 @@ class TabelasAuxiliaresSeeder extends Seeder
             ]
         ];
         ItemSubitem::insert($itemSubitem);
+        // itens template de plataforma
+        $PlataformaTemplate = [
+            [
+                'plataforma_id' => 1,
+                'item_id' => 1,
+                'subitem_id' => 1,
+                'fornecedor_id' => 1,
+                'vl_unit_cot' => 50,
+                'qt_unidade_cot' => 3,
+                'qt_multip_uni_cot' => 2,
+            ]
+        ];
+        PlataformaTemplate::insert($PlataformaTemplate);
+        // plataforma bzero
+        $BzeroPlataforma = [
+            [
+                'bzero_id' => 1,
+                'plataforma_id' => 1
+            ]
+        ];
+        BzeroPlataforma::insert($BzeroPlataforma);
     }
 }

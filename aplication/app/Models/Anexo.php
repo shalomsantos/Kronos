@@ -14,6 +14,6 @@ class Anexo extends Model
         'descricao',
         'extensao',
         'path',
-        'bz_plat_item_subitem_form_id'
+        'bzero_plataforma_item_subitem_fornecedor_id'
     ];
 }

@@ -11,7 +11,7 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('bz_plat_item_subitem_forms', function (Blueprint $table) {
+        Schema::create('bzero_plataforma_item_subitem_fornecedor', function (Blueprint $table) {
             $table->id();
             $table->foreignId('bzero_id')->constrained();
             $table->foreignId('plataforma_id')->constrained();
@@ -46,6 +46,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('bz_plat_item_subitem_forms');
+        Schema::dropIfExists('bzero_plataforma_item_subitem_fornecedor');
     }
 };

@@ -20,12 +20,12 @@ class Plataforma extends Model
 
     public function itens(): BelongsToMany
     {
-        return $this->belongsToMany(Item::class, 'plataforma_item_subitem_fornecedor', 'plataforma_id', 'item_id');
+        return $this->belongsToMany(Item::class, 'plataforma_template', 'plataforma_id', 'item_id');
     }
 
     public function itensPivot(): HasMany
 {
-    return $this->hasMany(PlataformaItemSubitemFornecedor::class, 'plataforma_id');
+    return $this->hasMany(PlataformaTemplate::class, 'plataforma_id');
 }
 
     public function createdBy(): BelongsTo

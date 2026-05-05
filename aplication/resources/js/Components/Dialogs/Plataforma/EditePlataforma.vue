@@ -148,7 +148,7 @@
                 </v-sheet>
 
                 <v-table
-                    v-else-if="PlataformaItemSubitemFornecedor.length > 0"
+                    v-else-if="PlataformaTemplate.length > 0"
                     style="height: 16rem"
                     class="overflow-y-auto rounded-lg elevation-3"
                     density="compact"
@@ -170,7 +170,7 @@
                         <tr
                             v-for="(
                                 item, id
-                            ) in PlataformaItemSubitemFornecedor"
+                            ) in PlataformaTemplate"
                             :key="id"
                         >
                             <td>{{ item.item.nome }}</td>
@@ -240,7 +240,7 @@ const vl_unit_cot = ref(0);
 const qt_unidade_cot = ref(1);
 const qt_multip_uni_cot = ref(1);
 // dados
-const PlataformaItemSubitemFornecedor = ref([]);
+const PlataformaTemplate = ref([]);
 // feedbacks
 const loading = ref(false);
 
@@ -251,7 +251,7 @@ watch(
             inputIdPlataforma.value = novo.id ?? "";
             inputPlataforma.value = novo.nome ?? "";
             inputDescricao.value = novo.descricao ?? "";
-            carregandoPlataformaItemSubitemFornecedor(novo.id);
+            carregandoPlataformaTemplate(novo.id);
             carregandoTodosItens();
         }
     },
@@ -304,16 +304,16 @@ const onlyNumbers = (event) => {
     }
 };
 // carregamentos
-const carregandoPlataformaItemSubitemFornecedor = async (id) => {
+const carregandoPlataformaTemplate = async (id) => {
     if (!id) return;
     loading.value = true;
-    PlataformaItemSubitemFornecedor.value = [];
+    PlataformaTemplate.value = [];
     try {
         await axios
             .get(route("plataforma.plataformasAssociaveis", { id: id }))
             .then((res) => {
                 if (res.data.success) {
-                    PlataformaItemSubitemFornecedor.value = res.data.data;
+                    PlataformaTemplate.value = res.data.data;
                     return;
                 }
                 trigger(res.data.message, "error");
@@ -400,10 +400,10 @@ const associar = async () => {
     };
 
     await axios
-        .post("/plataformaitemsubitemfornecedor", associacao)
+        .post("/plataformatemplate", associacao)
         .then((res) => {
             if (res.data.success) {
-                carregandoPlataformaItemSubitemFornecedor(
+                carregandoPlataformaTemplate(
                     inputIdPlataforma.value,
                 );
                 trigger(res.data.message, "success");

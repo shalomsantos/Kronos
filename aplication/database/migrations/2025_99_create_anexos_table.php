@@ -17,8 +17,8 @@ return new class extends Migration
             $table->text('descricao')->nullable();
             $table->string('extensao');
             $table->string('path');
-            $table->unsignedBigInteger('bz_plat_item_subitem_form_id');
-            $table->foreign('bz_plat_item_subitem_form_id')->references('id')->on('bz_plat_item_subitem_forms');
+            $table->unsignedBigInteger('bzero_plataforma_item_subitem_fornecedor_id');
+            $table->foreign('bzero_plataforma_item_subitem_fornecedor_id')->references('id')->on('bzero_plataforma_item_subitem_fornecedor');
             // stamps
             $table->foreignId('created_by')->nullable()->constrained('users')->nullOnDelete();
             $table->foreignId('updated_by')->nullable()->constrained('users')->nullOnDelete();
