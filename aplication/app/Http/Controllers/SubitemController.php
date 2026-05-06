@@ -14,7 +14,7 @@ class SubitemController extends Controller
      */
     public function index(Request $request)
     {
-        $query = Subitem::with('fornecedores');
+        $query = Subitem::with('fornecedores')->orderBy('id', 'desc');
         
         if ($request->filled('search')) $query->where('nome', 'like', "%{$request->search}%");
 
@@ -25,7 +25,7 @@ class SubitemController extends Controller
             $preferencias = $usuario_logado->preferencia;
 
             return Inertia::render('Crud/cadastros/subitens/index', [
-                'subitens' => $query->orderBy('id', 'desc')->get(),
+                'subitens' => $query->get(),
                 'user' => $usuario_logado,
                 'preferencias' => $preferencias,
             ]);

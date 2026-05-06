@@ -37,17 +37,17 @@
                         <v-btn
                             class="text-none w-100"
                             color="green-darken-1"
-                            prepend-icon="mdi-update"
-                            text="Atualizar"
+                            prepend-icon="mdi-pencil"
+                            text="Editar"
                             @click.prevent="atualizar()"
                         />
                     </v-col>
                 </v-row>
             </v-col>
-            <v-col cols="9" class="pa-5">
-                <v-row class="border rounded">
-                    <v-col cols="12" class="text-center ma-0 pa-0">
-                        <p class="text-disabled">Vincular item à plataforma.</p>
+            <v-col cols="9" class="d-flex align-end border rounded my-3">
+                <v-row>
+                    <v-col cols="12" class="text-center">
+                        <p class="text-disabled">Aqui é possível anexar um item bem como seu subitem e fornecedor a plataforma, desta forma ao incluir a plataforma será automaticamente criado os itens aqui exibidos, este modelo de apresentação é chamado de template.</p>
                     </v-col>
                     <v-col cols="4">
                         <v-select
@@ -68,6 +68,7 @@
                             v-model="valueSubItens"
                             label="Subitem"
                             :items="subItens"
+                            :disabled="!valueItens"
                             item-title="subitem.nome"
                             item-value="subitem_id"
                             variant="outlined"
@@ -75,13 +76,18 @@
                             color="green-darken-3"
                             hide-details
                             clearable
-                        ></v-select>
+                        >
+                        <template #prepend-inner v-if="!valueItens">
+                            <v-icon icon="mdi-lock-outline" color="grey" size="small" class="mr-2"></v-icon>
+                        </template>
+                    </v-select>
                     </v-col>
                     <v-col cols="4">
                         <v-select
                             v-model="valueFornecedores"
                             label="Fornecedor"
                             :items="fornecedores"
+                            :disabled="!valueSubItens"
                             item-title="fornecedor.razao_social"
                             item-value="fornecedor_id"
                             variant="outlined"
@@ -89,7 +95,11 @@
                             color="green-darken-3"
                             hide-details
                             clearable
-                        ></v-select>
+                        >
+                        <template #prepend-inner v-if="!valueSubItens">
+                            <v-icon icon="mdi-lock-outline" color="grey" size="small" class="mr-2"></v-icon>
+                        </template>
+                    </v-select>
                     </v-col>
                     <v-col cols="4">
                         <v-text-field

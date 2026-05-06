@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use Inertia\Inertia;
 use App\Models\Item;
 use App\Models\ItemSubitem;
+use App\Models\Subitem;
 
 class ItemController extends Controller
 {
@@ -14,18 +15,20 @@ class ItemController extends Controller
      */
     public function index(Request $request)
     {
-        $query = Item::query();
-
-        if ($request->filled('search')) $query->where('nome', 'like', "%{$request->search}%");
-
-        if ($request->expectsJson()) return response()->json($query->get());
-
         try {
+            $query = Item::query()->orderBy('id', 'desc'); // dados
+            $Subitem = Subitem::query()->orderBy('id', 'desc')->select(['id', 'nome']); // opções
+
+            if ($request->expectsJson()) return response()->json($query->get());
+
+            if ($request->filled('search')) $query->where('nome', 'like', "%{$request->search}%");
+
             $usuario_logado = auth()->user();
             $preferencias = $usuario_logado->preferencia;
 
             return Inertia::render('Crud/cadastros/itens/index', [
-                'itens'        => $query->orderBy('id', 'desc')->get(),
+                'itens'        => $query->get(),
+                'subitens'     => $Subitem->get(),
                 'user'         => $usuario_logado,
                 'preferencias' => $preferencias,
             ]);

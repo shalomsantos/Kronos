@@ -4,7 +4,7 @@
         title="Bases Lista"
         :location="location"
     >
-        <v-row dense>
+        <v-row dense class="pb-16">
             <v-col cols="12" class="d-flex justify-end ga-3 mb-1">
                 <v-btn
                     class="text-none"
@@ -38,26 +38,23 @@
                     <v-col
                         cols="6"
                         v-if="dados.data.length > 0 && viewOption"
-                        v-for="item in dados.data" :key="item.id"
+                        v-for="item in dados.data"
+                        :key="item.id"
                     >
                         <v-hover>
                             <template v-slot:default="{ isHovering, props }">
                                 <v-card
                                     v-bind="props"
-                                    :color="
-                                        isHovering
-                                            ? 'green-lighten-5'
-                                            : undefined
-                                    "
+                                    :elevation="isHovering ? 3 : 1"
+                                    :disabled="item.status.id == 5 || item.status.id == 6"
                                     class="position-relative"
-                                    @click="exibirDetalhes(item.id)"
                                 >
                                     <template v-slot:title>
                                         {{ item.projeto.nome }}
                                     </template>
                                     <template v-slot:item>
                                         <v-row no-gutters class="pt-2">
-                                            <v-col cols="3">
+                                            <v-col cols="2">
                                                 <p class="text-body-2">
                                                     Status
                                                 </p>
@@ -69,7 +66,7 @@
                                                     </p>
                                                 </div>
                                             </v-col>
-                                            <v-col cols="3">
+                                            <v-col cols="2">
                                                 <p class="text-body-2">Ano</p>
                                                 <div>
                                                     <p
@@ -79,7 +76,7 @@
                                                     </p>
                                                 </div>
                                             </v-col>
-                                            <v-col cols="3">
+                                            <v-col cols="2">
                                                 <p class="text-body-2">
                                                     Criado em
                                                 </p>
@@ -95,7 +92,7 @@
                                                     </p>
                                                 </div>
                                             </v-col>
-                                            <v-col cols="3">
+                                            <v-col cols="2">
                                                 <p class="text-body-2">Por</p>
                                                 <div>
                                                     <p
@@ -107,12 +104,79 @@
                                                     </p>
                                                 </div>
                                             </v-col>
+                                            <v-col cols="6" class="d-flex ga-3">
+                                                <v-btn
+                                                    icon="mdi-pencil"
+                                                    color="primary"
+                                                    text="teste"
+                                                    density="comfortable"
+                                                    variant="tonal"
+                                                    rounded
+                                                ></v-btn>
+                                                <v-btn
+                                                    icon="mdi-currency-usd"
+                                                    color="success"
 
+                                                    text="teste"
+                                                    density="comfortable"
+                                                    variant="tonal"
+                                                    rounded
+                                                    @click="
+                                                        exibirDetalhes(item.id)
+                                                    "
+                                                ></v-btn>
+                                                <v-btn
+                                                    icon="mdi-folder"
+                                                    color="warning"
+                                                    text="teste"
+                                                    density="comfortable"
+                                                    variant="tonal"
+                                                    rounded
+                                                ></v-btn>
+                                                <v-btn
+                                                    icon="mdi-information"
+                                                    color="info"
+                                                    text="teste"
+                                                    density="comfortable"
+                                                    variant="tonal"
+                                                    rounded
+                                                ></v-btn>
+                                                <v-btn
+                                                    icon="mdi-delete"
+                                                    color="red"
+                                                    text="teste"
+                                                    density="comfortable"
+                                                    variant="tonal"
+                                                    rounded
+                                                ></v-btn>
+                                            </v-col>
+                                            <v-col
+                                                cols="6"
+                                                class="d-flex ga-3 justify-end"
+                                            >
+                                                <v-btn
+                                                    icon="mdi-arrow-left"
+                                                    color="warning"
+                                                    text="teste"
+                                                    variant="tonal"
+                                                    density="comfortable"
+                                                ></v-btn>
+                                                <v-btn
+                                                    icon="mdi-arrow-right"
+                                                    color="warning"
+                                                    text="teste"
+                                                    variant="tonal"
+                                                    density="comfortable"
+                                                ></v-btn>
+                                            </v-col>
                                             <v-sheet
                                                 class="d-flex flex-wrap ga-2 bg-transparent pt-3"
                                             >
                                                 <v-chip
-                                                    v-if="item.plataformas?.length > 0"
+                                                    v-if="
+                                                        item.plataformas
+                                                            ?.length > 0
+                                                    "
                                                     v-for="plataforma in item.plataformas"
                                                     size="x-small"
                                                     color="green"
@@ -125,18 +189,11 @@
                                                     v-else
                                                     size="x-small"
                                                     color="green"
-                                                    style="width: 10rem;"
+                                                    style="width: 10rem"
                                                 >
                                                 </v-chip>
                                             </v-sheet>
                                         </v-row>
-                                        <v-chip
-                                            variant="flat"
-                                            color="green-darken-1"
-                                            class="position-absolute top-0 right-0 rounded-bs-xl rounded-t-0"
-                                        >
-                                            {{ item.id }}
-                                        </v-chip>
                                     </template>
                                 </v-card>
                             </template>
@@ -163,11 +220,14 @@
                             </thead>
                             <tbody>
                                 <tr
-                                    v-for="item in dados.data" :key="item.id"
+                                    v-for="item in dados.data"
+                                    :key="item.id"
                                     @click="exibirDetalhes(item.id)"
                                 >
                                     <td>
-                                        <v-chip color="green" size="x-small">{{ item.id }}</v-chip>
+                                        <v-chip color="green" size="x-small">{{
+                                            item.id
+                                        }}</v-chip>
                                         {{ item.projeto.nome }}
                                     </td>
                                     <td>{{ item.status.nome }}</td>
@@ -199,7 +259,6 @@
                     </v-col>
                 </template>
             </v-row>
-
             <v-col cols="12" class="d-flex justify-center">
                 <v-pagination
                     v-model="dados.current_page"
@@ -215,12 +274,7 @@
                 ></v-pagination>
             </v-col>
         </v-row>
-
-        <FiltroBase 
-            v-model="dialogFilter" 
-            @onFilter="filtro" 
-        />
-
+        <FiltroBase v-model="dialogFilter" @onFilter="filtro" />
         <NovaBase
             v-model="dialogNewBasezero"
             :projetos="props.projetos"
@@ -249,7 +303,7 @@ const location = [
     { title: "Kronos", disabled: false, href: "/" },
     { title: "Lista", disabled: true },
 ];
-const { trigger } = useFeedback()
+const { trigger } = useFeedback();
 // Variables
 const dados = ref(props.bzeros);
 const viewOption = ref(props.preferencias?.listagem_menu ?? 0);
@@ -265,15 +319,11 @@ async function filtro(filtros) {
         dados.value = res.data;
     }
 }
-async function endInsert(res) {
-    if (res?.success) {
-        dialogNewBasezero.value = false;
-        trigger(res.message, 'success');
-        const response = await carregarDados();
-        dados.value = response.bzeros;
-    } else {
-        trigger(res?.message || "Erro desconhecido", 'error');
-    }
+async function endInsert(message) {
+    dialogNewBasezero.value = false;
+    trigger(message, "success");
+    const response = await carregarDados();
+    dados.value = response.bzeros;
 }
 function exibirDetalhes(id) {
     router.get(route("bzero.show", id));

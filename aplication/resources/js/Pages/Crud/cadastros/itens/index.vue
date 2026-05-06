@@ -159,6 +159,7 @@
         <EditeItem
             v-model="dialogEditeItem"
             :item="itemSelecionado"
+            :subitens="props.subitens"
             @closeEvent="((itemSelecionado = null), (dialogEditeItem = false))"
             @editProcess="editItem"
         />
@@ -176,6 +177,7 @@ import { ref } from "vue";
 
 const props = defineProps({
     itens: Object,
+    subitens: Object,
     user: Object,
     preferencias: Object,
 });

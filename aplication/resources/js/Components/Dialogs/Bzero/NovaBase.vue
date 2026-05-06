@@ -81,6 +81,7 @@
 </template>
 
 <script setup>
+import { useFeedback } from "@/Composables/useFeedback";
 import NovoProjeto from "../Projeto/NovoProjeto.vue";
 import { useBzero } from "@/Composables/useBzero";
 import Dialog from "../Dialog.vue";
@@ -92,9 +93,10 @@ const props = defineProps({
     projetos: Object,
 });
 
-const emit = defineEmits(['onCloseDialog', 'insertEvent']);
+const emit = defineEmits(['onCloseDialog', 'end']);
 
 const { inserirBzero } = useBzero();
+const { trigger } = useFeedback();
 
 const projetosOptions = ref(props.projetos);
 const projetosValue = ref(null);
@@ -110,12 +112,15 @@ async function inserir() {
             descricao: inputDescricao.value,
         };
         const res = await inserirBzero(payload); 
-        emit('insertEvent', res.data);
+        if(res.success){
+            emit('end', res.message);
+        }else{
+            trigger(res.message, 'error')
+        }
     } catch (err) {
-        emit('insertEvent', err.response?.data);
+        emit('end', err.response?.data);
     }
 }
-
 async function insertProjeto(projeto) {
     await axios
         .post(route("projeto.store"), projeto)
@@ -147,7 +152,6 @@ async function insertProjeto(projeto) {
             };
         });
 }
-
 async function carregandoTodosProjetos(termo = "") {
     await axios
         .get(route("projeto.index"), {

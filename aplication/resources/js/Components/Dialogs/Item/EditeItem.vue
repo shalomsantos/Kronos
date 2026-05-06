@@ -33,17 +33,13 @@
                     <v-col cols="12">
                         <v-combobox
                             v-model="inputSubitem"
-                            :items="[
-                                'Demostrativo um',
-                                'Demostrativo Dois',
-                                'Demostrativo três',
-                            ]"
                             label="Escolher ou inserir subitem"
+                            :items="subitens"
                             variant="outlined"
+                            item-title="nome"
                             density="compact"
                             color="green-darken-3"
                             hide-details
-                            item-title="nome"
                             clearable
                         >
                             <template v-slot:prepend-item>
@@ -69,6 +65,13 @@
                         </v-combobox>
                     </v-col>
                     <v-col cols="12">
+                        <v-btn
+                            class="text-none w-100"
+                            color="green-darken-1"
+                            prepend-icon="mdi-playlist-plus"
+                            text="teste"
+                            @click.prevent="relodOptions"
+                        />
                         <v-btn
                             class="text-none w-100"
                             color="green-darken-1"
@@ -140,25 +143,31 @@
 
 <script setup>
 import { useFeedback } from "@/Composables/useFeedback";
+import { useSubitem } from "@/Composables/useSubitem";
 import NovoSubitem from "../Subitens/NovoSubitem.vue";
+import Confirmation from "../Confirmation.vue";
 import { ref, computed, watch } from "vue";
 import Dialog from "../Dialog.vue";
 import axios from "axios";
-import Confirmation from "../Confirmation.vue";
 
 const model = defineModel();
 const emit = defineEmits(["editeProcess"]);
 
 const props = defineProps({
     item: Object,
+    subitens: Object,
 });
 const { trigger } = useFeedback();
-
+const { index } = useSubitem();
+// input text
 const itemId = computed(() => props.item?.id ?? null);
 const inputItemNome = ref("");
-const dialogNovoSubitem = ref(false);
-const dialogConfirmation = ref(false);
+// options
 const inputSubitem = ref(null);
+const subitens = ref(props.subitens);
+// Dialogs
+const dialogConfirmation = ref(false);
+const dialogNovoSubitem = ref(false);
 
 watch(
     () => props.item,
@@ -170,7 +179,10 @@ watch(
     },
     { immediate: true },
 );
-
+async function relodOptions() {
+    const res =  await index();
+    subitens.value = res;
+}
 async function carregandoSubitensPeloitem() {
     return;
     await axios
