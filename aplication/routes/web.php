@@ -25,6 +25,7 @@ Route::middleware('auth')->group(function () {
     Route::resource('projeto', ProjetoController::class);
     // Tipo Projeto
     Route::resource('tipoprojeto', TipoProjetoController::class);
+    Route::get('tipoprojeto/ofselect', [TipoProjetoController::class, 'ofSelect'])->name('tipoprojeto.ofselect');
     // Plataforma
     Route::resource('plataforma', PlataformaController::class);
     Route::get('/plataforma/associaveis/{id}', [PlataformaTemplateController::class, 'show'])->name('plataforma.plataformasAssociaveis');

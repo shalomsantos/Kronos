@@ -46,7 +46,10 @@
                                 <v-card
                                     v-bind="props"
                                     :elevation="isHovering ? 3 : 1"
-                                    :disabled="item.status.id == 5 || item.status.id == 6"
+                                    :disabled="
+                                        item.status.id == 5 ||
+                                        item.status.id == 6
+                                    "
                                     class="position-relative"
                                 >
                                     <template v-slot:title>
@@ -116,7 +119,6 @@
                                                 <v-btn
                                                     icon="mdi-currency-usd"
                                                     color="success"
-
                                                     text="teste"
                                                     density="comfortable"
                                                     variant="tonal"
@@ -147,6 +149,10 @@
                                                     text="teste"
                                                     density="comfortable"
                                                     variant="tonal"
+                                                    @click.prevent="
+                                                        ((idDelete = item.id),
+                                                        (dialogConfirmation = true))
+                                                    "
                                                     rounded
                                                 ></v-btn>
                                             </v-col>
@@ -277,9 +283,15 @@
         <FiltroBase v-model="dialogFilter" @onFilter="filtro" />
         <NovaBase
             v-model="dialogNewBasezero"
-            :projetos="props.projetos"
-            @onCloseDialog="dialogNewBasezero = false"
+            :projetos="projetos"
             @end="endInsert"
+        />
+        <Confirmation
+            title="Para continuar confirme a ação!"
+            subtitle="Deseja realmente detelar a base."
+            v-model="dialogConfirmation"
+            @confirmed="deleteItem()"
+            @canceled="dialogConfirmation = false"
         />
     </DefaultLayout>
 </template>
@@ -289,6 +301,7 @@ import FiltroBase from "@/Components/Dialogs/Bzero/FiltroBase.vue";
 import NovaBase from "@/Components/Dialogs/Bzero/NovaBase.vue";
 import DefaultLayout from "@/Layouts/DefaultLayout.vue";
 import EmptyData from "@/Components/EmptyData.vue";
+import Confirmation from "@/Components/Dialogs/Confirmation.vue";
 import { useFeedback } from "@/Composables/useFeedback";
 import { useBzero } from "@/Composables/useBzero";
 import { router } from "@inertiajs/vue3";
@@ -304,13 +317,15 @@ const location = [
     { title: "Lista", disabled: true },
 ];
 const { trigger } = useFeedback();
+const { carregando, carregarDados, filtrarBases, deletarBzero } = useBzero();
 // Variables
 const dados = ref(props.bzeros);
 const viewOption = ref(props.preferencias?.listagem_menu ?? 0);
-const { carregando, carregarDados, filtrarBases } = useBzero();
+const idDelete = ref(null);
 // Dialogs
 const dialogFilter = ref(false);
 const dialogNewBasezero = ref(false);
+const dialogConfirmation = ref(false);
 // Functions
 async function filtro(filtros) {
     dialogFilter.value = false;
@@ -322,8 +337,22 @@ async function filtro(filtros) {
 async function endInsert(message) {
     dialogNewBasezero.value = false;
     trigger(message, "success");
-    const response = await carregarDados();
-    dados.value = response.bzeros;
+    const res = await carregarDados();
+    dados.value = res;
+}
+async function deleteItem() {
+    try {
+        const res = await deletarBzero(idDelete.value);
+        if (res.success) {
+            trigger(res.message, "success");
+            return;
+        }
+        trigger(res.message || res, "error");
+    } finally {
+        dialogConfirmation.value = false;
+        const res = await carregarDados();
+        dados.value = res;
+    }
 }
 function exibirDetalhes(id) {
     router.get(route("bzero.show", id));

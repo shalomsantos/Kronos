@@ -57,7 +57,17 @@ export function useBzero() {
             return { sucesso: false, msg: err.response?.data?.message || "Erro desconhecido" };
         } finally { carregando.value = false }
     }
-    async function removerPlataforma(id) { }
+    async function deletarBzero(id) {
+        carregando.value = true;
+        
+        try {
+            const res = await axios.delete(route("bzero.destroy", { id: id }));
+            return res.data;
+        } catch (err) {
+            console.error("Axios erro:", err);
+            return { sucesso: false, msg: err.response?.data?.message || "Erro desconhecido" };
+        } finally { carregando.value = false }
+    }
 
     return {
         dados,
@@ -66,6 +76,6 @@ export function useBzero() {
         filtrarBases,
         inserirBzero,
         associarPlataforma,
-        removerPlataforma
+        deletarBzero
     };
 }

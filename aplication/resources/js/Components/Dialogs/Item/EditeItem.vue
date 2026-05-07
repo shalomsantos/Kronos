@@ -189,7 +189,6 @@ async function carregandoSubitensPeloitem() {
         .post(route("subitem.subitensAssociaveis"), { itemId: itemId.value })
         .then((res) => {
             if (res.data.message) {
-                console.log(res.data);
                 trigger(res.data.message, "success");
                 return;
             }

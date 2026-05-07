@@ -55,16 +55,17 @@ class BzeroController extends Controller
     public function index(Request $request)
     {
         try {
-            $bzeros = Bzero::with('plataformas')->orderBy('id', 'desc')->paginate(6);
+            $query = Bzero::with('plataformas')->orderBy('id', 'desc');
+            $projetos = Projeto::orderBy('id', 'desc');
 
-            if ($request->expectsJson()) return response()->json(['success' => true, 'bzeros' => $bzeros], 200);
+            if ($request->expectsJson()) return response()->json($query->paginate(6));
 
             $usuario_logado = auth()->user();
             $preferencias = $usuario_logado->preferencia;
 
             return Inertia::render('Dashboard', [
-                'bzeros' => $bzeros,
-                'projetos' => Projeto::orderBy('id', 'desc')->get(),
+                'bzeros' => $query->paginate(6),
+                'projetos' => $projetos->get(),
                 'preferencias' => $preferencias
             ]);
         } catch (\Throwable $e) {
@@ -105,7 +106,6 @@ class BzeroController extends Controller
                     'message' => "base criada com sucesso."
                 ]);
             }
-
             return response()->json([
                 'success' => false,
                 'message' => "Houve um erro no procedimento de inserção de registro."
@@ -157,7 +157,25 @@ class BzeroController extends Controller
      */
     public function destroy(string $id)
     {
-        //
+        try {
+            $ifDestroy = Bzero::destroy($id);
+            if($ifDestroy){
+                return response()->json([
+                    'success' => true,
+                    'message' => 'Operação realizada com sucesso.',
+                ], 200);
+            }
+            return response()->json([
+                'success' => false,
+                'message' => 'Houve algo problema ao tentar deletar',
+            ], 500);
+
+        } catch (\Throwable $e) {
+            return response()->json([
+                'success' => false,
+                'message' => $e->getMessage(),
+            ], 500);
+        }
     }
 
     public function associarPLataforma(string $id, Request $request) 
@@ -187,6 +205,7 @@ class BzeroController extends Controller
             ]);
         }
     }
+
     public function modify(Request $request)
     {
         try {

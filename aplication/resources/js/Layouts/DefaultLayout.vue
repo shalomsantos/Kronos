@@ -210,7 +210,7 @@ const rail = ref(true);
 const menu = ref(false);
 
 let cadMenuOptions = [
-    ["Projeto", "mdi-clipboard-file", route("projeto.index")],
+    ["Projeto", "mdi-clipboard", route("projeto.index")],
     ["Plataforma", "mdi-layers", route("plataforma.index")],
     ["Item", "mdi-invoice-list", route("item.index")],
     ["Subitem", "mdi-sitemap", route("subitem.index")],

@@ -10,6 +10,14 @@ class TipoProjetoController extends Controller
     /**
      * Display a listing of the resource.
      */
+    public function ofSelect()
+    {
+        return TipoProjeto::orderBy('id', 'desc')->select(['id', 'nome'])->get();
+    }
+
+    /**
+     * Display a listing of the resource.
+     */
     public function index(Request $request)
     {
         if($request->expectsJson()) return TipoProjeto::all();

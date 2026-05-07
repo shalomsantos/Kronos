@@ -3,7 +3,7 @@
         v-model="model"
         title="Editar Projeto"
         width="40vw"
-        @onCloseDialog="$emit('closeEditProjeto')"
+        @onCloseDialog="((model=false), ($emit('closeEditProjeto')))"
     >
         <v-row>
             <v-col cols="12">
@@ -71,7 +71,7 @@ const props = defineProps({
 });
 
 const { trigger } = useFeedback();
-const emit = defineEmits(["editeProcess"]);
+const emit = defineEmits(['editeProcess', 'closeEditProjeto']);
 // form inputs
 const inputProjeto = ref(props.projeto?.nome);
 const inputDescricao = ref(props.projeto?.descricao);

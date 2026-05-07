@@ -6,7 +6,7 @@
         @onCloseDialog="
             ((model = false),
             (inputProjeto = null),
-            (valueTipoProjetos = null),
+            (tipoProjetosValue = null),
             (inputDescricao = null))
         "
     >
@@ -24,9 +24,9 @@
             </v-col>
             <v-col cols="12" class="d-flex ga-2 align-center">
                 <v-combobox
-                    v-model="valueTipoProjetos"
-                    :items="itensTipoProjetos"
-                    item-title="label"
+                    v-model="tipoProjetosValue"
+                    :items="tipoProjetosOptions"
+                    item-title="nome"
                     item-value="id"
                     :return-object="false"
                     label="Escolher ou inserir tipo projeto"
@@ -79,7 +79,8 @@
                     color="green-darken-1"
                     prepend-icon="mdi-clipboard-check"
                     text="Salvar"
-                    @click.prevent="insertEvent"
+                    :disabled="carregando"
+                    @click.prevent="insert"
                 />
             </v-col>
         </v-row>
@@ -93,88 +94,60 @@
 </template>
 
 <script setup>
-import NormalFeedback from "@/Components/Feedback/NormalFeedback.vue";
 import NovoTipoProjeto from "./NovoTipoProjeto.vue";
-import { ref, onMounted } from "vue";
+import { useProjeto } from "@/Composables/useProjeto";
+import { useTipoProjeto } from "@/Composables/useTipoProjeto";
+import { useFeedback } from "@/Composables/useFeedback";
+import { ref } from "vue";
 import Dialog from "../Dialog.vue";
 
 const model = defineModel();
 
 const props = defineProps({
-    tipos: {
-        type: Object,
-        required: true,
-    },
+    tiposProjetos: Object
 });
+const emit = defineEmits(["end"]);
 
-const emit = defineEmits(["insertProcess"]);
+const { carregando, store } = useProjeto();
+const { trigger } = useFeedback();
+const { ofSelect } = useTipoProjeto();
 
-onMounted(() => {
-    carregandoTodosTiposProjetos();
-});
-
-// Components var
 const inputProjeto = ref(null);
 const inputDescricao = ref(null);
 
-const valueTipoProjetos = ref(null);
-const itensTipoProjetos = ref(props.tipos ? reducingContent(props.tipos) : []);
+const tipoProjetosValue = ref(null);
+const tipoProjetosOptions = ref(props.tiposProjetos);
 
-// Dialog var
+// Dialog
 const dialogNovoTipoProjeto = ref(false);
-
-// Feedback var
-const feedback = ref({
-    show: false,
-    timeout: 2000,
-    color: "success",
-    text: "",
-});
 
 // Functions
 async function carregandoTodosTiposProjetos() {
-    await axios
-        .get(route("tipoprojeto.index"), {
-            headers: {
-                Accept: "application/json",
-            },
-        })
-        .then((res) => {
-            itensTipoProjetos.value = reducingContent(res.data);
-        })
-        .catch((err) => {
-            feedback.value = {
-                show: true,
-                timeout: 4000,
-                color: "error",
-                text: err,
-            };
-        });
+    const res = await ofSelect();
+    console.log(res);
+    tipoProjetosOptions.value = res.data || res
 }
-function insertEvent() {
-    if (inputProjeto.value == null || valueTipoProjetos.value == null) {
-        feedback.value = {
-            show: true,
-            timeout: 4000,
-            color: "warning",
-            text: "O nome e tipo do projeto devem ser preenchidos.",
-        };
-        return;
-    }
+async function insert() {
 
-    let projeto = {
-        nome: inputProjeto.value,
-        tipo_projeto_id: valueTipoProjetos.value,
-        descricao: inputDescricao.value,
-    };
-    // limpando inputs
-    inputProjeto.value = null;
-    valueTipoProjetos.value = null;
-    inputDescricao.value = null;
-    // fechando dialog
-    model.value = false;
-    // emitindo evento para o pai
-    emit("insertProcess", projeto);
+    if (inputProjeto.value == null) { trigger('O nome deve ser preenchido.', 'warning'); return; }
+    if (tipoProjetosValue.value == null) { trigger('O tipo do projeto deve ser preenchido.', 'warning'); return; }
+    try {
+        const payload = {
+            nome: inputProjeto.value,
+            tipo_projeto_id: tipoProjetosValue.value,
+            descricao: inputDescricao.value,
+        };
+        
+        const res = await store(payload)
+        console.log(res)
+        if (res.success) {
+            emit("end", res.message);
+        } else {
+            trigger(res.message || res, "error");
+        }
+    } catch (error) {
+        emit("end", err.response?.data);
+    }
 }
 async function insertTipoProjeto(tipoProjeto) {
     await axios
@@ -182,7 +155,7 @@ async function insertTipoProjeto(tipoProjeto) {
         .then((res) => {
             if (res.data.success) {
                 // reload tipos de projetos
-                itensTipoProjetos.value = [];
+                tipoProjetosOptions.value = [];
                 carregandoTodosTiposProjetos();
                 feedback.value = {
                     show: true,
@@ -207,12 +180,6 @@ async function insertTipoProjeto(tipoProjeto) {
                 text: "Axios: " + err + ". Data: " + res.data.message + ".",
             };
         });
-}
-function reducingContent(data) {
-    return data.map((item) => ({
-        id: item.id,
-        label: item.nome || item.label || "",
-    }));
 }
 </script>
 

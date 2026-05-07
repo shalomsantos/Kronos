@@ -17,8 +17,8 @@
                             color="green-darken-3"
                             clearable
                             append-inner-icon="mdi-magnify"
-                            @keydown.enter="executarBusca"
-                            @click:clear="carregandoTodosProjetos('')" 
+                            @keydown.enter.prevent="executarBusca"
+                            @click:clear="carregarDados('')" 
                         />
                     </v-col>
                     <v-col align="end">
@@ -32,103 +32,132 @@
                     </v-col>
                 </v-row>
             </v-col>
-            <v-col cols="6" v-if="dados.length > 0 && viewOption" v-for="(item, id) in dados" :key="id">
-                <v-hover>
-                    <template v-slot:default="{ isHovering, props }">
-                        <v-card
-                            v-bind="props"
-                            :title="item.nome"
-                            prepend-icon="mdi-clipboard"
-                            @click.prevent="
-                                ((projetoSelecionado = item),
-                                (dialogEditProjeto = true))
-                            "
-                            :color="
-                                isHovering ? 'green-lighten-5' : undefined
-                            "
-                        >
-                            <template #subtitle>
-                                <v-chip
-                                    size="small"
-                                    color="green"
-                                >
-                                    {{ item.tipo_projeto.nome }}
-                                </v-chip>
-                            </template>
-                            <template #item>
-                                <p class="text-body-2 text-disabled">
-                                    Criado em:
-                                    {{ isDate(item.created_at) }}
-                                </p>
-                                <p class="text-body-2 text-disabled">
-                                    Por: {{ item.created_by.name }}
-                                </p>
-                            </template>
-                        </v-card>
-                    </template>
-                </v-hover>
-            </v-col>                    
-            <v-col cols="12" v-else-if="dados.length > 0 && !viewOption">
-                <v-table
-                    class="rounded-lg elevation-3"
-                    density="compact"
-                    striped="even"
+            <v-row dense>
+                <v-col
+                    v-if="carregando"
+                    cols="12"
+                    class="d-flex justify-center align-center py-10"
                 >
-                    <thead>
-                        <tr>
-                            <th class="text-left">Nome</th>
-                            <th class="text-left">Tipo</th>
-                            <th class="text-left">Criado em</th>
-                            <th class="text-left">Criado por</th>
-                            <th class="text-left">***</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr
-                            v-for="(item, id) in dados"
-                            :key="id"
-                            @click.prevent="
-                                ((projetoSelecionado = item),
-                                (dialogEditProjeto = true))
-                            "
+                    <v-progress-circular
+                        indeterminate
+                        color="green-darken-1"
+                        size="64"
+                    />
+                </v-col>
+                <template v-else>
+                    <v-col cols="6" v-if="dados.data.length > 0 && viewOption" v-for="(item, id) in dados.data" :key="id">
+                        <v-hover>
+                            <template v-slot:default="{ isHovering, props }">
+                                <v-card
+                                    v-bind="props"
+                                    :title="item.nome"
+                                    prepend-icon="mdi-clipboard"
+                                    @click.prevent="
+                                        ((projetoSelecionado = item),
+                                        (dialogEditProjeto = true))
+                                    "
+                                    :color="
+                                        isHovering ? 'green-lighten-5' : undefined
+                                    "
+                                >
+                                    <template #subtitle>
+                                        <v-chip
+                                            size="small"
+                                            color="green"
+                                        >
+                                            {{ item.tipo_projeto.nome }}
+                                        </v-chip>
+                                    </template>
+                                    <template #item>
+                                        <p class="text-body-2 text-disabled">
+                                            Criado em:
+                                            {{ isDate(item.created_at) }}
+                                        </p>
+                                        <p class="text-body-2 text-disabled">
+                                            Por: {{ item.created_by.name }}
+                                        </p>
+                                    </template>
+                                </v-card>
+                            </template>
+                        </v-hover>
+                    </v-col>                    
+                    <v-col cols="12" v-else-if="dados.data.length > 0 && !viewOption">
+                        <v-table
+                            class="rounded-lg elevation-3"
+                            density="compact"
+                            striped="even"
                         >
-                            <td>{{ item.nome }}</td>
-                            <td>{{ item.tipo_projeto.nome }}</td>
-                            <td>{{ isDate(item.created_at) }}</td>
-                            <td>
-                                <v-chip size="x-small" color="green" variant="flat">
-                                    {{ item.created_by.name }}
-                                </v-chip>
-                            </td>
-                            <td>
-                                <v-btn
-                                    disabled
-                                    class="text-none me-1"
-                                    icon="mdi-delete"
-                                    density="comfortable"
-                                    color="red-lighten-2"
-                                ></v-btn>
-                            </td>
-                        </tr>
-                    </tbody>
-                </v-table>
-            </v-col>                
-            <v-col cols="12" v-else>
-                <EmptyData />
-            </v-col>                
+                            <thead>
+                                <tr>
+                                    <th class="text-left">Nome</th>
+                                    <th class="text-left">Tipo</th>
+                                    <th class="text-left">Criado em</th>
+                                    <th class="text-left">Criado por</th>
+                                    <th class="text-left">***</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr
+                                    v-for="(item, id) in dados"
+                                    :key="id"
+                                    @click.prevent="
+                                        ((projetoSelecionado = item),
+                                        (dialogEditProjeto = true))
+                                    "
+                                >
+                                    <td>{{ item.nome }}</td>
+                                    <td>{{ item.tipo_projeto.nome }}</td>
+                                    <td>{{ isDate(item.created_at) }}</td>
+                                    <td>
+                                        <v-chip size="x-small" color="green" variant="flat">
+                                            {{ item.created_by.name }}
+                                        </v-chip>
+                                    </td>
+                                    <td>
+                                        <v-btn
+                                            disabled
+                                            class="text-none me-1"
+                                            icon="mdi-delete"
+                                            density="comfortable"
+                                            color="red-lighten-2"
+                                        ></v-btn>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </v-table>
+                    </v-col>                
+                    <v-col cols="12" v-else>
+                        <EmptyData />
+                    </v-col>   
+                </template>
+            </v-row> 
+            <v-col cols="12" class="d-flex justify-center">
+                <v-pagination
+                    v-model="dados.current_page"
+                    :length="dados.last_page"
+                    :total-visible="4"
+                    @update:model-value="updatePage"
+                    active-color="green-darken-4"
+                    color="green-lighten-1"
+                    class="position-absolute bottom-0 mb-3"
+                    style="left: 50%; transform: translateX(-50%); z-index: 15"
+                    density="comfortable"
+                    variant="flat"
+                ></v-pagination>
+            </v-col>            
         </v-row>
 
-        <!-- Dialogs -->
         <EditeProjeto
             v-model="dialogEditProjeto"
             :projeto="projetoSelecionado"
             :tipos="tiposProjetos"
-            @closeEditProjeto="((projetoSelecionado = null), (dialogEditProjeto = false))"
+            @closeEditProjeto="(projetoSelecionado = null)"
             @editeProcess="editProjeto"
         />
         <NovoProjeto
             v-model="dialogNewProjeto"
-            @insertProcess="insertProjeto"
+            :tiposProjetos="tiposProjetos"
+            @end="endInsert"
         />
     </DefaultLayout>
 </template>
@@ -138,7 +167,9 @@ import EditeProjeto from "@/Components/Dialogs/Projeto/EditeProjeto.vue";
 import NovoProjeto from "@/Components/Dialogs/Projeto/NovoProjeto.vue";
 import DefaultLayout from "@/Layouts/DefaultLayout.vue";
 import { useFeedback } from "@/Composables/useFeedback";
+import { useProjeto } from "@/Composables/useProjeto";
 import EmptyData from "@/Components/EmptyData.vue";
+import { router } from "@inertiajs/vue3";
 import { ref } from "vue";
 import axios from "axios";
 
@@ -155,27 +186,47 @@ const location = [
 ];
 const { trigger } = useFeedback();
 
+const dados = ref(props.projetos);
 const viewOption = ref(props.preferencias?.listagem_menu ?? 0);
-const dados = ref(props.projetos ?? []);
+const { carregando, index } = useProjeto();
+
 const projetoSelecionado = ref(null);
 const search = ref("");
+
 // dialogs
 const dialogNewProjeto = ref(false);
 const dialogEditProjeto = ref(false);
 // functions
-async function insertProjeto(projeto) {
-    await axios
-        .post(route("projeto.store"), projeto)
-        .then((res) => {
-            if (res.data.success) {
-                carregandoTodosProjetos();
-                trigger(res.data.message, 'success')
-                return;
-            }
-            trigger(res.data.message, 'error')
-        })
-        .catch((err) => trigger(err, 'error'));
+async function endInsert(message) {
+    dialogNewProjeto.value = false
+    trigger(message, 'success')
+    const res = await index();
+    dados.value = res.data;
 }
+function executarBusca() {
+    carregarDados(search.value);
+}
+async function carregarDados(termo = "") {
+   try {
+        const res = await index(termo);
+        dados.value = res.data;
+    } catch (err) {
+        trigger(err.response?.data?.message || "Erro ao carregar", 'error');
+    }
+}
+const updatePage = (page) => {
+    router.get(
+        route("projeto.index"),
+        { page: page },
+        {
+            preserveState: true,
+            preserveScroll: true,
+            onSuccess: (page) => {
+                dados.value = page.props.projetos;
+            },
+        },
+    );
+};
 async function editProjeto(projeto) {
     const projectId = projeto.id;
 
@@ -183,47 +234,15 @@ async function editProjeto(projeto) {
         .patch(route("projeto.update", projectId), projeto)
         .then((res) => {
             if (!res.data.success) {
-                feedback.value = {
-                    show: true,
-                    timeout: 4000,
-                    color: "error",
-                    text: res.data.message,
-                };
+                trigger(res.data.message, "error")
                 return;
             }
-
-            carregandoTodosProjetos();
-            feedback.value = {
-                show: true,
-                timeout: 4000,
-                color: "success",
-                text: res.data.message,
-            };
+            carregarDados();
+            trigger(res.data.message, "success")
         })
         .catch((err) => {
-            feedback.value = {
-                show: true,
-                timeout: 4000,
-                color: "error",
-                text: err,
-            };
+            trigger(err, "error")
         });
-}
-function executarBusca() {
-    carregandoTodosProjetos(search.value);
-}
-async function carregandoTodosProjetos(termo = "") {
-    await axios
-        .get(route("projeto.index"), {
-            params: { search: termo },
-            headers: {
-                Accept: "application/json",
-            },
-        })
-        .then((res) => {
-            dados.value =  res.data; 
-        })
-        .catch((err) => trigger(err, 'error'));
 }
 </script>
 

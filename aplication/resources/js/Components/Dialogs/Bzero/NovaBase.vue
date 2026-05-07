@@ -3,7 +3,12 @@
         v-model="model"
         title="Nova Base zero"
         width="40vw"
-        @onCloseDialog="((projetosValue=null), (ano=null), (inputDescricao=null), ($emit('onCloseDialog')))"
+        @onCloseDialog="
+            ((projetosValue = null),
+            (ano = null),
+            (inputDescricao = null),
+            (model = false))
+        "
     >
         <v-row>
             <v-col cols="9">
@@ -12,7 +17,7 @@
                     :items="projetosOptions"
                     item-title="nome"
                     item-value="id"
-                    :return-object="false" 
+                    :return-object="false"
                     label="Escolher ou inserir projeto"
                     color="green-darken-3"
                     variant="outlined"
@@ -26,7 +31,7 @@
                             title="Não encontrou?"
                             subtitle="Clique para cadastrar um novo"
                             prepend-icon="mdi-plus-circle-outline"
-                            @click.prevent="DialogNovoProjeto=true"
+                            @click.prevent="DialogNovoProjeto = true"
                             color="primary"
                         >
                         </v-list-item>
@@ -73,11 +78,11 @@
                     prepend-icon="mdi-check"
                     text="Salvar"
                     @click.prevent="inserir"
-                    />
+                />
             </v-col>
         </v-row>
     </Dialog>
-    <NovoProjeto v-model="DialogNovoProjeto" @insertProcess="insertProjeto"/>
+    <NovoProjeto v-model="DialogNovoProjeto" @insertProcess="insertProjeto" />
 </template>
 
 <script setup>
@@ -93,32 +98,35 @@ const props = defineProps({
     projetos: Object,
 });
 
-const emit = defineEmits(['onCloseDialog', 'end']);
+const emit = defineEmits(["end"]);
 
 const { inserirBzero } = useBzero();
 const { trigger } = useFeedback();
 
-const projetosOptions = ref(props.projetos);
 const projetosValue = ref(null);
+const projetosOptions = ref(props.projetos);
 const ano = ref(null);
 const inputDescricao = ref(null);
 const DialogNovoProjeto = ref(false);
 
 async function inserir() {
+    if (projetosValue.value == null) { trigger('O projeto deve ser selecionado.', 'warning'); return; }
+    if (ano.value == null) { trigger('O ano deve ser preenchido.', 'warning'); return; }
+
     try {
         const payload = {
             projeto_id: projetosValue.value,
             ano: ano.value,
             descricao: inputDescricao.value,
         };
-        const res = await inserirBzero(payload); 
-        if(res.success){
-            emit('end', res.message);
-        }else{
-            trigger(res.message, 'error')
+        const res = await inserirBzero(payload);
+        if (res.success) {
+            emit("end", res.message);
+        } else {
+            trigger(res.message, "error");
         }
     } catch (err) {
-        emit('end', err.response?.data);
+        emit("end", err.response?.data);
     }
 }
 async function insertProjeto(projeto) {
@@ -161,7 +169,7 @@ async function carregandoTodosProjetos(termo = "") {
             },
         })
         .then((res) => {
-            projetosOptions.value =  res.data; 
+            projetosOptions.value = res.data;
         })
         .catch((err) => console.log(err));
 }
