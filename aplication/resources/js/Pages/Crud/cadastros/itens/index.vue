@@ -33,7 +33,7 @@
                 </v-row>
             </v-col>
             <v-col
-                cols="6"
+                cols="4"
                 v-if="dados.length > 0 && viewOption"
                 v-for="(item, id) in dados"
                 :key="id"
@@ -49,6 +49,7 @@
                                 ((itemSelecionado = item),
                                 (dialogEditeItem = true))
                             "
+                            class="h-100 d-flex flex-column" 
                         >
                             <template #subtitle>
                                 <v-sheet class="d-flex justify-space-between align-end" color="transparent">
@@ -190,6 +191,9 @@ const dialogEditeItem = ref(false);
 const dialogNovoItem = ref(false);
 // functions
 async function insertItem(item) {}
+function editItem(item) {
+    console.log(item)
+}
 const executarBusca = async () => {
     await carregandoTodasItens(search.value);
 };

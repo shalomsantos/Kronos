@@ -32,8 +32,8 @@
                     </v-col>
                 </v-row>
             </v-col>
-            <v-col cols="6" v-if="dados.length > 0 && viewOption" v-for="(item, id) in dados" :key="id">
-                <v-hover>
+            <v-col cols="4" v-if="dados.length > 0 && viewOption" v-for="(item, id) in dados" :key="id">
+                <v-hover class="h-100">
                     <template v-slot:default="{ isHovering, props }">
                         <v-card
                             v-bind="props"
@@ -44,6 +44,7 @@
                                 (dialogEditePlataforma = true))
                             "
                             :elevation="isHovering ? 3 : 1"
+                            class="h-100 d-flex flex-column" 
                         >
                             <template #subtitle>
                                 <v-sheet class="d-flex justify-space-between align-end" color="transparent">

@@ -46,6 +46,8 @@ const inputSubitem = ref(null);
 
 const emit = defineEmits(['insertProcess']);
 
+const inputPlataforma = ref('')
+
 function insertEvent() {
     let plataforma = {
         item: inputItem.value,
