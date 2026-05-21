@@ -62,13 +62,13 @@
                     v-model="inputDescricao"
                     label="Descrição"
                     variant="outlined"
-                    color="green-darken-3"
                     density="compact"
+                    color="green-darken-3"
                     :counter="255"
                     maxlength="255"
                     rows="3"
+                    max-rows="3"
                     auto-grow
-                    clearable
                 ></v-textarea>
             </v-col>
             <v-col cols="12">

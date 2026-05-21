@@ -34,7 +34,6 @@
             <v-col cols="12">
                 <v-textarea
                     v-model="inputDescricao"
-                    clearable
                     label="Descrição"
                     variant="outlined"
                     density="compact"
@@ -42,6 +41,7 @@
                     :counter="255"
                     maxlength="255"
                     rows="3"
+                    max-rows="3"
                     auto-grow
                 ></v-textarea>
             </v-col>

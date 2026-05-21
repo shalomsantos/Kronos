@@ -29,7 +29,7 @@
                             :counter="255"
                             maxlength="255"
                             rows="3"
-                            clearable
+                            max-rows="3"
                             auto-grow
                         ></v-textarea>
                     </v-col>
