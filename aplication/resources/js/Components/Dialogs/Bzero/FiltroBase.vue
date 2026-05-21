@@ -30,8 +30,8 @@
                     v-model="projeto_id"
                     label="Projetos"
                     :items="itensProjetos"
-                    item-title="label"
                     item-value="id"
+                    item-title="nome"
                     clearable
                     variant="outlined"
                     density="compact"
@@ -55,8 +55,8 @@
                     v-model="status_id"
                     label="Status"
                     :items="itensStatus"
-                    item-title="label"
                     item-value="id"
+                    item-title="nome"
                     clearable
                     variant="outlined"
                     density="compact"
@@ -166,7 +166,7 @@ async function carregandoTodosProjetos() {
             },
         })
         .then((res) => {
-            itensProjetos.value = reducingContent(res.data) ?? [];
+            itensProjetos.value = res.data.data
         })
         .catch((err) => console.log(err));
 }
@@ -179,16 +179,9 @@ async function carregandoTodosStatus() {
             },
         })
         .then((res) => {
-            itensStatus.value = reducingContent(res.data) ?? [];
+            itensStatus.value = res.data
         })
         .catch((err) => console.log(err));
-}
-
-function reducingContent(data) {
-    return data.map((item) => ({
-        id: item.id,
-        label: item.nome || item.label || "",
-    }));
 }
 </script>
 

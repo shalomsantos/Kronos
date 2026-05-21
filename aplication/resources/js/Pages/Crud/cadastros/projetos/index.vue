@@ -45,7 +45,7 @@
                     />
                 </v-col>
                 <template v-else>
-                    <v-col cols="6" v-if="dados.data.length > 0 && viewOption" v-for="(item, id) in dados.data" :key="id">
+                    <v-col cols="4" v-if="dados.data.length > 0 && viewOption" v-for="(item, id) in dados.data" :key="id">
                         <v-hover>
                             <template v-slot:default="{ isHovering, props }">
                                 <v-card
@@ -56,8 +56,8 @@
                                         ((projetoSelecionado = item),
                                         (dialogEditProjeto = true))
                                     "
-                                    :color="
-                                        isHovering ? 'green-lighten-5' : undefined
+                                    :elevation="
+                                        isHovering ? 3 : 1
                                     "
                                 >
                                     <template #subtitle>
@@ -69,13 +69,12 @@
                                         </v-chip>
                                     </template>
                                     <template #item>
-                                        <p class="text-body-2 text-disabled">
-                                            Criado em:
-                                            {{ isDate(item.created_at) }}
-                                        </p>
-                                        <p class="text-body-2 text-disabled">
-                                            Por: {{ item.created_by.name }}
-                                        </p>
+                                        <v-sheet class="d-flex justify-space-between align-end">
+                                            <Avatar :nomeCompleto="item.created_by.name"/>
+                                            <p class="text-body-2 text-disabled">
+                                                {{ isDate(item.created_at) }}
+                                            </p>
+                                        </v-sheet>
                                     </template>
                                 </v-card>
                             </template>
@@ -92,13 +91,13 @@
                                     <th class="text-left">Nome</th>
                                     <th class="text-left">Tipo</th>
                                     <th class="text-left">Criado em</th>
-                                    <th class="text-left">Criado por</th>
+                                    <th class="text-left">Por</th>
                                     <th class="text-left">***</th>
                                 </tr>
                             </thead>
                             <tbody>
                                 <tr
-                                    v-for="(item, id) in dados"
+                                    v-for="(item, id) in dados.data"
                                     :key="id"
                                     @click.prevent="
                                         ((projetoSelecionado = item),
@@ -109,9 +108,7 @@
                                     <td>{{ item.tipo_projeto.nome }}</td>
                                     <td>{{ isDate(item.created_at) }}</td>
                                     <td>
-                                        <v-chip size="x-small" color="green" variant="flat">
-                                            {{ item.created_by.name }}
-                                        </v-chip>
+                                        <Avatar :nomeCompleto="item.created_by.name"/>
                                     </td>
                                     <td>
                                         <v-btn
@@ -164,6 +161,7 @@
 
 <script setup>
 import EditeProjeto from "@/Components/Dialogs/Projeto/EditeProjeto.vue";
+import Avatar from "@/Components/Bases/Avatar.vue";
 import NovoProjeto from "@/Components/Dialogs/Projeto/NovoProjeto.vue";
 import DefaultLayout from "@/Layouts/DefaultLayout.vue";
 import { useFeedback } from "@/Composables/useFeedback";
@@ -180,9 +178,9 @@ const props = defineProps({
     preferencias: Object
 });
 const location = [
-    { title: "Kronos", disabled: false, href: "/" },
-    { title: "Projetos", disabled: true },
-    { title: "Lista", disabled: true },
+    { title: "Kronos", href: "/" },
+    { title: "Projetos" },
+    { title: "Lista", disabled: false },
 ];
 const { trigger } = useFeedback();
 

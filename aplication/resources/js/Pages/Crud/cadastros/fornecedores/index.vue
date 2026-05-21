@@ -44,20 +44,19 @@
                             v-bind="props"
                             :title="item.razao_social"
                             prepend-icon="mdi-store"
-                            :color="isHovering ? 'green-lighten-5' : undefined"
+                            :elevation="isHovering ? 3 : 1"
                             @click.prevent="
                                 ((fornecedorSelecionado = item),
                                 (dialogEditeFornecedor = true))
                             "
                         >
                             <template #subtitle>
-                                <p class="text-body-2 text-disabled">
-                                    Criado em:
-                                    {{ isDate(item.created_at) }}
-                                </p>
-                                <p class="text-body-2 text-disabled">
-                                    Por: {{ item.created_by.name }}
-                                </p>
+                                <v-sheet class="d-flex justify-space-between align-end" color="transparent">
+                                    <Avatar :nomeCompleto="item.created_by.name"/>
+                                    <p class="text-body-2 text-disabled">
+                                        {{ isDate(item.created_at) }}
+                                    </p>
+                                </v-sheet>
                             </template>
                         </v-card>
                     </template>
@@ -73,7 +72,7 @@
                         <tr>
                             <th class="text-left">Nome</th>
                             <th class="text-left">Criado em</th>
-                            <th class="text-left">Criado por</th>
+                            <th class="text-left">Por</th>
                             <th class="text-left">***</th>
                         </tr>
                     </thead>
@@ -89,13 +88,7 @@
                             <td>{{ item.razao_social }}</td>
                             <td>{{ isDate(item.created_at) }}</td>
                             <td>
-                                <v-chip
-                                    size="x-small"
-                                    color="green"
-                                    variant="flat"
-                                >
-                                    {{ item.created_by.name }}
-                                </v-chip>
+                                <Avatar :nomeCompleto="item.created_by.name"/>
                             </td>
                             <td>
                                 <v-btn
@@ -154,6 +147,7 @@ import EmptyData from "@/Components/EmptyData.vue";
 import NormalFeedback from "@/Components/Feedback/NormalFeedback.vue";
 import { router } from "@inertiajs/vue3";
 import { ref } from "vue";
+import Avatar from "@/Components/Bases/Avatar.vue";
 
 const props = defineProps({
     fornecedores: Object,

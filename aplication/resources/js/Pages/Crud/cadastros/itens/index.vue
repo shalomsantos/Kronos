@@ -1,5 +1,9 @@
 <template>
-    <DefaultLayout v-model="viewOption" title="Itens" :location="location">
+    <DefaultLayout 
+        v-model="viewOption" 
+        title="Itens" 
+        :location="location"
+    >
         <v-row dense>
             <v-col cols="12">
                 <v-row>
@@ -40,25 +44,19 @@
                             v-bind="props"
                             :title="item.nome"
                             prepend-icon="mdi-invoice-list"
-                            :color="isHovering ? 'green-lighten-5' : undefined"
+                            :elevation="isHovering ? 3  : 1"
                             @click.prevent="
                                 ((itemSelecionado = item),
                                 (dialogEditeItem = true))
                             "
                         >
                             <template #subtitle>
-                                <v-row no-gutters>
-                                    <v-col cols="2">
-                                        <p class="text-body-2 text-disabled">
-                                            Criado em:
-                                            {{ isDate(item.created_at) }}
-                                        </p>
-                                        <p class="text-body-2 text-disabled">
-                                            Por:
-                                            {{ item.created_by.name }}
-                                        </p>
-                                    </v-col>
-                                </v-row>
+                                <v-sheet class="d-flex justify-space-between align-end" color="transparent">
+                                    <Avatar :nomeCompleto="item.created_by.name" />
+                                    <p class="text-body-2 text-disabled">
+                                        {{ isDate(item.created_at) }}
+                                    </p>
+                                </v-sheet>
                             </template>
                             <template #item>
                                 <v-sheet
@@ -90,7 +88,7 @@
                             <th class="text-left">Nome</th>
                             <th class="text-left">Subitens</th>
                             <th class="text-left">Criado em</th>
-                            <th class="text-left">Criado por</th>
+                            <th class="text-left">Por</th>
                             <th class="text-left">***</th>
                         </tr>
                     </thead>
@@ -131,13 +129,7 @@
                             </td>
                             <td>{{ isDate(item.created_at) }}</td>
                             <td>
-                                <v-chip
-                                    size="x-small"
-                                    color="green"
-                                    variant="flat"
-                                >
-                                    {{ item.created_by.name }}
-                                </v-chip>
+                                <Avatar :nomeCompleto="item.created_by.name"/>
                             </td>
                             <td>
                                 <v-btn
@@ -173,6 +165,7 @@ import EditeItem from "@/Components/Dialogs/Item/EditeItem.vue";
 import { useFeedback } from "@/Composables/useFeedback";
 import DefaultLayout from "@/Layouts/DefaultLayout.vue";
 import EmptyData from "@/Components/EmptyData.vue";
+import Avatar from "@/Components/Bases/Avatar.vue";
 import { ref } from "vue";
 
 const props = defineProps({
@@ -186,7 +179,7 @@ const location = [
     { title: "Itens", disabled: true },
     { title: "Lista", disabled: true },
 ];
-const { trigger } = useFeedback()
+const { trigger } = useFeedback();
 
 const viewOption = ref(props.preferencias?.listagem_menu ?? 0);
 const dados = ref(props.itens ?? []);
@@ -199,7 +192,7 @@ const dialogNovoItem = ref(false);
 async function insertItem(item) {}
 const executarBusca = async () => {
     await carregandoTodasItens(search.value);
-}
+};
 async function carregandoTodasItens(termo = "") {
     await axios
         .get(route("item.index"), {
@@ -211,7 +204,7 @@ async function carregandoTodasItens(termo = "") {
         .then((res) => {
             dados.value = res.data;
         })
-        .catch((err) => trigger(err, 'error'));
+        .catch((err) => trigger(err, "error"));
 }
 </script>
 

@@ -96,16 +96,7 @@
                                                 </div>
                                             </v-col>
                                             <v-col cols="2">
-                                                <p class="text-body-2">Por</p>
-                                                <div>
-                                                    <p
-                                                        class="text-body-2 text-disabled"
-                                                    >
-                                                        {{
-                                                            item.created_by.name
-                                                        }}
-                                                    </p>
-                                                </div>
+                                                <Avatar :nomeCompleto="item.created_by.name"/>
                                             </v-col>
                                             <v-col cols="6" class="d-flex ga-3">
                                                 <v-btn
@@ -123,9 +114,7 @@
                                                     density="comfortable"
                                                     variant="tonal"
                                                     rounded
-                                                    @click="
-                                                        exibirDetalhes(item.id)
-                                                    "
+                                                    @click="() => router.get(route('bzero.show', item.id))"
                                                 ></v-btn>
                                                 <v-btn
                                                     icon="mdi-folder"
@@ -220,15 +209,14 @@
                                     <th class="text-left">Status</th>
                                     <th class="text-left">Ano</th>
                                     <th class="text-left">Criado em</th>
-                                    <th class="text-left">Criador por</th>
-                                    <th class="text-left">***</th>
+                                    <th class="text-left">Por</th>
+                                    <th class="text-left"></th>
                                 </tr>
                             </thead>
                             <tbody>
                                 <tr
                                     v-for="item in dados.data"
                                     :key="item.id"
-                                    @click="exibirDetalhes(item.id)"
                                 >
                                     <td>
                                         <v-chip color="green" size="x-small">{{
@@ -240,21 +228,26 @@
                                     <td>{{ item.ano }}</td>
                                     <td>{{ isDate(item.created_at) }}</td>
                                     <td>
-                                        <v-chip
-                                            size="x-small"
-                                            color="green"
-                                            variant="flat"
-                                        >
-                                            {{ item.created_by.name }}
-                                        </v-chip>
+                                        <Avatar :nomeCompleto="item.created_by.name"/>
                                     </td>
                                     <td>
-                                        <v-btn
+                                        <!-- <v-btn
                                             class="text-none me-1"
                                             icon="mdi-delete"
                                             density="compact"
                                             color="red-lighten-2"
-                                        ></v-btn>
+                                        ></v-btn> -->
+                                        <v-menu location="top">
+                                            <template v-slot:activator="{ props }">
+                                                <v-btn
+                                                    v-bind="props"
+                                                    icon="mdi-dots-vertical"
+                                                    variant="text"
+                                                    density="compact"
+                                                ></v-btn>
+                                            </template>
+                                            <v-list :items="items" density="compact" @click:select="(acao) => gerenciarAcoesMenu(acao, item.id)"/>
+                                        </v-menu>
                                     </td>
                                 </tr>
                             </tbody>
@@ -280,7 +273,10 @@
                 ></v-pagination>
             </v-col>
         </v-row>
-        <FiltroBase v-model="dialogFilter" @onFilter="filtro" />
+        <FiltroBase
+            v-model="dialogFilter" 
+            @onFilter="filtro"
+        />
         <NovaBase
             v-model="dialogNewBasezero"
             :projetos="projetos"
@@ -302,6 +298,7 @@ import NovaBase from "@/Components/Dialogs/Bzero/NovaBase.vue";
 import DefaultLayout from "@/Layouts/DefaultLayout.vue";
 import EmptyData from "@/Components/EmptyData.vue";
 import Confirmation from "@/Components/Dialogs/Confirmation.vue";
+import Avatar from "@/Components/Bases/Avatar.vue";
 import { useFeedback } from "@/Composables/useFeedback";
 import { useBzero } from "@/Composables/useBzero";
 import { router } from "@inertiajs/vue3";
@@ -315,6 +312,13 @@ const props = defineProps({
 const location = [
     { title: "Kronos", disabled: false, href: "/" },
     { title: "Lista", disabled: true },
+];
+const items = [
+    { title: "Editar", value: "editar", props: { prependIcon: "mdi-pencil" } },
+    { title: "Anexar Moeda", value: "anexar_moeda", props: { prependIcon: "mdi-currency-usd" } },
+    { title: "Anexar Pasta", value: "anexar_pasta", props: { prependIcon: "mdi-folder" } },
+    { title: "Voltar Fase", value: "voltar", props: { prependIcon: "mdi-arrow-left" } },
+    { title: "Avançar Fase", value: "avancar", props: { prependIcon: "mdi-arrow-right" } },
 ];
 const { trigger } = useFeedback();
 const { carregando, carregarDados, filtrarBases, deletarBzero } = useBzero();
@@ -354,8 +358,17 @@ async function deleteItem() {
         dados.value = res;
     }
 }
-function exibirDetalhes(id) {
-    router.get(route("bzero.show", id));
+function gerenciarAcoesMenu(acao, idProjeto) {
+    const tipoAcao = acao.id;
+
+    switch (tipoAcao) {
+        case 'anexar_moeda':
+            router.get(route("bzero.show", idProjeto));
+            break;
+        case 'editar':
+            console.log("Editando projeto:", idProjeto);
+            break;
+    }
 }
 const updatePage = (page) => {
     router.get(

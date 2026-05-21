@@ -1,5 +1,9 @@
 <template>
-    <DefaultLayout v-model="viewOption" title="Subitens" :location="location">
+    <DefaultLayout 
+        v-model="viewOption" 
+        title="Subitens" 
+        :location="location"
+    >
         <v-row dense>
             <v-col cols="12">
                 <v-row>
@@ -46,13 +50,12 @@
                             "
                         >
                             <template #subtitle>
-                                <p class="text-body-2 text-disabled">
-                                    Criado em:
-                                    {{ isDate(item.created_at) }}
-                                </p>
-                                <p class="text-body-2 text-disabled">
-                                    Por: {{ item.created_by.name }}
-                                </p>
+                                <v-sheet class="d-flex justify-space-between align-end" color="transparent">
+                                    <Avatar :nomeCompleto="item.created_by.name" />
+                                    <p class="text-body-2 text-disabled">
+                                        {{ isDate(item.created_at) }}
+                                    </p>
+                                </v-sheet>
                             </template>
                             <template #item>
                                 <v-sheet
@@ -86,7 +89,7 @@
                             <th class="text-left">Nome</th>
                             <th class="text-left">Subitens</th>
                             <th class="text-left">Criado em</th>
-                            <th class="text-left">Criado por</th>
+                            <th class="text-left">Por</th>
                             <th class="text-left">***</th>
                         </tr>
                     </thead>
@@ -124,13 +127,7 @@
                             </td>
                             <td>{{ isDate(item.created_at) }}</td>
                             <td>
-                                <v-chip
-                                    size="x-small"
-                                    color="green"
-                                    variant="flat"
-                                >
-                                    {{ item.created_by.name }}
-                                </v-chip>
+                                <Avatar :nomeCompleto="item.created_by.name"/>
                             </td>
                             <td>
                                 <v-btn
@@ -168,6 +165,7 @@ import DefaultLayout from "@/Layouts/DefaultLayout.vue";
 import EmptyData from "@/Components/EmptyData.vue";
 import axios from "axios";
 import { ref } from "vue";
+import Avatar from "@/Components/Bases/Avatar.vue";
 
 const props = defineProps({
     subitens: Object,

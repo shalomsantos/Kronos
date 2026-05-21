@@ -17,5 +17,9 @@ export default {
 
       return formatter.format(data);
     },
+    avatarNick(completeName){
+      const nomes = completeName.split(" ") // Admin admin
+      return nomes[0].charAt(0) + nomes.pop().charAt(0); // first[0] + last[0]
+    }
   },
 };

@@ -43,20 +43,15 @@
                                 ((plataformaSelecionada = item),
                                 (dialogEditePlataforma = true))
                             "
-                            :color="isHovering ? 'green-lighten-5' : undefined"
+                            :elevation="isHovering ? 3 : 1"
                         >
                             <template #subtitle>
-                                <v-row no-gutters>
-                                    <v-col cols="2">
-                                        <p class="text-body-2 text-disabled">
-                                            Criado em:
-                                            {{ isDate(item.created_at) }}
-                                        </p>
-                                        <p class="text-body-2 text-disabled">
-                                            Por: {{ item.created_by.name }}
-                                        </p>
-                                    </v-col>
-                                </v-row>
+                                <v-sheet class="d-flex justify-space-between align-end" color="transparent">
+                                    <Avatar :nomeCompleto="item.created_by.name"/>
+                                    <p class="text-body-2 text-disabled">
+                                        {{ isDate(item.created_at) }}
+                                    </p>
+                                </v-sheet>
                             </template>
                             <template #item>
                                 <v-sheet
@@ -95,7 +90,7 @@
                         <tr>
                             <th class="text-left">Nome</th>
                             <th class="text-left">Criado em</th>
-                            <th class="text-left">Criado por</th>
+                            <th class="text-left">Por</th>
                             <th class="text-left">***</th>
                         </tr>
                     </thead>
@@ -111,13 +106,7 @@
                             <td>{{ item.nome }}</td>
                             <td>{{ isDate(item.created_at) }}</td>
                             <td>
-                                <v-chip
-                                    size="x-small"
-                                    color="green"
-                                    variant="flat"
-                                >
-                                    {{ item.created_by?.name }}
-                                </v-chip>
+                                <Avatar :nomeCompleto="item.created_by?.name"/>
                             </td>
                             <td>
                                 <v-btn
@@ -159,6 +148,7 @@ import NovaPlataforma from "@/Components/Dialogs/Plataforma/NovaPlataforma.vue";
 import { useFeedback } from "@/Composables/useFeedback";
 import DefaultLayout from "@/Layouts/DefaultLayout.vue";
 import EmptyData from "@/Components/EmptyData.vue";
+import Avatar from "@/Components/Bases/Avatar.vue";
 import axios from "axios";
 import { ref } from "vue";
 
