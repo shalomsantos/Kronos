@@ -31,23 +31,20 @@
 </template>
 
 <script setup>
+import { useFeedback } from "@/Composables/useFeedback";
 import Dialog from "../Dialog.vue";
 import { ref } from "vue";
 
 const model = defineModel();
 
 const emit = defineEmits(["insertProcess"]);
+const { trigger } = useFeedback();
 
 const tipoProjetoNome = ref(null);
 
 function insertEvent() {
     if (tipoProjetoNome.value == null) {
-        feedback.value = {
-            show: true,
-            timeout: 4000,
-            color: "warning",
-            text: "O campo nome é obrigatório.",
-        };
+        trigger('O campo nome é obrigatório.', 'warning')
         return;
     }
     let tipoProjeto = {

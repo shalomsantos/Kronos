@@ -199,7 +199,7 @@ async function endInsert(message) {
     dialogNewProjeto.value = false
     trigger(message, 'success')
     const res = await index();
-    dados.value = res.data;
+    dados.value = res.data || res.data.data;
 }
 function executarBusca() {
     carregarDados(search.value);

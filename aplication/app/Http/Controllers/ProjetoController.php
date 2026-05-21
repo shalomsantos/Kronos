@@ -15,7 +15,7 @@ class ProjetoController extends Controller
     public function index(Request $request)
     {
         $query = Projeto::with('tipoProjeto')->orderBy('id', 'desc');
-        $tipoProjeto = TipoProjeto::query();
+        $tipoProjeto = TipoProjeto::orderBy('id', 'desc')->select(['id', 'nome']);
 
         if ($request->filled('search')) $query->where('nome', 'like', "%{$request->search}%");
 

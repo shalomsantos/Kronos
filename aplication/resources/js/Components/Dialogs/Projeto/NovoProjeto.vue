@@ -110,7 +110,7 @@ const emit = defineEmits(["end"]);
 
 const { carregando, store } = useProjeto();
 const { trigger } = useFeedback();
-const { ofSelect } = useTipoProjeto();
+const { index } = useTipoProjeto();
 
 const inputProjeto = ref(null);
 const inputDescricao = ref(null);
@@ -123,9 +123,8 @@ const dialogNovoTipoProjeto = ref(false);
 
 // Functions
 async function carregandoTodosTiposProjetos() {
-    const res = await ofSelect();
-    console.log(res);
-    tipoProjetosOptions.value = res.data || res
+    const res = await index();
+    tipoProjetosOptions.value = res
 }
 async function insert() {
 
@@ -139,7 +138,6 @@ async function insert() {
         };
         
         const res = await store(payload)
-        console.log(res)
         if (res.success) {
             emit("end", res.message);
         } else {
@@ -150,36 +148,19 @@ async function insert() {
     }
 }
 async function insertTipoProjeto(tipoProjeto) {
-    await axios
-        .post(route("tipoprojeto.store"), { nome: tipoProjeto.nome })
-        .then((res) => {
+    try {
+        const res = await axios.post(route("tipoprojeto.store"), { nome: tipoProjeto.nome })
             if (res.data.success) {
-                // reload tipos de projetos
-                tipoProjetosOptions.value = [];
-                carregandoTodosTiposProjetos();
-                feedback.value = {
-                    show: true,
-                    timeout: 4000,
-                    color: "success",
-                    text: res.data.message,
-                };
+                trigger(res.data.message, 'success');
             } else {
-                feedback.value = {
-                    show: true,
-                    timeout: 4000,
-                    color: "error",
-                    text: res.data.message,
-                };
+                trigger(res.data.message, 'error');
             }
-        })
-        .catch((err) => {
-            feedback.value = {
-                show: true,
-                timeout: 4000,
-                color: "error",
-                text: "Axios: " + err + ". Data: " + res.data.message + ".",
-            };
-        });
+    } catch (err) {
+        trigger("Axios: " + err + ". Data: " + res.data.message + ".", 'error')
+    } finally{
+        tipoProjetosOptions.value = [];
+        await carregandoTodosTiposProjetos();
+    }
 }
 </script>
 
