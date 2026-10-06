@@ -1,7 +1,7 @@
 <template>
     <Dialog
         v-model="model"
-        title="Incluir Item"
+        :title="props.plataforma ? 'Incluir Item: ' + props.plataforma.nome : 'Incluir Item'"
         width="50vw"
         @onCloseDialog="$emit('onCloseDialog')"
     >
@@ -96,6 +96,11 @@ import { ref, watch, computed, onMounted } from "vue";
 import Dialog from "../Dialog.vue";
 import axios from "axios";
 const model = defineModel();
+
+const props = defineProps({
+    bzeroId: { type: [Number, String], required: true },
+    plataforma: { type: Object, default: null },
+});
 
 const emit = defineEmits(['onCloseDialog', 'incluirProcess']);
 

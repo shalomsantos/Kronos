@@ -23,10 +23,11 @@
                 ></v-text-field>
             </v-col>
             <v-col cols="12" class="d-flex ga-2 align-center">
-                {{ tipoProjetosOptions }}
+                <!-- {{tipoProjetosOptions}} -->
                 <v-combobox
                     v-model="tipoProjetosValue"
                     :items="tipoProjetosOptions"
+                    :loading="carregandoTiposProjetos"
                     item-title="nome"
                     item-value="id"
                     :return-object="false"
@@ -98,33 +99,39 @@ import NovoTipoProjeto from "./NovoTipoProjeto.vue";
 import { useProjeto } from "@/Composables/useProjeto";
 import { useTipoProjeto } from "@/Composables/useTipoProjeto";
 import { useFeedback } from "@/Composables/useFeedback";
-import { ref } from "vue";
+import { ref, watch } from "vue";
+import axios from "axios";
 import Dialog from "../Dialog.vue";
 
 const model = defineModel();
 
-const props = defineProps({
-    tiposProjetos: Object
-});
 const emit = defineEmits(["end"]);
 
 const { carregando, store } = useProjeto();
 const { trigger } = useFeedback();
-const { index } = useTipoProjeto();
+const { index, carregando: carregandoTiposProjetos } = useTipoProjeto();
 
 const inputProjeto = ref(null);
 const inputDescricao = ref(null);
 
 const tipoProjetosValue = ref(null);
-const tipoProjetosOptions = ref(props.tiposProjetos ?? []);
+const tipoProjetosOptions = ref([]);
 
 // Dialog
 const dialogNovoTipoProjeto = ref(false);
 
+watch(model, (aberto) => {
+    if (aberto) carregandoTodosTiposProjetos();
+}, { immediate: true });
+
 // Functions
 async function carregandoTodosTiposProjetos() {
     const res = await index();
-    tipoProjetosOptions.value = res
+    if (Array.isArray(res)) {
+        tipoProjetosOptions.value = res;
+        return;
+    }
+    trigger(res?.msg || "Erro ao carregar os tipos de projeto.", "error");
 }
 async function insert() {
 
@@ -156,7 +163,7 @@ async function insertTipoProjeto(tipoProjeto) {
                 trigger(res.data.message, 'error');
             }
     } catch (err) {
-        trigger("Axios: " + err + ". Data: " + res.data.message + ".", 'error')
+        trigger(err.response?.data?.message || "Erro ao cadastrar o tipo de projeto.", 'error')
     } finally{
         tipoProjetosOptions.value = [];
         await carregandoTodosTiposProjetos();

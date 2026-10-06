@@ -1,7 +1,7 @@
 <template>
-    <DefaultLayout 
-        v-model="viewOption" 
-        title="Subitens" 
+    <DefaultLayout
+        v-model="viewOption"
+        title="Subitens"
         :location="location"
     >
         <v-row dense>
@@ -32,99 +32,23 @@
                     </v-col>
                 </v-row>
             </v-col>
-            <v-col
-                cols="4"
-                v-if="dados.length > 0 && viewOption"
-                v-for="(item, id) in dados"
-                :key="id"
-            >
-                <v-hover>
-                    <template v-slot:default="{ isHovering, props }">
-                        <v-card
-                            v-bind="props"
-                            :title="item.nome"
-                            prepend-icon="mdi-sitemap"
-                            class="border-s-lg"
-                            :color="isHovering ? 'green-lighten-5' : undefined"
-                            @click.prevent="
-                                ((subitemSelecionado = item),
-                                (dialogEditSubitem = true))
-                            "
-                        >
-                            <template #item>
-                                <v-sheet color="transparent" class="d-flex flex-column ga-3">
-                                    <Avatar :avatar="item" />
-                                    <MultItens :item="item" entity="fornecedores"/>
-                                </v-sheet>
-                            </template>
-                        </v-card>
+            <v-col cols="12">
+                <EmptyData v-if="!dados?.length" />
+                <ViewMode v-else :mode="viewOption">
+                    <template #table>
+                        <SubitemTable
+                            :items="dados"
+                            @editar="abrirEdicao"
+                            @excluir="confirmation = true"
+                        />
                     </template>
-                </v-hover>
-            </v-col>
-            <v-col cols="12" v-else-if="dados.length > 0 && !viewOption">
-                <v-table
-                    class="rounded-lg elevation-3"
-                    density="compact"
-                    striped="even"
-                >
-                    <thead>
-                        <tr>
-                            <th class="text-left">Nome</th>
-                            <th class="text-left">Subitens</th>
-                            <th class="text-center">Por</th>
-                            <th class="text-left"></th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr
-                            v-for="(item, id) in dados"
-                            :key="id"
-                            @click.prevent="
-                                ((subitemSelecionado = item),
-                                (dialogEditSubitem = true))
-                            "
-                        >
-                            <td>{{ item.nome }}</td>
-                            <td>
-                                <v-chip
-                                    v-for="(
-                                        fornecedor, idx
-                                    ) in item.fornecedores.slice(0, 2)"
-                                    :key="idx"
-                                    size="x-small"
-                                    color="green-darken-1"
-                                    variant="tonal"
-                                    class="font-weight-bold"
-                                >
-                                    {{ fornecedor.razao_social }}
-                                </v-chip>
-                                <a
-                                    v-if="item.fornecedores.length > 2"
-                                    size="x-small"
-                                    variant="text"
-                                    class="text-grey-darken-1"
-                                >
-                                    +{{ item.fornecedores.length - 2 }} itens
-                                </a>
-                            </td>
-                            <td style="width: 200px;">
-                                <Avatar :avatar="item"/>
-                            </td>
-                            <td>
-                                <v-btn
-                                    class="text-none me-1"
-                                    icon="mdi-delete"
-                                    density="comfortable"
-                                    color="red-lighten-2"
-                                    @click.prevent="confirmation = true"
-                                ></v-btn>
-                            </td>
-                        </tr>
-                    </tbody>
-                </v-table>
-            </v-col>
-            <v-col cols="12" v-else>
-                <EmptyData />
+                    <template #cards>
+                        <SubitemCards
+                            :items="dados"
+                            @editar="abrirEdicao"
+                        />
+                    </template>
+                </ViewMode>
             </v-col>
         </v-row>
 
@@ -135,24 +59,25 @@
                 ((subitemSelecionado = null), (dialogEditSubitem = false))
             "
         />
-        <NovoSubitem 
-            v-model="dialogNovoSubitem" 
+        <NovoSubitem
+            v-model="dialogNovoSubitem"
             @insertProcess="insertSubitem"
         />
     </DefaultLayout>
 </template>
 
 <script setup>
+import ViewMode from "@/Components/Shared/ViewMode.vue";
+import SubitemTable from "@/Components/Cadastros/Subitem/SubitemTable.vue";
+import SubitemCards from "@/Components/Cadastros/Subitem/SubitemCards.vue";
 import EditeSubitem from "@/Components/Dialogs/Subitens/EditeSubitem.vue";
 import { useFeedback } from "@/Composables/useFeedback";
 import DefaultLayout from "@/Layouts/DefaultLayout.vue";
 import EmptyData from "@/Components/EmptyData.vue";
 import axios from "axios";
 import { ref } from "vue";
-import Avatar from "@/Components/Bases/Avatar.vue";
 import NovoSubitem from "@/Components/Dialogs/Subitens/NovoSubitem.vue";
 import { useSubitem } from "@/Composables/useSubitem";
-import MultItens from "@/Components/Bases/MultItens.vue";
 
 const props = defineProps({
     subitens: Object,
@@ -167,13 +92,14 @@ const location = [
 const { trigger } = useFeedback();
 const { store } = useSubitem();
 
-const viewOption = ref(props.preferencias?.listagem_menu ?? 0);
+const viewOption = ref(Number(props.preferencias?.listagem_menu ?? 0));
 const dados = ref(props.subitens ?? []);
 const subitemSelecionado = ref(null);
 const search = ref("");
 // dialog
 const dialogEditSubitem = ref(false);
 const dialogNovoSubitem = ref(false);
+const confirmation = ref(false);
 
 async function insertSubitem(item) {
     try{
@@ -205,6 +131,11 @@ async function carregandoTodasSubitens(termo = "") {
         })
         .catch((err) => console.log(err));
 }
+function abrirEdicao(item) {
+    subitemSelecionado.value = item;
+    dialogEditSubitem.value = true;
+}
+
 </script>
 
 <style scoped></style>

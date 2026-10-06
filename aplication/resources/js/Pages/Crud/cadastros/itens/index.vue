@@ -1,7 +1,7 @@
 <template>
-    <DefaultLayout 
-        v-model="viewOption" 
-        title="Itens" 
+    <DefaultLayout
+        v-model="viewOption"
+        title="Itens"
         :location="location"
     >
         <v-row dense>
@@ -32,79 +32,22 @@
                     </v-col>
                 </v-row>
             </v-col>
-            <v-col
-                cols="4"
-                v-if="dados.length > 0 && viewOption"
-                v-for="(item, id) in dados"
-                :key="id"
-            >
-                <v-hover>
-                    <template v-slot:default="{ isHovering, props }">
-                        <v-card
-                            v-bind="props"
-                            :title="item.nome"
-                            prepend-icon="mdi-invoice-list"
-                            :elevation="isHovering ? 3  : 1"
-                            @click.prevent="
-                                ((itemSelecionado = item),
-                                (dialogEditeItem = true))
-                            "
-                            class="h-100 d-flex flex-column border-s-lg" 
-                        >
-                            <template #item>
-                                <v-sheet color="transparent" class="d-flex flex-column ga-3">
-                                    <Avatar :avatar="item" />
-                                    <MultItens :item="item" entity="subitens"/>
-                                </v-sheet>
-                            </template>
-                        </v-card>
+            <v-col cols="12">
+                <EmptyData v-if="!dados?.length" />
+                <ViewMode v-else :mode="viewOption">
+                    <template #table>
+                        <ItemTable
+                            :items="dados"
+                            @editar="abrirEdicao"
+                        />
                     </template>
-                </v-hover>
-            </v-col>
-            <v-col cols="12" v-else-if="dados.length > 0 && !viewOption">
-                <v-table
-                    class="rounded-lg elevation-3"
-                    density="compact"
-                    striped="even"
-                >
-                    <thead>
-                        <tr>
-                            <th class="text-left">Nome</th>
-                            <th class="text-left">Subitens</th>
-                            <th class="text-center">Por</th>
-                            <th class="text-left"></th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr
-                            v-for="(item, id) in dados"
-                            :key="id"
-                            @click.prevent="
-                                ((itemSelecionado = item),
-                                (dialogEditeItem = true))
-                            "
-                        >
-                            <td>{{ item.nome }}</td>
-                            <td>
-                                <MultItens :item="item" entity="subitens"/>
-                            </td>
-                            <td style="width: 200px;">
-                                <Avatar :avatar="item"/>
-                            </td>
-                            <td>
-                                <v-btn
-                                    class="text-none me-1"
-                                    icon="mdi-delete"
-                                    density="comfortable"
-                                    color="red-lighten-2"
-                                ></v-btn>
-                            </td>
-                        </tr>
-                    </tbody>
-                </v-table>
-            </v-col>
-            <v-col cols="12" v-else>
-                <EmptyData />
+                    <template #cards>
+                        <ItemCards
+                            :items="dados"
+                            @editar="abrirEdicao"
+                        />
+                    </template>
+                </ViewMode>
             </v-col>
         </v-row>
 
@@ -120,15 +63,16 @@
 </template>
 
 <script setup>
+import ViewMode from "@/Components/Shared/ViewMode.vue";
+import ItemTable from "@/Components/Cadastros/Item/ItemTable.vue";
+import ItemCards from "@/Components/Cadastros/Item/ItemCards.vue";
 import NovoItem from "@/Components/Dialogs/Item/NovoItem.vue";
 import EditeItem from "@/Components/Dialogs/Item/EditeItem.vue";
 import { useFeedback } from "@/Composables/useFeedback";
 import DefaultLayout from "@/Layouts/DefaultLayout.vue";
 import EmptyData from "@/Components/EmptyData.vue";
-import Avatar from "@/Components/Bases/Avatar.vue";
 import { ref, watch } from "vue";
 import { useItem } from "@/Composables/useItem";
-import MultItens from "@/Components/Bases/MultItens.vue";
 
 const props = defineProps({
     itens: Object,
@@ -148,7 +92,7 @@ const { dados, carregarDados, finding } = useItem();
 
 watch(() => props.itens, (novosItens) => { if (novosItens) dados.value = novosItens }, { immediate: true });
 
-const viewOption = ref(props.preferencias?.listagem_menu ?? 0);
+const viewOption = ref(Number(props.preferencias?.listagem_menu ?? 0));
 const itemSelecionado = ref(null);
 const search = ref("");
 
@@ -170,6 +114,11 @@ function editItem(item) {
 const executarBusca = async () => { await finding(search.value) }
 
 async function limparBusca() { await finding('') }
+function abrirEdicao(item) {
+    itemSelecionado.value = item;
+    dialogEditeItem.value = true;
+}
+
 </script>
 
 <style scoped>

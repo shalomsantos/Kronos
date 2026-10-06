@@ -32,74 +32,22 @@
                     </v-col>
                 </v-row>
             </v-col>
-            <v-col cols="4" v-if="dados.length > 0 && viewOption" v-for="(item, id) in dados" :key="id">
-                <v-hover class="h-100">
-                    <template v-slot:default="{ isHovering, props }">
-                        <v-card
-                            v-bind="props"
-                            :title="item.nome"
-                            prepend-icon="mdi-layers"
-                            @click.prevent="
-                                ((plataformaSelecionada = item),
-                                (dialogEditePlataforma = true))
-                            "
-                            :elevation="isHovering ? 3 : 1"
-                            class="h-100 d-flex flex-column border-s-lg" 
-                        >
-                            <template #item>
-                                <v-sheet color="transparent" class="d-flex flex-column ga-3">
-                                    <Avatar :avatar="item"/>
-                                    <MultItens :item="item" entity="itens"/>
-                                </v-sheet>
-                            </template>
-                        </v-card>
+            <v-col cols="12">
+                <EmptyData v-if="!dados?.length" />
+                <ViewMode v-else :mode="viewOption">
+                    <template #table>
+                        <PlatformTable
+                            :items="dados"
+                            @editar="abrirEdicao"
+                        />
                     </template>
-                </v-hover>
-            </v-col>
-            <v-col cols="12" v-else-if="dados.length > 0 && !viewOption">
-                <v-table
-                    class="rounded-lg elevation-3"
-                    density="compact"
-                    striped="even"
-                >
-                    <thead>
-                        <tr>
-                            <th class="text-left">Nome</th>
-                            <th class="text-left">Itens</th>
-                            <th class="text-center">Por</th>
-                            <th class="text-left"></th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr
-                            v-for="(item, id) in dados"
-                            :key="id"
-                            @click.prevent="
-                                ((plataformaSelecionada = item),
-                                (dialogEditePlataforma = true))
-                            "
-                        >
-                            <td>{{ item.nome }}</td>
-                            <td>
-                                <MultItens :item="item" entity="itens"/>
-                            </td>
-                            <td style="width: 200px;">
-                                <Avatar :avatar="item"/>
-                            </td>
-                            <td>
-                                <v-btn
-                                    class="text-none me-1"
-                                    icon="mdi-delete"
-                                    density="comfortable"
-                                    color="red-lighten-2"
-                                ></v-btn>
-                            </td>
-                        </tr>
-                    </tbody>
-                </v-table>
-            </v-col>
-            <v-col cols="12" v-else>
-                <EmptyData />
+                    <template #cards>
+                        <PlatformCards
+                            :items="dados"
+                            @editar="abrirEdicao"
+                        />
+                    </template>
+                </ViewMode>
             </v-col>
         </v-row>
         <!-- Dialogs -->
@@ -121,15 +69,16 @@
 </template>
 
 <script setup>
+import ViewMode from "@/Components/Shared/ViewMode.vue";
+import PlatformTable from "@/Components/Cadastros/Platform/PlatformTable.vue";
+import PlatformCards from "@/Components/Cadastros/Platform/PlatformCards.vue";
 import EditePlataforma from "@/Components/Dialogs/Plataforma/EditePlataforma.vue";
 import NovaPlataforma from "@/Components/Dialogs/Plataforma/NovaPlataforma.vue";
 import { useFeedback } from "@/Composables/useFeedback";
 import DefaultLayout from "@/Layouts/DefaultLayout.vue";
 import EmptyData from "@/Components/EmptyData.vue";
-import Avatar from "@/Components/Bases/Avatar.vue";
 import axios from "axios";
 import { ref } from "vue";
-import MultItens from "@/Components/Bases/MultItens.vue";
 
 const props = defineProps({
     plataformas: Object,
@@ -143,7 +92,7 @@ const location = [
 ];
 const { trigger } = useFeedback();
 
-const viewOption = ref(props.preferencias?.listagem_menu ?? 0);
+const viewOption = ref(Number(props.preferencias?.listagem_menu ?? 0));
 const dados = ref(props.plataformas ?? []);
 const plataformaSelecionada = ref(null);
 const search = ref("");
@@ -179,6 +128,11 @@ async function carregandoTodasPlataformas(termo = "") {
         })
         .catch((err) => trigger(err, 'error'));
 }
+function abrirEdicao(item) {
+    plataformaSelecionada.value = item;
+    dialogEditePlataforma.value = true;
+}
+
 </script>
 
 <style scoped></style>
